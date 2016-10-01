@@ -11,9 +11,9 @@ public:
 
     Vector3(double x, double y, double z);
 
-    Vector3 cross(Vector3 vector);
+	Vector3 cross(Vector3& vector);
 
-    Vector3 dot(double scalar);
+	double dot(Vector3& other);
 
     Vector3 normalize();
 
