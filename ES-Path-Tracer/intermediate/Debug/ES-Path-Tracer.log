@@ -1,0 +1,8 @@
+﻿  vector3.cpp
+  triangle.cpp
+  path_tracer.cpp
+  kd_tree.cpp
+  Generating Code...
+kd_tree.obj : error LNK2019: unresolved external symbol "public: __thiscall KD_Node::KD_Node(void)" (??0KD_Node@@QAE@XZ) referenced in function "public: __thiscall KD_Leaf::KD_Leaf(class Triangle)" (??0KD_Leaf@@QAE@VTriangle@@@Z)
+MSVCRTD.lib(exe_main.obj) : error LNK2019: unresolved external symbol _main referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
+.\output\Debug\ES-Path-Tracer.exe : fatal error LNK1120: 2 unresolved externals
