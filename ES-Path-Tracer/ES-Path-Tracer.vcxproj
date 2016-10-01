@@ -150,16 +150,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\geometry\point3.cpp" />
+    <ClCompile Include="src\geometry\ray.cpp" />
+    <ClCompile Include="src\geometry\surface_point.cpp" />
     <ClCompile Include="src\kd-tree\kd_tree.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\path-tracer\path_tracer.cpp" />
-    <ClCompile Include="src\primitives\triangle.cpp" />
-    <ClCompile Include="src\primitives\vector3.cpp" />
+    <ClCompile Include="src\geometry\triangle.cpp" />
+    <ClCompile Include="src\geometry\vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\geometry\point3.h" />
+    <ClInclude Include="src\geometry\ray.h" />
+    <ClInclude Include="src\geometry\surface_point.h" />
     <ClInclude Include="src\kd-tree\kd_tree.h" />
     <ClInclude Include="src\path-tracer\path_tracer.h" />
-    <ClInclude Include="src\primitives\triangle.h" />
-    <ClInclude Include="src\primitives\vector3.h" />
+    <ClInclude Include="src\geometry\triangle.h" />
+    <ClInclude Include="src\geometry\vector3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

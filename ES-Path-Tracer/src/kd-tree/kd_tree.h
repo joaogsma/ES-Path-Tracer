@@ -1,8 +1,8 @@
 #ifndef __GUARD_KD_TREE_H__
 #define __GUARD_KD_TREE_H__
 
-#include "../primitives/vector3.h"
-#include "../primitives/triangle.h"
+#include "../geometry/vector3.h"
+#include "../geometry/triangle.h"
 #include <vector>
 #include <utility>
 
@@ -11,7 +11,7 @@ struct Region { double min_x, max_x, min_y, max_y, min_z, max_z; };
 // Abstract node class
 class KD_Node {
 public:
-    KD_Node();
+	KD_Node() {}
 };
 
 
