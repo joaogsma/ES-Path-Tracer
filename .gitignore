@@ -1,4 +1,6 @@
 
 *.exe
+*.suo
 
 ES-Path-Tracer/intermediate/
+ES-Path-Tracer/output/
