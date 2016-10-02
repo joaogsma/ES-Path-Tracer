@@ -1,7 +1,8 @@
-#include "point3.h"
+#include "geometry/point3.h"
 
 #include <math.h>
 
+// Euclidean point distance
 double distance(const Point3& a, const Point3& b)
 {
 	double x_diff = a.x - b.x;
@@ -11,4 +12,5 @@ double distance(const Point3& a, const Point3& b)
 	return sqrt(pow(x_diff, 2) + pow(y_diff, 2) + pow(z_diff, 2));
 }
 
+// Point constructor
 Point3::Point3(double x, double y, double z) : x(x), y(y), z(z) {}

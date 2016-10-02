@@ -41,25 +41,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\kd-tree\kd_tree.h">
+    <ClInclude Include="headers\geometry\point3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\path-tracer\path_tracer.h">
+    <ClInclude Include="headers\geometry\ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry\triangle.h">
+    <ClInclude Include="headers\geometry\surface_point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry\vector3.h">
+    <ClInclude Include="headers\geometry\triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry\point3.h">
+    <ClInclude Include="headers\geometry\vector3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry\ray.h">
+    <ClInclude Include="headers\kd-tree\kd_tree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry\surface_point.h">
+    <ClInclude Include="headers\path-tracer\path_tracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

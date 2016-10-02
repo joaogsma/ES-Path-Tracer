@@ -1,3 +1,4 @@
+
 *.exe
 
-.\ES-Path-Tracer\intermediate
+ES-Path-Tracer/intermediate/

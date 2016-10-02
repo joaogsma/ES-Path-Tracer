@@ -1,4 +1,5 @@
-#include "vector3.h"
+#include "geometry/vector3.h"
+
 #include <math.h>
 
 using std::sqrt;

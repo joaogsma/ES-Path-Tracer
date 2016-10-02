@@ -93,6 +93,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.\headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.\headers\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,13 +162,13 @@
     <ClCompile Include="src\geometry\vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\geometry\point3.h" />
-    <ClInclude Include="src\geometry\ray.h" />
-    <ClInclude Include="src\geometry\surface_point.h" />
-    <ClInclude Include="src\kd-tree\kd_tree.h" />
-    <ClInclude Include="src\path-tracer\path_tracer.h" />
-    <ClInclude Include="src\geometry\triangle.h" />
-    <ClInclude Include="src\geometry\vector3.h" />
+    <ClInclude Include="headers\geometry\point3.h" />
+    <ClInclude Include="headers\geometry\ray.h" />
+    <ClInclude Include="headers\geometry\surface_point.h" />
+    <ClInclude Include="headers\kd-tree\kd_tree.h" />
+    <ClInclude Include="headers\path-tracer\path_tracer.h" />
+    <ClInclude Include="headers\geometry\triangle.h" />
+    <ClInclude Include="headers\geometry\vector3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
