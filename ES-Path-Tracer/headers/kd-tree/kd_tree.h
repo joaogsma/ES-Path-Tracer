@@ -82,6 +82,8 @@ private:
 
 	static bool compare_by_z(const Triangle* a, const Triangle* b);
 
+	static bool at_left_half_space(const Triangle* tri, int dimension, double split_value);
+
 	static void KD_Tree::sort_triangles(const std::vector<const Triangle*>& triangles,
 		std::vector<std::vector<const Triangle*> >& sorted_triangles);
 

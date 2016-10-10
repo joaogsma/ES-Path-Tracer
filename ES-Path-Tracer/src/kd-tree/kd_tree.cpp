@@ -99,6 +99,7 @@ bool KD_Tree::compare_by_x(const Triangle* a, const Triangle* b)
 	barycenter_a_x < barycenter_b_x;
 }
 
+
 bool KD_Tree::compare_by_y(const Triangle* a, const Triangle* b)
 {
 	double barycenter_a_y = (a->v1->y + a->v2->y + a->v3->y) / 3;
@@ -107,6 +108,7 @@ bool KD_Tree::compare_by_y(const Triangle* a, const Triangle* b)
 	barycenter_a_y < barycenter_b_y;
 }
 
+
 bool KD_Tree::compare_by_z(const Triangle* a, const Triangle* b)
 {
 	double barycenter_a_z = (a->v1->z + a->v2->z + a->v3->z) / 3;
@@ -114,6 +116,30 @@ bool KD_Tree::compare_by_z(const Triangle* a, const Triangle* b)
 
 	barycenter_a_z < barycenter_b_z;
 }
+
+
+bool KD_Tree::at_left_half_space(const Triangle* tri, int dimension, double split_value)
+{
+	double barycenter_coord;
+
+	switch (dimension)
+	{
+	case X:
+		barycenter_coord = (tri->v1->x + tri->v2->x + tri->v3->x) / 3;
+		break;
+	case Y:
+		barycenter_coord = (tri->v1->y + tri->v2->y + tri->v3->y) / 3;
+		break;
+	case Z:
+		barycenter_coord = (tri->v1->z + tri->v2->z + tri->v3->z) / 3;
+		break;
+	default:
+		throw std::logic_error("Unknown dimension");
+	}
+
+	return barycenter_coord <= split_value;
+}
+
 
 void KD_Tree::sort_triangles(const vector<const Triangle*>& triangles,
 	vector<vector<const Triangle*> >& sorted_triangles)
@@ -155,9 +181,10 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 	// The triangle vector for the dimension in which this node splits the space
 	vector<const Triangle*>& triangles = sorted_triangles[dimension];
 	
-	// If there is only one triangle, so the returned node will be a KD_Leaf
 	if ( triangles.size() == 1 )
 	{
+		/*	If there is only one triangle, so the returned node will be a KD_Leaf */
+		
 		const Triangle& tri = *triangles[0];
 		
 		// Set the bounding box values for this leaf
@@ -172,7 +199,7 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 		return new KD_Leaf( triangles[0] );
 	}
 	
-	// There is more than one triangle, so the returned node will be a KD_Middle_Node
+	/*	There is more than one triangle, so the returned node will be a KD_Middle_Node */
 	
 	// ===== Compute the node's split value (median) =====
 	vector<const Triangle*>::size_type mid = triangles.size() / 2;
@@ -250,6 +277,25 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 		}
 	}
 	// ===================================================
+
+
+	// ===== Divide the sorted triangle lists by the split value =====
+	vector<vector<const Triangle*> > left_sorted_triangles(sorted_triangles.size());
+	vector<vector<const Triangle*> > right_sorted_triangles(sorted_triangles.size());
+
+	for (int dim = 0; dim < sorted_triangles.size(); dim++)
+	{
+		for (vector<const Triangle*>::const_iterator tri_it = sorted_triangles[dim].begin();
+			tri_it != sorted_triangles[dim].end(); tri_it++)
+		{
+			if ( at_left_half_space(*tri_it, dimension, split_value) )
+				left_sorted_triangles[dim].push_back( *tri_it );
+			else
+				right_sorted_triangles[dim].push_back( *tri_it );
+		}
+	}
+	// ===============================================================
+
 
 
 	// TODO... (see notebook)
