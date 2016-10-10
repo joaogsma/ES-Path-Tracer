@@ -26,7 +26,7 @@ public:
 	beyond the plane defined by it's parent median_value. */
 class KD_Middle_Node : public KD_Node {
 public:
-    const double median_value;
+    const double split_value;
 	const double left_bound_offset, right_bound_offset;
 
     const KD_Node * const left;

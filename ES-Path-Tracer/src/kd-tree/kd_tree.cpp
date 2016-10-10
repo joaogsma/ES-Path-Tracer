@@ -21,7 +21,7 @@ using std::vector;
 KD_Middle_Node::KD_Middle_Node(double median_value, double left_bound_offset,
 	double right_bound_offset, const KD_Node * const left_child,
 	const KD_Node * const right_child)
-	: median_value(median_value), left_bound_offset(left_bound_offset),
+	: split_value(median_value), left_bound_offset(left_bound_offset),
 	right_bound_offset(right_bound_offset), left(left_child), right(right_child) {}
 
 KD_Middle_Node::~KD_Middle_Node() {	delete left; delete right; }
@@ -96,7 +96,7 @@ bool KD_Tree::compare_by_x(const Triangle* a, const Triangle* b)
 	double barycenter_a_x = (a->v1->x + a->v2->x + a->v3->x) / 3;
 	double barycenter_b_x = (b->v1->x + b->v2->x + b->v3->x) / 3;
 
-	barycenter_a_x < barycenter_b_x;
+	return barycenter_a_x < barycenter_b_x;
 }
 
 
@@ -105,7 +105,7 @@ bool KD_Tree::compare_by_y(const Triangle* a, const Triangle* b)
 	double barycenter_a_y = (a->v1->y + a->v2->y + a->v3->y) / 3;
 	double barycenter_b_y = (b->v1->y + b->v2->y + b->v3->y) / 3;
 
-	barycenter_a_y < barycenter_b_y;
+	return barycenter_a_y < barycenter_b_y;
 }
 
 
@@ -114,7 +114,7 @@ bool KD_Tree::compare_by_z(const Triangle* a, const Triangle* b)
 	double barycenter_a_z = (a->v1->z + a->v2->z + a->v3->z) / 3;
 	double barycenter_b_z = (b->v1->z + b->v2->z + b->v3->z) / 3;
 
-	barycenter_a_z < barycenter_b_z;
+	return barycenter_a_z < barycenter_b_z;
 }
 
 
@@ -214,41 +214,43 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 
 		switch (dimension)
 		{
-		case X:
-			// X coordinate of mid_triangle's barycenter
-			double berycentric_mid_tri_x = (mid_triangle->v1->x + mid_triangle->v2->x
-				+ mid_triangle->v3->x) / 3;
-			// X coordinate of mid_prev_triangle's barycenter
-			double berycentric_mid_prev_tri_x = (mid_prev_triangle->v1->x
-				+ mid_prev_triangle->v2->x + mid_prev_triangle->v3->x) / 3;
+			case X:
+			{
+				// X coordinate of mid_triangle's barycenter
+				double barycentric_mid_tri_x = (mid_triangle->v1->x + mid_triangle->v2->x
+					+ mid_triangle->v3->x) / 3;
+				// X coordinate of mid_prev_triangle's barycenter
+				double barycentric_mid_prev_tri_x = (mid_prev_triangle->v1->x
+					+ mid_prev_triangle->v2->x + mid_prev_triangle->v3->x) / 3;
 
-			split_value = (berycentric_mid_tri_x + berycentric_mid_prev_tri_x) / 2;
-			break;
+				split_value = (barycentric_mid_tri_x + barycentric_mid_prev_tri_x) / 2;
+				break;
+			}
+			case Y:
+			{
+				// Y coordinate of mid_triangle's barycenter
+				double barycentric_mid_tri_y = (mid_triangle->v1->y + mid_triangle->v2->y
+					+ mid_triangle->v3->y) / 3;
+				// Y coordinate of mid_prev_triangle's barycenter
+				double barycentric_mid_prev_tri_y = (mid_prev_triangle->v1->y
+					+ mid_prev_triangle->v2->y + mid_prev_triangle->v3->y) / 3;
 
-		case Y:
-			// Y coordinate of mid_triangle's barycenter
-			double berycentric_mid_tri_y = (mid_triangle->v1->y + mid_triangle->v2->y
-				+ mid_triangle->v3->y) / 3;
-			// Y coordinate of mid_prev_triangle's barycenter
-			double berycentric_mid_prev_tri_y = (mid_prev_triangle->v1->y
-				+ mid_prev_triangle->v2->y + mid_prev_triangle->v3->y) / 3;
+				split_value = (barycentric_mid_tri_y + barycentric_mid_prev_tri_y) / 2;
+				break;
+			}
+			case Z:
+			{
+				// Z coordinate of mid_triangle's barycenter
+				double barycentric_mid_tri_z = (mid_triangle->v1->z + mid_triangle->v2->z
+					+ mid_triangle->v3->z) / 3;
+				// Z coordinate of mid_prev_triangle's barycenter
+				double barycentric_mid_prev_tri_z = (mid_prev_triangle->v1->z
+					+ mid_prev_triangle->v2->z + mid_prev_triangle->v3->z) / 3;
 
-			split_value = (berycentric_mid_tri_y + berycentric_mid_prev_tri_y) / 2;
-			break;
-
-		case Z:
-			// Z coordinate of mid_triangle's barycenter
-			double berycentric_mid_tri_z = (mid_triangle->v1->z + mid_triangle->v2->z
-				+ mid_triangle->v3->z) / 3;
-			// Z coordinate of mid_prev_triangle's barycenter
-			double berycentric_mid_prev_tri_z = (mid_prev_triangle->v1->z
-				+ mid_prev_triangle->v2->z + mid_prev_triangle->v3->z) / 3;
-
-			split_value = (berycentric_mid_tri_z + berycentric_mid_prev_tri_z) / 2;
-			break;
-
-		default:
-			throw std::logic_error("Unknown dimension");
+				split_value = (barycentric_mid_tri_z + barycentric_mid_prev_tri_z) / 2;
+				break;
+			}
+			default: { throw std::logic_error("Unknown dimension"); }
 		}
 	}
 	// Odd number of triangles
@@ -296,10 +298,48 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 	}
 	// ===============================================================
 
+	Region left_bounding_box, right_bounding_box;
+	
+	// Recursively compute the left and right subtrees
+	KD_Node* left_child = build_tree( left_sorted_triangles, 
+		(dimension + 1) % 3, left_bounding_box );
+	KD_Node* right_child = build_tree( right_sorted_triangles, 
+		(dimension + 1) % 3, right_bounding_box );
 
+	// Compute the entire subtree's bounding box
+	bounding_box.min_x = min( left_bounding_box.min_x, right_bounding_box.min_x );
+	bounding_box.min_y = min( left_bounding_box.min_y, right_bounding_box.min_y );
+	bounding_box.min_z = min( left_bounding_box.min_z, right_bounding_box.min_z );
 
-	// TODO... (see notebook)
+	bounding_box.max_x = max(left_bounding_box.max_x, right_bounding_box.max_x);
+	bounding_box.max_y = max(left_bounding_box.max_y, right_bounding_box.max_y);
+	bounding_box.max_z = max(left_bounding_box.max_z, right_bounding_box.max_z);
 
+	// Compute the left subtree's bound offset
+	double *left_max, *right_min;
+	switch (dimension)
+	{
+	case X: 
+		left_max = &left_bounding_box.max_x; 
+		right_min = &right_bounding_box.min_x; 
+		break;
+	case Y:
+		left_max = &left_bounding_box.max_y; 
+		right_min = &right_bounding_box.min_y; 
+		break;
+	case Z:
+		left_max = &left_bounding_box.max_z;
+		right_min = &right_bounding_box.min_z;
+		break;
+	default:
+		throw std::logic_error("Unknown dimension");
+	}
+
+	double left_bound_offset = max( 0.0, *left_max - split_value );
+	double right_bound_offset = max( 0.0, split_value - *right_min );
+
+	return new KD_Middle_Node(split_value, left_bound_offset, 
+		right_bound_offset, left_child, right_child);
 }
 
 
@@ -381,11 +421,11 @@ void KD_Tree::search(const KD_Node* const current, Region& region,
 		}
 
 		// Adjust the region boundary of the left subregion
-		*left_max_dim = current_as_middle_node->median_value 
+		*left_max_dim = current_as_middle_node->split_value 
 			+ current_as_middle_node->left_bound_offset;
 
 		// Adjust the region boundary of the right subregion
-		*right_min_dim = current_as_middle_node->median_value
+		*right_min_dim = current_as_middle_node->split_value
 			- current_as_middle_node->right_bound_offset;
 		// =================================================
 
