@@ -14,9 +14,7 @@ struct Region { double min_x, max_x, min_y, max_y, min_z, max_z; };
 // Abstract node class
 class KD_Node {
 public:
-	const double bound_offset;
-
-	KD_Node(double bound_offset) : bound_offset(bound_offset) {}
+	KD_Node() {}
 	virtual ~KD_Node() {}
 };
 
@@ -29,12 +27,13 @@ public:
 class KD_Middle_Node : public KD_Node {
 public:
     const double median_value;
+	const double left_bound_offset, right_bound_offset;
 
     const KD_Node * const left;
     const KD_Node * const right;
     
-    KD_Middle_Node(double bound_offset, int median_value, 
-		const KD_Node * const left_child, 
+    KD_Middle_Node(double median_value, double left_bound_offset, 
+		double right_bound_offset, const KD_Node * const left_child, 
 		const KD_Node * const right_child);
 
 	~KD_Middle_Node();
@@ -48,7 +47,7 @@ class KD_Leaf : public KD_Node {
 public:
     const Triangle * const tri;
 
-    KD_Leaf(double bound_offset, const Triangle * const triangle);
+    KD_Leaf(const Triangle * const triangle);
 
 	~KD_Leaf();
 };
@@ -59,7 +58,7 @@ public:
 	which receives an intesection test function. */
 class KD_Tree {
 public:
-    static KD_Tree* build_tree(std::vector<Triangle>& triangles);
+    static KD_Tree* build_tree(std::vector<const Triangle*>& triangles);
 
 	~KD_Tree();
 
@@ -70,9 +69,15 @@ public:
 
 private:
     const KD_Node* const root;
+	const Region bounding_box;
 	unsigned int dim_counter;
 
-    KD_Tree(const KD_Node* const root);
+    KD_Tree(KD_Node* root, Region bounding_box);
+
+	static double median(const std::vector<const Triangle*>& values, int dimension);
+	
+	static KD_Node* build_tree(std::vector<const Triangle*>& triangles, 
+		int dimension, Region& bounding_box);
 
 	void search( const KD_Node* const current, Region &region, 
 		int dimension, std::vector<const Triangle*>& intersected, 
@@ -82,6 +87,7 @@ private:
 
 	void report_subtree( const KD_Node* const root, 
 		std::vector<const Triangle*>& intersected ) const;
+
 };
 
 #endif

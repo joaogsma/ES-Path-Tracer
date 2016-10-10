@@ -1,20 +1,28 @@
+#include "geometry/point3.h"
 #include "geometry/triangle.h"
 #include "kd-tree/kd_tree.h"
 
+#include <algorithm>
 #include <cfloat>
+#include <iterator>
+#include <stdexcept>
 #include <vector>
 
+using std::min;
+using std::max;
+using std::sort;
+using std::transform;
 using std::vector;
 
 // ============================================================================
 // ============================== KD_MIDDLE_NODE ==============================
 // ============================================================================
 
-KD_Middle_Node::KD_Middle_Node(double bound_offset, int median_value, 
-	const KD_Node * const left_child, 
-	const KD_Node * const right_child) :
-	KD_Node(bound_offset), median_value(median_value),
-	left(left_child), right(right_child) {}
+KD_Middle_Node::KD_Middle_Node(double median_value, double left_bound_offset,
+	double right_bound_offset, const KD_Node * const left_child,
+	const KD_Node * const right_child)
+	: median_value(median_value), left_bound_offset(left_bound_offset),
+	right_bound_offset(right_bound_offset), left(left_child), right(right_child) {}
 
 KD_Middle_Node::~KD_Middle_Node() {	delete left; delete right; }
 
@@ -26,8 +34,7 @@ KD_Middle_Node::~KD_Middle_Node() {	delete left; delete right; }
 // ================================= KD_LEAF ==================================
 // ============================================================================
 
-KD_Leaf::KD_Leaf(double bound_offset, const Triangle* const triangle)
-	: KD_Node(0), tri(triangle) {}
+KD_Leaf::KD_Leaf(const Triangle* const triangle) : tri(triangle) {}
 
 KD_Leaf::~KD_Leaf() { delete tri; }
 
@@ -43,15 +50,82 @@ static const int X = 0;
 static const int Y = 1;
 static const int Z = 2;
 
-KD_Tree::KD_Tree(const KD_Node * const root) : dim_counter(0), root(root) {}
+KD_Tree::KD_Tree(KD_Node* root, Region bounding_box) : dim_counter(0), 
+	root(root), bounding_box(bounding_box) {}
+
 
 KD_Tree::~KD_Tree() { delete root; }
 
-KD_Tree* KD_Tree::build_tree(std::vector<Triangle>& triangles)
+
+double KD_Tree::median(const vector<const Triangle*>& triangles, int dimension)
 {
-	// TODO...
-	// Remember to compute bound_offsets of KD_Leaf objects as well
-	return nullptr;
+	vector<double> values;
+	
+	// Extract the dimension values for each triangle barycenter
+	for (vector<const Triangle*>::const_iterator it = triangles.begin();
+		it != triangles.end(); it++)
+	{
+		const Triangle* tri = *it;
+		Point3 barycenter((tri->v1->x + tri->v2->x + tri->v3->x) / 3,
+			(tri->v1->y + tri->v2->y + tri->v3->y) / 3,
+			(tri->v1->z + tri->v2->z + tri->v3->z) / 3);
+
+		switch (dimension)
+		{
+		case X: { values.push_back(barycenter.x); break; }
+		case Y: { values.push_back(barycenter.y); break; }
+		case Z: { values.push_back(barycenter.z); break; }
+		default: throw std::logic_error("Unknown dimension");
+		}
+	}
+	
+	// Sort the values
+	sort( values.begin(), values.end() );
+
+	// Compute the median
+	vector<double>::size_type mid = values.size() / 2;
+	if ( values.size() % 2 == 0 )
+		return (values[mid] + values[mid - 1]) / 2;
+	
+	return values[mid];
+}
+
+
+KD_Tree* KD_Tree::build_tree(vector<const Triangle*>& triangles)
+{
+	Region tree_bounding_box;
+	KD_Node* root = build_tree(triangles, X, tree_bounding_box);
+	return new KD_Tree(root, tree_bounding_box);
+}
+
+
+KD_Node* KD_Tree::build_tree(vector<const Triangle*>& triangles, int dimension, 
+	Region& bounding_box)
+{
+	if (triangles.empty())
+		throw std::logic_error("Empty triangle vector");
+
+	// If there is only one triangle, so the returned node will be a KD_Leaf
+	if ( triangles.size() == 1 )
+	{
+		const Triangle& tri = *triangles[0];
+		
+		// Set the bounding box values for this leaf
+		bounding_box.min_x = min(tri.v1->x, min(tri.v2->x, tri.v3->x));
+		bounding_box.min_y = min(tri.v1->y, min(tri.v2->y, tri.v3->y));
+		bounding_box.min_z = min(tri.v1->z, min(tri.v2->z, tri.v3->z));
+
+		bounding_box.max_x = max(tri.v1->x, max(tri.v2->x, tri.v3->x));
+		bounding_box.max_y = max(tri.v1->y, max(tri.v2->y, tri.v3->y));
+		bounding_box.max_z = max(tri.v1->z, max(tri.v2->z, tri.v3->z));
+
+		return new KD_Leaf( triangles[0] );
+	}
+	
+	// There is more than one triangle, so the returned node will be a KD_Middle_Node
+	
+	// TODO... (see notebook)
+
 }
 
 
@@ -93,13 +167,23 @@ void KD_Tree::search(const KD_Node* const current, Region& region,
 	}
 	else
 	{
+		/*	Check if the query range intersects the region corresponding to this 
+			subtree. This check is done here, instead of in the parent node, because
+			then there is no need to check intersections with leaf bounding boxes, as
+			we only need to check for intersections with the triangle contained in the 
+			leaf (see previous if clause) */
+		if ( !intersects_region(region) )
+			return;
+		
 		const KD_Middle_Node* const current_as_middle_node = 
 			static_cast<const KD_Middle_Node*>(current);
 
 		Region left_subregion = region;
 		Region right_subregion = region;
 		
+		// ===== Compute the left and right subregions =====
 		double *left_max_dim = nullptr, *right_min_dim = nullptr;
+		// Find which dimension is the one corresponding to this node
 		switch (dimension)
 		{
 		case X:
@@ -116,43 +200,66 @@ void KD_Tree::search(const KD_Node* const current, Region& region,
 			left_max_dim = &left_subregion.max_z;
 			right_min_dim = &right_subregion.min_z;
 			break;
+
+		default:
+			throw std::logic_error("Unknown dimension");
+			break;
 		}
 
-		// Adjust the reagion boundaries of the left and right subregions
+		// Adjust the region boundary of the left subregion
 		*left_max_dim = current_as_middle_node->median_value 
-			+ current_as_middle_node->left->bound_offset;
+			+ current_as_middle_node->left_bound_offset;
 
+		// Adjust the region boundary of the right subregion
 		*right_min_dim = current_as_middle_node->median_value
-			- current_as_middle_node->right->bound_offset;
+			- current_as_middle_node->right_bound_offset;
+		// =================================================
 
 		// ===== Processing of left subtree =====
-		// Report the entire left subtree if it is fully contained in the query region
-		if (contains_region(left_subregion))
-			report_subtree(current_as_middle_node->left, intersected);
-
-		/*	Recursively continue through the left subtree if the left subregion
-			intersects the query subregion */
-		else if (intersects_region(left_subregion))
 		{
-			search( current_as_middle_node->left, left_subregion, 
-				(dimension + 1) % 3, intersected, contains_region, 
-				intersects_region, intersects_triangle );
+			if (current_as_middle_node->left)
+			{
+				/*	Report the entire left subtree if it is fully contained in the 
+					query region */
+				if (contains_region(left_subregion))
+				{
+					report_subtree(current_as_middle_node->left, intersected);
+				}
+				/*	The left subtree is not entirely contained in the query region, 
+					but they might intersect */
+				else
+				{
+					/*	Recursively continue through the left subtree if the left 
+						subregion intersects the query subregion */
+					search(current_as_middle_node->left, left_subregion,
+						(dimension + 1) % 3, intersected, contains_region,
+						intersects_region, intersects_triangle);
+				}
+			}
 		}
 		// ======================================
 		
 		// ===== Processing of right subtree =====
-		/*	Report the entire right subtree if it is fully contained in the 
-			query region */
-		if (contains_region(right_subregion))
-			report_subtree(current_as_middle_node->right, intersected);
-
-		/*	Recursively continue through the right subtree if the right subregion
-			intersects the query subregion */
-		else if (intersects_region(right_subregion))
 		{
-			search(current_as_middle_node->right, right_subregion,
-				(dimension + 1) % 3, intersected, contains_region,
-				intersects_region, intersects_triangle);
+			if ( current_as_middle_node->right )
+			{
+				/*	Report the entire right subtree if it is fully contained in 
+					the query region */
+				if (contains_region(right_subregion))
+				{
+					report_subtree(current_as_middle_node->right, intersected);
+				}
+				/*	The right subtree is not entirely contained in the query region,
+					but they might intersect */
+				else
+				{
+					/*	Recursively continue through the right subtree if the 
+						right subregion intersects the query subregion */
+					search(current_as_middle_node->right, right_subregion,
+						(dimension + 1) % 3, intersected, contains_region,
+						intersects_region, intersects_triangle);
+				}
+			}
 		}
 		// =======================================
 	}
