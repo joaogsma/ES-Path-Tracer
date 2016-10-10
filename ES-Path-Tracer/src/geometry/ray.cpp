@@ -2,10 +2,8 @@
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
 
-#include <memory>
 #include <vector>
 
-using std::shared_ptr;
 using std::vector;
 
 // ============================================================================
@@ -82,7 +80,7 @@ vector<Point3> box_bot_vertices(const Point3 &center, const double x_dims,
 // ========================== INTERSECTION FUNCTIONS ==========================
 // ============================================================================
 
-bool Ray::intersect(const Triangle &tri, double &t, vector<double> &bar_weights) const
+bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 {
 	const Point3 &v1 = *tri.v1;
 	const Point3 &v2 = *tri.v2;
@@ -121,7 +119,7 @@ bool Ray::intersect(const Triangle &tri, double &t, vector<double> &bar_weights)
 	return true;
 }
 
-bool Ray::intersect(const Region &kd_region) const
+bool Ray::hit(const Region &kd_region) const
 {
 	// If the origin is inside the region, return true
 	if (kd_region.min_x <= origin.x && origin.x <= kd_region.max_x &&
@@ -149,31 +147,31 @@ bool Ray::intersect(const Region &kd_region) const
 	for (vector<Point3>::size_type i = 0; i < 4; i++)
 	{
 		// ===== Create the triangle vertices =====
-		shared_ptr<Surface_Point> v1( new Surface_Point(top_vertices[i].x, 
-			top_vertices[i].y, top_vertices[i].z, Vector3(0, 0, 0)) );
+		Vertex v1( top_vertices[i].x, top_vertices[i].y, top_vertices[i].z, 
+			Vector3(0, 0, 0) );
 		
-		shared_ptr<Surface_Point> v2( new Surface_Point(bot_vertices[i].x, 
-			bot_vertices[i].y, bot_vertices[i].z, Vector3(0, 0, 0)) );
+		Vertex v2( bot_vertices[i].x, bot_vertices[i].y, bot_vertices[i].z, 
+			Vector3(0, 0, 0) );
 		
 		vector<Point3>::size_type next_i = (i + 1) % 4;
 		
-		shared_ptr<Surface_Point> v3( new Surface_Point(bot_vertices[next_i].x, 
-			bot_vertices[next_i].y, bot_vertices[next_i].z, Vector3(0, 0, 0)) );
+		Vertex v3( bot_vertices[next_i].x, bot_vertices[next_i].y, 
+			bot_vertices[next_i].z, Vector3(0, 0, 0) );
 		
-		shared_ptr<Surface_Point> v4( new Surface_Point(top_vertices[next_i].x, 
-			top_vertices[next_i].y, top_vertices[next_i].z, Vector3(0, 0, 0)) );
+		Vertex v4( top_vertices[next_i].x, top_vertices[next_i].y, 
+			top_vertices[next_i].z, Vector3(0, 0, 0) );
 		// ========================================
 
 		// ===== Check for intersections =====
 		double t;
 		vector<double> weights;
 
-		Triangle tri1(v1, v2, v3);
-		if (intersect(tri1, t, weights))
+		Triangle tri1(&v1, &v2, &v3);
+		if (hit(tri1, t, weights))
 			return true;
 		
-		Triangle tri2(v3, v4, v1);
-		if (intersect(tri2, t, weights))
+		Triangle tri2(&v3, &v4, &v1);
+		if (hit(tri2, t, weights))
 			return true;
 		// ===================================
 	}
@@ -181,27 +179,27 @@ bool Ray::intersect(const Region &kd_region) const
 
 	// ========== Check the 2 top triangles for intersections ==========
 	{
-		shared_ptr<Surface_Point> v1(new Surface_Point(top_vertices[0].x,
-			top_vertices[0].y, top_vertices[0].z, Vector3(0, 0, 0)));
+		Vertex v1( top_vertices[0].x, top_vertices[0].y, top_vertices[0].z, 
+			Vector3(0, 0, 0) );
 
-		shared_ptr<Surface_Point> v2(new Surface_Point(top_vertices[1].x,
-			top_vertices[1].y, top_vertices[1].z, Vector3(0, 0, 0)));
+		Vertex v2( top_vertices[1].x, top_vertices[1].y, top_vertices[1].z, 
+			Vector3(0, 0, 0) );
 
-		shared_ptr<Surface_Point> v3(new Surface_Point(top_vertices[2].x,
-			top_vertices[2].y, top_vertices[2].z, Vector3(0, 0, 0)));
+		Vertex v3( top_vertices[2].x, top_vertices[2].y, top_vertices[2].z, 
+			Vector3(0, 0, 0) );
 
-		shared_ptr<Surface_Point> v4(new Surface_Point(top_vertices[3].x,
-			top_vertices[3].y, top_vertices[3].z, Vector3(0, 0, 0)));
+		Vertex v4( top_vertices[3].x, top_vertices[3].y, top_vertices[3].z, 
+			Vector3(0, 0, 0) );
 
 		double t;
 		vector<double> weights;
 
-		Triangle tri1(v1, v2, v3);
-		if (intersect(tri1, t, weights))
+		Triangle tri1(&v1, &v2, &v3);
+		if (hit(tri1, t, weights))
 			return true;
 
-		Triangle tri2(v3, v4, v1);
-		if (intersect(tri2, t, weights))
+		Triangle tri2(&v3, &v4, &v1);
+		if (hit(tri2, t, weights))
 			return true;
 	}
 	// =================================================================
@@ -209,27 +207,27 @@ bool Ray::intersect(const Region &kd_region) const
 
 	// ========== Check the 2 bottom triangles for intersections ==========
 	{
-		shared_ptr<Surface_Point> v1(new Surface_Point(bot_vertices[0].x,
-			bot_vertices[0].y, bot_vertices[0].z, Vector3(0, 0, 0)));
+		Vertex v1( bot_vertices[0].x, bot_vertices[0].y, bot_vertices[0].z, 
+			Vector3(0, 0, 0) );
 
-		shared_ptr<Surface_Point> v2(new Surface_Point(bot_vertices[1].x,
-			bot_vertices[1].y, bot_vertices[1].z, Vector3(0, 0, 0)));
+		Vertex v2( bot_vertices[1].x, bot_vertices[1].y, bot_vertices[1].z, 
+			Vector3(0, 0, 0) );
 
-		shared_ptr<Surface_Point> v3(new Surface_Point(bot_vertices[2].x,
-			bot_vertices[2].y, bot_vertices[2].z, Vector3(0, 0, 0)));
+		Vertex v3( bot_vertices[2].x, bot_vertices[2].y, bot_vertices[2].z, 
+			Vector3(0, 0, 0) );
 
-		shared_ptr<Surface_Point> v4(new Surface_Point(bot_vertices[3].x,
-			bot_vertices[3].y, bot_vertices[3].z, Vector3(0, 0, 0)));
+		Vertex v4( bot_vertices[3].x, bot_vertices[3].y, bot_vertices[3].z, 
+			Vector3(0, 0, 0) );
 
 		double t;
 		vector<double> weights;
 
-		Triangle tri1(v1, v2, v3);
-		if (intersect(tri1, t, weights))
+		Triangle tri1(&v1, &v2, &v3);
+		if (hit(tri1, t, weights))
 			return true;
 
-		Triangle tri2(v3, v4, v1);
-		if (intersect(tri2, t, weights))
+		Triangle tri2(&v3, &v4, &v1);
+		if (hit(tri2, t, weights))
 			return true;
 	}
 	// ====================================================================

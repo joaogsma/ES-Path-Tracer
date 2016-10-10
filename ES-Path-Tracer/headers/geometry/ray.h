@@ -19,11 +19,13 @@ public:
 	Point3 at(double t) const;
 
 	// Triangle intersection function
-	bool intersect(const Triangle &tri, double &t, 
+	bool hit(const Triangle &tri, double &t, 
 		std::vector<double> &bar_weights) const;
 
 	// KD-Tree Region intersection function
-	bool intersect(const Region& kd_region) const;
+	bool hit(const Region& kd_region) const;
+
+	bool contains_region(const Region& kd_region) const { return false; }
 };
 
 #endif

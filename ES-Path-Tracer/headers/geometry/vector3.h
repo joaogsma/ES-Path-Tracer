@@ -20,7 +20,8 @@ public:
     Vector3(double x, double y, double z);
 
 	Vector3(const Point3& origin, const Point3& destination);
-
+	
+	// Returns a new Vector3 object corresponding to the normalized vector
 	Vector3 normalize() const;
 
 	double magnitude() const;

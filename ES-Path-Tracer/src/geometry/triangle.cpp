@@ -4,17 +4,34 @@
 #include "geometry/vector3.h"
 
 #include <cmath>
-#include <memory>
 #include <vector>
 
 using std::vector;
 using std::abs;
-using std::shared_ptr;
 
-Triangle::Triangle(const shared_ptr<Surface_Point> &point1,
-	const shared_ptr<Surface_Point> &point2,
-	const shared_ptr<Surface_Point> &point3) :
-	v1(point1), v2(point2), v3(point3) {}
+Triangle::Triangle(Vertex * const point1, Vertex * const point2, 
+	Vertex * const point3) : v1(point1), v2(point2), v3(point3) 
+{
+	// Increase each vertex's triangle counter
+	v1->triangle_cout++;
+	v2->triangle_cout++;
+	v3->triangle_cout++;
+}
+
+Triangle::~Triangle()
+{
+	/*	For each Vertex, decrease the counter of triangles pointing to it.
+		Also, if this was the last such triangle, delete the vertex object. */
+
+	if ( --(v1->triangle_cout) == 0 )
+		delete v1;
+
+	if ( --(v2->triangle_cout) == 0 )
+		delete v2;
+
+	if ( --(v3->triangle_cout) == 0 )
+		delete v3;
+}
 
 
 vector<double> Triangle::baricentric_coordinates(const Point3& p) const

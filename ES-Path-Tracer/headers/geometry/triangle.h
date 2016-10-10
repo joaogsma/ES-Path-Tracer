@@ -4,17 +4,19 @@
 #include "geometry/point3.h"
 #include "geometry/surface_point.h"
 #include "geometry/vector3.h"
+#include "geometry/vertex.h"
 
-#include <memory>
 #include <vector>
 
+/*	Triangle objects correspond to triangles in scene object meshes.
+	They contain pointers to their vertices (for memory efficiency). */
 class Triangle {
 public:
-    std::shared_ptr<Surface_Point> v1, v2, v3;
+	Vertex * const v1, * const v2, * const v3;
 
-	Triangle(const std::shared_ptr<Surface_Point> &point1, 
-		const std::shared_ptr<Surface_Point> &point2, 
-		const std::shared_ptr<Surface_Point> &point3);
+	Triangle(Vertex* point1, Vertex* point2, Vertex* point3);
+
+	~Triangle();
 
 	std::vector<double> baricentric_coordinates(const Point3& p) const;
 };
