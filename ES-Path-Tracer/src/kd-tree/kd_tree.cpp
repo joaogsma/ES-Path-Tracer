@@ -56,7 +56,7 @@ KD_Tree::KD_Tree(KD_Node* root, Region bounding_box) : dim_counter(0),
 
 KD_Tree::~KD_Tree() { delete root; }
 
-
+/*
 double KD_Tree::median(const vector<const Triangle*>& triangles, int dimension)
 {
 	vector<double> values;
@@ -89,22 +89,72 @@ double KD_Tree::median(const vector<const Triangle*>& triangles, int dimension)
 	
 	return values[mid];
 }
+*/
 
-
-KD_Tree* KD_Tree::build_tree(vector<const Triangle*>& triangles)
+bool KD_Tree::compare_by_x(const Triangle* a, const Triangle* b)
 {
+	double barycenter_a_x = (a->v1->x + a->v2->x + a->v3->x) / 3;
+	double barycenter_b_x = (b->v1->x + b->v2->x + b->v3->x) / 3;
+
+	barycenter_a_x < barycenter_b_x;
+}
+
+bool KD_Tree::compare_by_y(const Triangle* a, const Triangle* b)
+{
+	double barycenter_a_y = (a->v1->y + a->v2->y + a->v3->y) / 3;
+	double barycenter_b_y = (b->v1->y + b->v2->y + b->v3->y) / 3;
+
+	barycenter_a_y < barycenter_b_y;
+}
+
+bool KD_Tree::compare_by_z(const Triangle* a, const Triangle* b)
+{
+	double barycenter_a_z = (a->v1->z + a->v2->z + a->v3->z) / 3;
+	double barycenter_b_z = (b->v1->z + b->v2->z + b->v3->z) / 3;
+
+	barycenter_a_z < barycenter_b_z;
+}
+
+void KD_Tree::sort_triangles(const vector<const Triangle*>& triangles,
+	vector<vector<const Triangle*> >& sorted_triangles)
+{
+	sorted_triangles.clear();
+	// Insert 3 copies of all the triangles, one for each dimension-ordered vector
+	sorted_triangles.push_back(triangles);
+	sorted_triangles.push_back(triangles);
+	sorted_triangles.push_back(triangles);
+
+	// Sort each dimension-ordered vector by the corresponding dimension values
+	sort( sorted_triangles[X].begin(), sorted_triangles[X].end(), compare_by_x );
+	sort( sorted_triangles[Y].begin(), sorted_triangles[Y].end(), compare_by_y );
+	sort( sorted_triangles[Z].begin(), sorted_triangles[Z].end(), compare_by_z );
+}
+
+
+KD_Tree* KD_Tree::build_tree(const vector<const Triangle*>& triangles)
+{
+	if ( triangles.empty() )
+		throw std::logic_error("Empty triangle vector");
+
+	/*	Sort the triangles by coordinates of their barycenters, in three vectors. 
+		Each vector corresponds to a sorting done based in coordinates from a 
+		different dimension (X, Y, Z) */
+	vector<vector<const Triangle*> > sorted_triangles;
+	sort_triangles(triangles, sorted_triangles);
+
 	Region tree_bounding_box;
-	KD_Node* root = build_tree(triangles, X, tree_bounding_box);
+	KD_Node* root = build_tree(sorted_triangles, X, tree_bounding_box);
+	
 	return new KD_Tree(root, tree_bounding_box);
 }
 
 
-KD_Node* KD_Tree::build_tree(vector<const Triangle*>& triangles, int dimension, 
-	Region& bounding_box)
+KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles, 
+	int dimension, Region& bounding_box)
 {
-	if (triangles.empty())
-		throw std::logic_error("Empty triangle vector");
-
+	// The triangle vector for the dimension in which this node splits the space
+	vector<const Triangle*>& triangles = sorted_triangles[dimension];
+	
 	// If there is only one triangle, so the returned node will be a KD_Leaf
 	if ( triangles.size() == 1 )
 	{
@@ -124,6 +174,84 @@ KD_Node* KD_Tree::build_tree(vector<const Triangle*>& triangles, int dimension,
 	
 	// There is more than one triangle, so the returned node will be a KD_Middle_Node
 	
+	// ===== Compute the node's split value (median) =====
+	vector<const Triangle*>::size_type mid = triangles.size() / 2;
+	double split_value;
+	
+	/*	Even number of triangles. The median is the average of the coordinates 
+		of the barycenters */
+	if (triangles.size() % 2 == 0)
+	{
+		const Triangle* mid_triangle = triangles[mid];
+		const Triangle* mid_prev_triangle = triangles[mid-1];
+
+		switch (dimension)
+		{
+		case X:
+			// X coordinate of mid_triangle's barycenter
+			double berycentric_mid_tri_x = (mid_triangle->v1->x + mid_triangle->v2->x
+				+ mid_triangle->v3->x) / 3;
+			// X coordinate of mid_prev_triangle's barycenter
+			double berycentric_mid_prev_tri_x = (mid_prev_triangle->v1->x
+				+ mid_prev_triangle->v2->x + mid_prev_triangle->v3->x) / 3;
+
+			split_value = (berycentric_mid_tri_x + berycentric_mid_prev_tri_x) / 2;
+			break;
+
+		case Y:
+			// Y coordinate of mid_triangle's barycenter
+			double berycentric_mid_tri_y = (mid_triangle->v1->y + mid_triangle->v2->y
+				+ mid_triangle->v3->y) / 3;
+			// Y coordinate of mid_prev_triangle's barycenter
+			double berycentric_mid_prev_tri_y = (mid_prev_triangle->v1->y
+				+ mid_prev_triangle->v2->y + mid_prev_triangle->v3->y) / 3;
+
+			split_value = (berycentric_mid_tri_y + berycentric_mid_prev_tri_y) / 2;
+			break;
+
+		case Z:
+			// Z coordinate of mid_triangle's barycenter
+			double berycentric_mid_tri_z = (mid_triangle->v1->z + mid_triangle->v2->z
+				+ mid_triangle->v3->z) / 3;
+			// Z coordinate of mid_prev_triangle's barycenter
+			double berycentric_mid_prev_tri_z = (mid_prev_triangle->v1->z
+				+ mid_prev_triangle->v2->z + mid_prev_triangle->v3->z) / 3;
+
+			split_value = (berycentric_mid_tri_z + berycentric_mid_prev_tri_z) / 2;
+			break;
+
+		default:
+			throw std::logic_error("Unknown dimension");
+		}
+	}
+	// Odd number of triangles
+	else
+	{
+		const Triangle* mid_triangle = triangles[mid];
+		switch (dimension)
+		{
+		case X:
+			split_value = (mid_triangle->v1->x + mid_triangle->v2->x
+				+ mid_triangle->v3->x) / 3;
+			break;
+
+		case Y:
+			split_value = (mid_triangle->v1->y + mid_triangle->v2->y
+				+ mid_triangle->v3->y) / 3;
+			break;
+
+		case Z:
+			split_value = (mid_triangle->v1->z + mid_triangle->v2->z
+				+ mid_triangle->v3->z) / 3;
+			break;
+
+		default:
+			throw std::logic_error("Unknown dimension");
+		}
+	}
+	// ===================================================
+
+
 	// TODO... (see notebook)
 
 }

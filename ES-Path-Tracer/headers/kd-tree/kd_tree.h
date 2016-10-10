@@ -58,7 +58,7 @@ public:
 	which receives an intesection test function. */
 class KD_Tree {
 public:
-    static KD_Tree* build_tree(std::vector<const Triangle*>& triangles);
+    static KD_Tree* build_tree(const std::vector<const Triangle*>& triangles);
 
 	~KD_Tree();
 
@@ -74,9 +74,18 @@ private:
 
     KD_Tree(KD_Node* root, Region bounding_box);
 
-	static double median(const std::vector<const Triangle*>& values, int dimension);
+	//static double median(const std::vector<const Triangle*>& values, int dimension);
 	
-	static KD_Node* build_tree(std::vector<const Triangle*>& triangles, 
+	static bool compare_by_x(const Triangle* a, const Triangle* b);
+
+	static bool compare_by_y(const Triangle* a, const Triangle* b);
+
+	static bool compare_by_z(const Triangle* a, const Triangle* b);
+
+	static void KD_Tree::sort_triangles(const std::vector<const Triangle*>& triangles,
+		std::vector<std::vector<const Triangle*> >& sorted_triangles);
+
+	static KD_Node* build_tree(std::vector<std::vector<const Triangle*> >& triangles, 
 		int dimension, Region& bounding_box);
 
 	void search( const KD_Node* const current, Region &region, 
