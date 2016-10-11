@@ -56,40 +56,6 @@ KD_Tree::KD_Tree(KD_Node* root, Region bounding_box) : dim_counter(0),
 
 KD_Tree::~KD_Tree() { delete root; }
 
-/*
-double KD_Tree::median(const vector<const Triangle*>& triangles, int dimension)
-{
-	vector<double> values;
-	
-	// Extract the dimension values for each triangle barycenter
-	for (vector<const Triangle*>::const_iterator it = triangles.begin();
-		it != triangles.end(); it++)
-	{
-		const Triangle* tri = *it;
-		Point3 barycenter((tri->v1->x + tri->v2->x + tri->v3->x) / 3,
-			(tri->v1->y + tri->v2->y + tri->v3->y) / 3,
-			(tri->v1->z + tri->v2->z + tri->v3->z) / 3);
-
-		switch (dimension)
-		{
-		case X: { values.push_back(barycenter.x); break; }
-		case Y: { values.push_back(barycenter.y); break; }
-		case Z: { values.push_back(barycenter.z); break; }
-		default: throw std::logic_error("Unknown dimension");
-		}
-	}
-	
-	// Sort the values
-	sort( values.begin(), values.end() );
-
-	// Compute the median
-	vector<double>::size_type mid = values.size() / 2;
-	if ( values.size() % 2 == 0 )
-		return (values[mid] + values[mid - 1]) / 2;
-	
-	return values[mid];
-}
-*/
 
 bool KD_Tree::compare_by_x(const Triangle* a, const Triangle* b)
 {
