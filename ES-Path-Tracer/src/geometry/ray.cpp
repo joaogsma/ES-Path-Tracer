@@ -147,18 +147,18 @@ bool Ray::hit(const Region &kd_region) const
 	for (vector<Point3>::size_type i = 0; i < 4; i++)
 	{
 		// ===== Create the triangle vertices =====
-		Vertex* v1 = new Vertex( top_vertices[i].x, top_vertices[i].y, 
+		Surface_Point v1( top_vertices[i].x, top_vertices[i].y, 
 			top_vertices[i].z, Vector3(0, 0, 0) );
 		
-		Vertex* v2 = new Vertex( bot_vertices[i].x, bot_vertices[i].y, 
+		Surface_Point v2( bot_vertices[i].x, bot_vertices[i].y,
 			bot_vertices[i].z, Vector3(0, 0, 0) );
 		
 		vector<Point3>::size_type next_i = (i + 1) % 4;
 		
-		Vertex* v3 = new Vertex( bot_vertices[next_i].x, bot_vertices[next_i].y, 
+		Surface_Point v3( bot_vertices[next_i].x, bot_vertices[next_i].y,
 			bot_vertices[next_i].z, Vector3(0, 0, 0) );
 		
-		Vertex* v4 = new Vertex( top_vertices[next_i].x, top_vertices[next_i].y, 
+		Surface_Point v4( top_vertices[next_i].x, top_vertices[next_i].y,
 			top_vertices[next_i].z, Vector3(0, 0, 0) );
 		// ========================================
 
@@ -166,11 +166,11 @@ bool Ray::hit(const Region &kd_region) const
 		double t;
 		vector<double> weights;
 
-		Triangle tri1(v1, v2, v3);
+		Triangle tri1(&v1, &v2, &v3);
 		if (hit(tri1, t, weights))
 			return true;
 		
-		Triangle tri2(v3, v4, v1);
+		Triangle tri2(&v3, &v4, &v1);
 		if (hit(tri2, t, weights))
 			return true;
 		// ===================================
@@ -179,26 +179,26 @@ bool Ray::hit(const Region &kd_region) const
 
 	// ========== Check the 2 top triangles for intersections ==========
 	{
-		Vertex* v1 = new Vertex( top_vertices[0].x, top_vertices[0].y, 
+		Surface_Point v1( top_vertices[0].x, top_vertices[0].y,
 			top_vertices[0].z, Vector3(0, 0, 0) );
 
-		Vertex* v2 = new Vertex( top_vertices[1].x, top_vertices[1].y, 
+		Surface_Point v2( top_vertices[1].x, top_vertices[1].y,
 			top_vertices[1].z, Vector3(0, 0, 0) );
 
-		Vertex* v3 = new Vertex( top_vertices[2].x, top_vertices[2].y, 
+		Surface_Point v3( top_vertices[2].x, top_vertices[2].y,
 			top_vertices[2].z, Vector3(0, 0, 0) );
 
-		Vertex* v4 = new Vertex( top_vertices[3].x, top_vertices[3].y, 
+		Surface_Point v4( top_vertices[3].x, top_vertices[3].y,
 			top_vertices[3].z, Vector3(0, 0, 0) );
 
 		double t;
 		vector<double> weights;
 
-		Triangle tri1(v1, v2, v3);
+		Triangle tri1(&v1, &v2, &v3);
 		if (hit(tri1, t, weights))
 			return true;
 
-		Triangle tri2(v3, v4, v1);
+		Triangle tri2(&v3, &v4, &v1);
 		if (hit(tri2, t, weights))
 			return true;
 	}
@@ -207,26 +207,26 @@ bool Ray::hit(const Region &kd_region) const
 
 	// ========== Check the 2 bottom triangles for intersections ==========
 	{
-		Vertex* v1 = new Vertex( bot_vertices[0].x, bot_vertices[0].y, 
+		Surface_Point v1( bot_vertices[0].x, bot_vertices[0].y,
 			bot_vertices[0].z, Vector3(0, 0, 0) );
 
-		Vertex* v2 = new Vertex( bot_vertices[1].x, bot_vertices[1].y, 
+		Surface_Point v2( bot_vertices[1].x, bot_vertices[1].y,
 			bot_vertices[1].z, Vector3(0, 0, 0) );
 
-		Vertex* v3 = new Vertex( bot_vertices[2].x, bot_vertices[2].y, 
+		Surface_Point v3( bot_vertices[2].x, bot_vertices[2].y,
 			bot_vertices[2].z, Vector3(0, 0, 0) );
 
-		Vertex* v4 = new Vertex( bot_vertices[3].x, bot_vertices[3].y, 
+		Surface_Point v4( bot_vertices[3].x, bot_vertices[3].y,
 			bot_vertices[3].z, Vector3(0, 0, 0) );
 
 		double t;
 		vector<double> weights;
 
-		Triangle tri1(v1, v2, v3);
+		Triangle tri1(&v1, &v2, &v3);
 		if (hit(tri1, t, weights))
 			return true;
 
-		Triangle tri2(v3, v4, v1);
+		Triangle tri2(&v3, &v4, &v1);
 		if (hit(tri2, t, weights))
 			return true;
 	}

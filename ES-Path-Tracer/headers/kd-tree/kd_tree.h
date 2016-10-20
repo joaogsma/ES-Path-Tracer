@@ -34,9 +34,11 @@ public:
     
     KD_Middle_Node(double median_value, double left_bound_offset, 
 		double right_bound_offset, const KD_Node * const left_child, 
-		const KD_Node * const right_child);
+		const KD_Node * const right_child)
+		: split_value(median_value), left_bound_offset(left_bound_offset), 
+		right_bound_offset(right_bound_offset), left(left_child), right(right_child) {}
 
-	~KD_Middle_Node();
+	~KD_Middle_Node() { delete left; delete right; }
 };
 
 
@@ -47,9 +49,7 @@ class KD_Leaf : public KD_Node {
 public:
     const Triangle * const tri;
 
-    KD_Leaf(const Triangle * const triangle);
-
-	~KD_Leaf();
+	KD_Leaf(const Triangle * const triangle) : tri(triangle) {}
 };
 
 

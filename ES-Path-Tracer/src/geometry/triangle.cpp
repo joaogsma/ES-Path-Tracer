@@ -3,34 +3,35 @@
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
 
+#include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <vector>
 
+using std::copy;
 using std::vector;
 using std::abs;
 
-Triangle::Triangle(Vertex * const point1, Vertex * const point2, 
-	Vertex * const point3) : v1(point1), v2(point2), v3(point3) 
+Triangle::Triangle(Surface_Point* point1, Surface_Point* point2, Surface_Point* point3)
+	: v1(vertices[0]), v2(vertices[1]), v3(vertices[2])
 {
-	// Increase each vertex's triangle counter
-	v1->triangle_cout++;
-	v2->triangle_cout++;
-	v3->triangle_cout++;
+	vertices[0] = point1;
+	vertices[1] = point2;
+	vertices[2] = point3;
 }
 
-Triangle::~Triangle()
+
+Triangle::Triangle(const Triangle& other)
+	: v1(vertices[0]), v2(vertices[1]), v3(vertices[2])
 {
-	/*	For each Vertex, decrease the counter of triangles pointing to it.
-		Also, if this was the last such triangle, delete the vertex object. */
+	copy( other.begin(), other.end(), begin() );
+}
 
-	if ( --(v1->triangle_cout) == 0 )
-		delete v1;
 
-	if ( --(v2->triangle_cout) == 0 )
-		delete v2;
-
-	if ( --(v3->triangle_cout) == 0 )
-		delete v3;
+Triangle& Triangle::operator=(const Triangle& other)
+{
+	copy(other.begin(), other.end(), begin());
+	return *this;
 }
 
 

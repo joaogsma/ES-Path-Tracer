@@ -4,47 +4,14 @@
 
 #include <algorithm>
 #include <cfloat>
-#include <iterator>
 #include <stdexcept>
 #include <vector>
 
+
+using std::logic_error;
 using std::min;
 using std::max;
-using std::sort;
-using std::transform;
 using std::vector;
-
-// ============================================================================
-// ============================== KD_MIDDLE_NODE ==============================
-// ============================================================================
-
-KD_Middle_Node::KD_Middle_Node(double median_value, double left_bound_offset,
-	double right_bound_offset, const KD_Node * const left_child,
-	const KD_Node * const right_child)
-	: split_value(median_value), left_bound_offset(left_bound_offset),
-	right_bound_offset(right_bound_offset), left(left_child), right(right_child) {}
-
-KD_Middle_Node::~KD_Middle_Node() {	delete left; delete right; }
-
-// ============================================================================
-
-
-
-// ============================================================================
-// ================================= KD_LEAF ==================================
-// ============================================================================
-
-KD_Leaf::KD_Leaf(const Triangle* const triangle) : tri(triangle) {}
-
-KD_Leaf::~KD_Leaf() { delete tri; }
-
-// ============================================================================
-
-
-
-// ============================================================================
-// ================================= KD_TREE ==================================
-// ============================================================================
 
 static const int X = 0;
 static const int Y = 1;
@@ -100,7 +67,7 @@ bool KD_Tree::at_left_half_space(const Triangle* tri, int dimension, double spli
 		barycenter_coord = (tri->v1->z + tri->v2->z + tri->v3->z) / 3;
 		break;
 	default:
-		throw std::logic_error("Unknown dimension");
+		throw logic_error("Unknown dimension");
 	}
 
 	return barycenter_coord <= split_value;
@@ -126,7 +93,7 @@ void KD_Tree::sort_triangles(const vector<const Triangle*>& triangles,
 KD_Tree* KD_Tree::build_tree(const vector<const Triangle*>& triangles)
 {
 	if ( triangles.empty() )
-		throw std::logic_error("Empty triangle vector");
+		throw logic_error("Empty triangle vector");
 
 	/*	Sort the triangles by coordinates of their barycenters, in three vectors. 
 		Each vector corresponds to a sorting done based in coordinates from a 
@@ -216,7 +183,7 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 				split_value = (barycentric_mid_tri_z + barycentric_mid_prev_tri_z) / 2;
 				break;
 			}
-			default: { throw std::logic_error("Unknown dimension"); }
+			default: { throw logic_error("Unknown dimension"); }
 		}
 	}
 	// Odd number of triangles
@@ -241,7 +208,7 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 			break;
 
 		default:
-			throw std::logic_error("Unknown dimension");
+			throw logic_error("Unknown dimension");
 		}
 	}
 	// ===================================================
@@ -298,7 +265,7 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 		right_min = &right_bounding_box.min_z;
 		break;
 	default:
-		throw std::logic_error("Unknown dimension");
+		throw logic_error("Unknown dimension");
 	}
 
 	double left_bound_offset = max( 0.0, *left_max - split_value );
@@ -382,7 +349,7 @@ void KD_Tree::search(const KD_Node* const current, Region& region,
 			break;
 
 		default:
-			throw std::logic_error("Unknown dimension");
+			throw logic_error("Unknown dimension");
 			break;
 		}
 
@@ -466,7 +433,3 @@ void KD_Tree::report_subtree(const KD_Node* const current,
 	}
 	
 }
-
-// ============================================================================
-
-
