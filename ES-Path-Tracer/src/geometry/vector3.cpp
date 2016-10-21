@@ -71,7 +71,9 @@ double dot_prod(const Vector3& a, const Vector3& b)
 
 Vector3& Vector3::operator=(const Vector3& other)
 {
-	copy(other.begin(), other.end(), coordinates);
+	if ( &other != this )
+		copy(other.begin(), other.end(), coordinates);
+	
 	return *this;
 }
 

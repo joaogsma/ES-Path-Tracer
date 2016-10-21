@@ -30,7 +30,9 @@ Triangle::Triangle(const Triangle& other)
 
 Triangle& Triangle::operator=(const Triangle& other)
 {
-	copy(other.begin(), other.end(), begin());
+	if (&other != this)
+		copy(other.begin(), other.end(), begin());
+
 	return *this;
 }
 

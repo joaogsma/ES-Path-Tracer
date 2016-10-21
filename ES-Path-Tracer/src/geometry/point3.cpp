@@ -37,6 +37,8 @@ double distance(const Point3& a, const Point3& b)
 
 Point3& Point3::operator=(const Point3& other)
 {
-	copy(other.begin(), other.end(), begin());
+	if ( &other != this )
+		copy(other.begin(), other.end(), begin());
+	
 	return *this;
 }
