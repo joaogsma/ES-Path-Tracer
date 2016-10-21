@@ -1,8 +1,10 @@
 #include "geometry/vector3.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <math.h>
 
+using std::abs;
 using std::copy;
 using std::sqrt;
 using std::pow;
@@ -75,6 +77,19 @@ Vector3& Vector3::operator=(const Vector3& other)
 		copy(other.begin(), other.end(), coordinates);
 	
 	return *this;
+}
+
+
+bool Vector3::operator==(const Vector3& other) const
+{
+	if (&other == this)
+		return true;
+
+	double x_diff = x - other.x;
+	double y_diff = y - other.y;
+	double z_diff = z - other.z;
+
+	return (abs(x_diff) + abs(y_diff) + abs(z_diff)) <= COMP_EPSILON;
 }
 
 

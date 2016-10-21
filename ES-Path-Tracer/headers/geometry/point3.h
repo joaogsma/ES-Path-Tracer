@@ -10,9 +10,11 @@ class Point3;
 
 double distance(const Point3& a, const Point3& b);
 
+
 class Point3 {
 public:
 	static const int N_DIMS = 3;
+	const double COMP_EPSILON = 10E-9;
 
 	typedef double* iterator;
 	typedef const double* const_iterator;
@@ -37,6 +39,8 @@ public:
 	const_iterator end() const { return coordinates + N_DIMS; }
 
 	Point3& operator=(const Point3& other);
+
+	bool operator==(const Point3& other) const;
 
 private:
 	double coordinates[N_DIMS];

@@ -42,3 +42,16 @@ Point3& Point3::operator=(const Point3& other)
 	
 	return *this;
 }
+
+
+bool Point3::operator==(const Point3& other) const
+{
+	if ( &other == this )
+		return true;
+
+	double x_diff = x - other.x;
+	double y_diff = y - other.y;
+	double z_diff = z - other.z;
+
+	return ( abs(x_diff) + abs(y_diff) + abs(z_diff) ) <= COMP_EPSILON;
+}
