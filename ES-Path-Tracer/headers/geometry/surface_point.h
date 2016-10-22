@@ -13,7 +13,7 @@ public:
 
 	Surface_Point(double x, double y, double z);
 
-	Surface_point(const Point3& point);
+	Surface_Point(const Point3& point);
 
 	Surface_Point(double x, double y, double z, const Vector3 &normal_vector);
 };

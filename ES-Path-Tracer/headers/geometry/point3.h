@@ -1,17 +1,10 @@
 #ifndef  __GUARD_POINT3_H__
 #define __GUARD_POINT3_H__
 
-#define _SCL_SECURE_NO_WARNINGS
-
 #include <algorithm>
 #include <vector> 
 
 #include "vector3.h"
-
-class Point3;
-
-double distance(const Point3& a, const Point3& b);
-
 
 class Point3 {
 public:
@@ -50,5 +43,8 @@ public:
 private:
 	double coordinates[N_DIMS];
 };
+
+
+double distance(const Point3& a, const Point3& b);
 
 #endif

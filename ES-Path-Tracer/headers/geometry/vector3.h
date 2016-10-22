@@ -1,12 +1,10 @@
 #ifndef __GUARD_VECTOR3_H__
 #define __GUARD_VECTOR3_H__
 
-#define _SCL_SECURE_NO_WARNINGS
-
 #include <algorithm>
 #include <vector>
 
-#include "point3.h"
+class Point3;
 
 class Vector3 {
 public:
@@ -73,5 +71,9 @@ Vector3 operator-(const Vector3& vec1, const Vector3& vec2);
 
 // Vector division
 template <class T> Vector3 operator/(const Vector3& vec, const T& scalar);
+
+
+// At the end of the header in order to avoid cyclic dependency
+#include "point3.h"
 
 #endif
