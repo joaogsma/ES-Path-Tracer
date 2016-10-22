@@ -11,6 +11,10 @@ class Surface_Point : public Point3 {
 public:
 	const Vector3 normal;
 
+	Surface_Point(double x, double y, double z);
+
+	Surface_point(const Point3& point);
+
 	Surface_Point(double x, double y, double z, const Vector3 &normal_vector);
 };
 

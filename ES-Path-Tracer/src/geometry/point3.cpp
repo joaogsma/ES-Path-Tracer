@@ -1,7 +1,8 @@
-#include "geometry/point3.h"
-
 #include <algorithm>
 #include <math.h>
+
+#include "geometry/point3.h"
+#include "geometry/vector3.h"
 
 using std::copy;
 
@@ -15,12 +16,19 @@ Point3::Point3(double x, double y, double z) : x(coordinates[0]),
 }
 
 
+Point3::Point3(const Vector3& vector) : x(coordinates[0]), 
+	y(coordinates[1]), z(coordinates[2])
+{
+	copy(vector.begin(), vector.end(), begin());
+}
+
+
 // Copy constructor
 Point3::Point3(const Point3& other) : x(coordinates[0]),
 y(coordinates[1]), z(coordinates[2])
 {
 	double* other_coord = &other.x;
-	copy(other_coord, other_coord + N_DIMS, coordinates);
+	copy(other_coord, other_coord + N_DIMS, begin());
 }
 
 

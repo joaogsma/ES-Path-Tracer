@@ -4,7 +4,9 @@
 #define _SCL_SECURE_NO_WARNINGS
 
 #include <algorithm>
-#include <vector>
+#include <vector> 
+
+#include "vector3.h"
 
 class Point3;
 
@@ -24,6 +26,9 @@ public:
 	double& z;
 
 	Point3(double x, double y, double z);
+
+	// Conversion constructor from Vector3
+	Point3(const Vector3& vector);
 
 	// Copy constructor
 	Point3(const Point3& other);

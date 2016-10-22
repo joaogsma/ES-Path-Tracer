@@ -1,8 +1,9 @@
-#include "geometry/vector3.h"
-
 #include <algorithm>
 #include <cstdlib>
 #include <math.h>
+
+#include "geometry/vector3.h"
+#include "geometry/point3.h"
 
 using std::abs;
 using std::copy;
@@ -24,6 +25,13 @@ Vector3::Vector3(const Point3& origin, const Point3& destination)
 	coordinates[0] = destination.x - origin.x;
 	coordinates[1] = destination.y - origin.y;
 	coordinates[2] = destination.z - origin.z;
+}
+
+
+Vector3::Vector3(const Point3& point) : x(coordinates[0]), 
+y(coordinates[1]), z(coordinates[2])
+{
+	copy(point.begin(), point.end(), begin());
 }
 
 

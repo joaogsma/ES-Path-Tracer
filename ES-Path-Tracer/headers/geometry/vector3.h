@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "geometry/point3.h"
+#include "point3.h"
 
 class Vector3 {
 public:
@@ -25,6 +25,9 @@ public:
 
 	// Constructor based on initial and end points
 	Vector3(const Point3& origin, const Point3& destination);
+
+	// Conversion constructor from Point3
+	Vector3(const Point3& point);
 
 	// Copy constructor
 	Vector3(const Vector3& other);
