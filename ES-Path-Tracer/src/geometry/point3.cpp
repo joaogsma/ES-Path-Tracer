@@ -6,6 +6,8 @@
 
 using std::copy;
 
+const double Point3::COMP_EPSILON = 10E-9;
+
 // Point constructor
 Point3::Point3(double x, double y, double z) : x(coordinates[0]), 
 	y(coordinates[1]), z(coordinates[2]) 

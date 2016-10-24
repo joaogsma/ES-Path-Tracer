@@ -10,6 +10,9 @@ using std::copy;
 using std::sqrt;
 using std::pow;
 
+
+const double Vector3::COMP_EPSILON = 10E-9;
+
 Vector3::Vector3(double x, double y, double z) : x(coordinates[0]), 
 y(coordinates[1]), z(coordinates[2])
 {
@@ -17,7 +20,6 @@ y(coordinates[1]), z(coordinates[2])
 	coordinates[1] = y;
 	coordinates[2] = z;
 }
-
 
 Vector3::Vector3(const Point3& origin, const Point3& destination) 
 	: x( coordinates[0] ), y( coordinates[1] ), z( coordinates[2] )
@@ -27,13 +29,11 @@ Vector3::Vector3(const Point3& origin, const Point3& destination)
 	coordinates[2] = destination.z - origin.z;
 }
 
-
 Vector3::Vector3(const Point3& point) : x(coordinates[0]), 
 y(coordinates[1]), z(coordinates[2])
 {
 	copy(point.begin(), point.end(), begin());
 }
-
 
 // Copy constructor
 Vector3::Vector3(const Vector3& other) : x(coordinates[0]), 
@@ -42,7 +42,6 @@ Vector3::Vector3(const Vector3& other) : x(coordinates[0]),
 	double* other_coord = &other.x;
 	std::copy(other_coord, other_coord + N_DIMS, coordinates);
 }
-
 
 Vector3 Vector3::normalize() const
 {
@@ -56,12 +55,10 @@ Vector3 Vector3::normalize() const
 	return Vector3(x / mag, y / mag, z / mag);
 }
 
-
 double Vector3::magnitude() const
 {
 	return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 }
-
 
 Vector3 cross_prod(const Vector3& a, const Vector3& b)
 {
@@ -72,12 +69,10 @@ Vector3 cross_prod(const Vector3& a, const Vector3& b)
 	return Vector3(x_, y_, z_);
 }
 
-
 double dot_prod(const Vector3& a, const Vector3& b)
 {
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
-
 
 Vector3& Vector3::operator=(const Vector3& other)
 {
@@ -86,7 +81,6 @@ Vector3& Vector3::operator=(const Vector3& other)
 	
 	return *this;
 }
-
 
 bool Vector3::operator==(const Vector3& other) const
 {
@@ -100,13 +94,11 @@ bool Vector3::operator==(const Vector3& other) const
 	return (abs(x_diff) + abs(y_diff) + abs(z_diff)) <= COMP_EPSILON;
 }
 
-
 template <class T>
 Vector3 operator*(const Vector3& vec, const T& scalar)
 {
 	return Vector3(vec.x*T, vec.y*T, vec.z*T);
 }
-
 
 template <class T>
 Vector3 operator*(const T& scalar, const Vector3& vec)
@@ -114,13 +106,11 @@ Vector3 operator*(const T& scalar, const Vector3& vec)
 	return Vector3(vec.x*T, vec.y*T, vec.z*T);
 }
 
-
 template <class T>
 Vector3 operator/(const Vector3& vec, const T& scalar)
 {
 	return Vector3(vec.x/T, vec.y/T, vec.z/T);
 }
-
 
 template <class T>
 Vector3 operator/(const T& scalar, const Vector3& vec)
@@ -128,12 +118,10 @@ Vector3 operator/(const T& scalar, const Vector3& vec)
 	return Vector3(vec.x/T, vec.y/T, vec.z/T);
 }
 
-
 Vector3 operator+(const Vector3& vec1, const Vector3& vec2)
 {
 	return Vector3(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z);
 }
-
 
 Vector3 operator-(const Vector3& vec1, const Vector3& vec2)
 {
