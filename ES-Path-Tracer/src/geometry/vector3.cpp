@@ -84,7 +84,7 @@ Vector3& Vector3::operator=(const Vector3& other)
 
 bool Vector3::operator==(const Vector3& other) const
 {
-	if (&other == this)
+	if ( &other == this )
 		return true;
 
 	double x_diff = x - other.x;
