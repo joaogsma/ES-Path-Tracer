@@ -22,7 +22,8 @@ namespace ES
 	typedef std::pair<Individual, Individual>(*parent_selection_function)(
 		const std::vector<Individual>& population);
 
-	typedef Individual(*recombination_function)(const std::vector<Individual>& population);
+	typedef Individual(*recombination_function)(
+		const std::pair<Individual, Individual>& parents);
 
 	typedef double(*fitness_function)(const Individual& individual);
 
@@ -49,10 +50,11 @@ namespace ES
 		fitness_function fitness_fn;
 		survivor_selection_function survivor_selection_fn;
 
-		Evo_Strategy(int iteration_limit, 
+		Evo_Strategy(int iteration_limit, int children_population_ratio,
 			std::vector<Individual>::size_type population_size);
 
 		Evo_Strategy(int iteration_limit, int n_indv_obj_attr,
+			int children_population_ratio,
 			std::vector<Individual>::size_type population_size,
 			stop_condition_function stop_condition_fn,
 			parent_selection_function parent_selection_fn,
@@ -60,10 +62,8 @@ namespace ES
 			fitness_function fitness_fn,
 			survivor_selection_function survivor_selection_fn);
 
+		// Initializes the population
 		bool initialize();
-
-		// Runs an interation in the evolutionary strategy
-		void iterate();
 
 		std::vector<Individual> evolve();
 
@@ -71,7 +71,11 @@ namespace ES
 		std::vector<Individual> population;
 		int iteration_limit;
 		int n_indv_obj_attr;
+		double children_population_ratio;
 		bool initialized;
+		
+		// Runs an single iteration
+		void iterate();
 	};
 
 	// ===========================================================================

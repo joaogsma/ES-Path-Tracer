@@ -23,16 +23,28 @@ namespace ES
 			double(*fitness_fn)(const Individual& individual));
 
 		// Iterator functions
-		iterator begin() { return attributes.begin(); }
-		iterator end() { return attributes.end(); }
-		const_iterator begin() const { return attributes.begin(); }
-		const_iterator end() const { return attributes.end(); }
+		iterator begin() { return data.begin(); }
+		iterator end() { return data.end(); }
+		const_iterator begin() const { return data.begin(); }
+		const_iterator end() const { return data.end(); }
 
-		size_type size() const { return attributes.size(); }
+		// Iterator functions for the individual's object attributes
+		iterator obj_attr_begin() { return data.begin(); }
+		iterator obj_attr_end() { return std_dev_begin(); }
+		const_iterator obj_attr_begin() const { return data.begin(); }
+		const_iterator obj_attr_end() const { return std_dev_begin(); }
+
+		// Iterator functions for the individual's standard deviation
+		iterator std_dev_begin() { return --data.end(); }
+		iterator std_dev_end() { return data.end(); }
+		const_iterator std_dev_begin() const { return --data.end(); }
+		const_iterator std_dev_end() const { return data.end(); }
+
+		size_type size() const { return data.size(); }
 
 		// Indexing operator
-		double& operator[](size_type position) { return attributes[position]; }
-		const double& operator[](size_type position) const { return attributes[position]; }
+		double& operator[](size_type position) { return data[position]; }
+		const double& operator[](size_type position) const { return data[position]; }
 
 		Individual& operator=(const Individual& other);
 
@@ -40,11 +52,14 @@ namespace ES
 
 		void mutate();
 
+		/*	Computes the fitness of the individual. The computation is performed
+			only in the first call to this function, and then stored for O(1) access
+			in subsequent calls */
 		double fitness();
 
 	private:
 		bool valid_fitness;
-		std::vector<double> attributes;
+		std::vector<double> data;
 		double fitness_val;
 
 		// Fitness function

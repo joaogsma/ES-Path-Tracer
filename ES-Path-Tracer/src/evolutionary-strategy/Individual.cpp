@@ -22,7 +22,7 @@ namespace ES
 		double(*fitness_fn)(const Individual& individual))
 		: fitness_fn(fitness_fn), valid_fitness(false)
 	{
-		attributes.resize(num_obj_attr + 1);
+		data.resize(num_obj_attr + 1);
 	}
 
 	Individual::Individual(int num_obj_attr, std::mt19937 random_engine,
@@ -32,15 +32,15 @@ namespace ES
 		uniform_real_distribution<double> dist(0, 1);
 
 		for (int i = 0; i < num_obj_attr + 1; i++)
-			attributes.push_back(dist(random_engine));
+			data.push_back(dist(random_engine));
 	}
 
 	Individual& Individual::operator=(const Individual& other)
 	{
 		if (&other != this)
 		{
-			attributes.clear();
-			copy(other.begin(), other.end(), back_inserter(attributes));
+			data.clear();
+			copy(other.begin(), other.end(), back_inserter(data));
 		}
 
 		return *this;
@@ -56,7 +56,7 @@ namespace ES
 
 		double accumulator = 0;
 		for (size_type i = 0; i < size(); i++)
-			accumulator += abs(attributes[i] - other[i]);
+			accumulator += abs(data[i] - other[i]);
 
 		return accumulator <= COMP_EPSILON;
 	}
