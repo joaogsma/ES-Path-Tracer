@@ -13,41 +13,67 @@ using std::mt19937;
 using std::uniform_real_distribution;
 using std::vector;
 
-// Epsilon constant used in Individual comparations
-const double Individual::COMP_EPSILON = 10E-9;
-
-Individual::Individual(int length) { attributes.resize(length); }
-
-Individual::Individual(int length, std::mt19937 random_engine)
+namespace ES
 {
-	uniform_real_distribution<double> dist(0, 1);
-	
-	for (int i = 0; i < length; i++)
-		attributes.push_back( dist(random_engine) );
-}
+	// Epsilon constant used in Individual comparations
+	const double Individual::COMP_EPSILON = 10E-9;
 
-Individual& Individual::operator=(const Individual& other)
-{
-	if (&other != this)
+	Individual::Individual(int num_obj_attr,
+		double(*fitness_fn)(const Individual& individual))
+		: fitness_fn(fitness_fn), valid_fitness(false)
 	{
-		attributes.clear();
-		copy(other.begin(), other.end(), back_inserter(attributes));
+		attributes.resize(num_obj_attr + 1);
 	}
 
-	return *this;
-}
+	Individual::Individual(int num_obj_attr, std::mt19937 random_engine,
+		double(*fitness_fn)(const Individual& individual))
+		: fitness_fn(fitness_fn), valid_fitness(false)
+	{
+		uniform_real_distribution<double> dist(0, 1);
 
-bool Individual::operator==(const Individual& other) const
-{
-	if (&other == this)
-		return true;
+		for (int i = 0; i < num_obj_attr + 1; i++)
+			attributes.push_back(dist(random_engine));
+	}
 
-	if (size() != other.size())
-		return false;
+	Individual& Individual::operator=(const Individual& other)
+	{
+		if (&other != this)
+		{
+			attributes.clear();
+			copy(other.begin(), other.end(), back_inserter(attributes));
+		}
 
-	double accumulator = 0;
-	for (size_type i = 0; i < size(); i++)
-		accumulator += abs(attributes[i] - other[i]);
+		return *this;
+	}
 
-	return accumulator <= COMP_EPSILON;
+	bool Individual::operator==(const Individual& other) const
+	{
+		if (&other == this)
+			return true;
+
+		if (size() != other.size())
+			return false;
+
+		double accumulator = 0;
+		for (size_type i = 0; i < size(); i++)
+			accumulator += abs(attributes[i] - other[i]);
+
+		return accumulator <= COMP_EPSILON;
+	}
+
+	void Individual::mutate()
+	{
+
+	}
+
+	double Individual::fitness()
+	{
+		if (!valid_fitness)
+		{
+			fitness_val = fitness_fn(*this);
+			valid_fitness = true;
+		}
+
+		return fitness_val;
+	}
 }
