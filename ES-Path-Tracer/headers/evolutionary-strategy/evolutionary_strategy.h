@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "individual.h"
+#include "parent_selection.h"
 
 namespace ES
 {
@@ -20,7 +21,7 @@ namespace ES
 		int completed_iterations, int iteration_limit);
 
 	typedef std::pair<Individual, Individual>(*parent_selection_function)(
-		const std::vector<Individual>& population);
+		const std::vector<Individual>& population, std::mt19937& random_engine);
 
 	typedef Individual(*recombination_function)(
 		const std::pair<Individual, Individual>& parents);

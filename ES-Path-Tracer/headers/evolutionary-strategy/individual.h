@@ -21,6 +21,9 @@ namespace ES
 		Individual(int num_obj_attr, double(*fitness_fn)(const Individual& individual));
 		Individual(int num_obj_attr, std::mt19937 random_engine,
 			double(*fitness_fn)(const Individual& individual));
+		
+		// Fitness function pointer
+		double(*fitness_fn)(const Individual& individual);
 
 		// Iterator functions
 		iterator begin() { return data.begin(); }
@@ -40,7 +43,10 @@ namespace ES
 		const_iterator std_dev_begin() const { return --data.end(); }
 		const_iterator std_dev_end() const { return data.end(); }
 
+		// Size functions
 		size_type size() const { return data.size(); }
+		size_type obj_attr_size() const { return obj_attr_end() - obj_attr_begin(); }
+		size_type std_dev_size() const { return std_dev_end() - std_dev_begin(); }
 
 		// Indexing operator
 		double& operator[](size_type position) { return data[position]; }
@@ -61,9 +67,6 @@ namespace ES
 		bool valid_fitness;
 		std::vector<double> data;
 		double fitness_val;
-
-		// Fitness function
-		double(*fitness_fn)(const Individual& individual);
 	};
 }
 

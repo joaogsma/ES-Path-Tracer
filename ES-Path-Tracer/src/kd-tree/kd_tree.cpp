@@ -218,7 +218,7 @@ KD_Node* KD_Tree::build_tree(vector<vector<const Triangle*> >& sorted_triangles,
 	vector<vector<const Triangle*> > left_sorted_triangles(sorted_triangles.size());
 	vector<vector<const Triangle*> > right_sorted_triangles(sorted_triangles.size());
 
-	for (int dim = 0; dim < sorted_triangles.size(); dim++)
+	for (unsigned int dim = 0; dim < sorted_triangles.size(); dim++)
 	{
 		for (vector<const Triangle*>::const_iterator tri_it = sorted_triangles[dim].begin();
 			tri_it != sorted_triangles[dim].end(); tri_it++)

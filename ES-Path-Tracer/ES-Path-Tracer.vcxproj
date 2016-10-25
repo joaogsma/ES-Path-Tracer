@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="src\evolutionary-strategy\evolutionary_strategy.cpp" />
     <ClCompile Include="src\evolutionary-strategy\Individual.cpp" />
+    <ClCompile Include="src\evolutionary-strategy\parent_selection.cpp" />
     <ClCompile Include="src\geometry\point3.cpp" />
     <ClCompile Include="src\geometry\ray.cpp" />
     <ClCompile Include="src\geometry\surface_point.cpp" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="headers\evolutionary-strategy\evolutionary_strategy.h" />
     <ClInclude Include="headers\evolutionary-strategy\individual.h" />
+    <ClInclude Include="headers\evolutionary-strategy\parent_selection.h" />
     <ClInclude Include="headers\geometry\point3.h" />
     <ClInclude Include="headers\geometry\ray.h" />
     <ClInclude Include="headers\geometry\surface_point.h" />

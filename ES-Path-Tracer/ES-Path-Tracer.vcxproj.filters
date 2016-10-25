@@ -45,6 +45,9 @@
     <ClCompile Include="src\evolutionary-strategy\evolutionary_strategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\evolutionary-strategy\parent_selection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\geometry\point3.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolutionary-strategy\evolutionary_strategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolutionary-strategy\parent_selection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

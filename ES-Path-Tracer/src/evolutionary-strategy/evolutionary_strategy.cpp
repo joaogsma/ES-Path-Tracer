@@ -54,12 +54,13 @@ namespace ES
 	void Evo_Strategy::iterate()
 	{
 		vector<Individual> children;
-		children.reserve(children_population_ratio * population_size);
+		double children_size = children_population_ratio * population_size;
+		children.reserve( (vector<Individual>::size_type) children_size );
 
 		while (children.size() < children_population_ratio * population_size)
 		{
 			// Select parents
-			pair<Individual, Individual>& parents = parent_selection_fn(population);
+			pair<Individual, Individual>& parents = parent_selection_fn(population, ES::mt_engine);
 			// Generate a child
 			Individual& child = recombination_fn(parents);
 			// Mutate the child
