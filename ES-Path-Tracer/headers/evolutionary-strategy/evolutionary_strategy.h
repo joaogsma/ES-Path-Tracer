@@ -1,18 +1,15 @@
 #ifndef __GUARD_EVOLUTIONARY_STRATEGY_H__
 #define __GUARD_EVOLUTIONARY_STRATEGY_H__
 
-#include <random>
 #include <utility>
 #include <vector>
 
 #include "individual.h"
 #include "parent_selection.h"
+#include "recombination.h"
 
 namespace ES
 {
-	static std::random_device rd;
-	static std::mt19937 mt_engine( rd() );
-
 	// ===========================================================================
 	// ================================ TYPEDEFS =================================
 	// ===========================================================================
@@ -21,10 +18,10 @@ namespace ES
 		int completed_iterations, int iteration_limit);
 
 	typedef std::pair<Individual, Individual>(*parent_selection_function)(
-		const std::vector<Individual>& population, std::mt19937& random_engine);
+		const std::vector<Individual>& population);
 
-	typedef Individual(*recombination_function)(
-		const std::pair<Individual, Individual>& parents);
+	typedef Individual(*recombination_function)(const Individual& parent1, 
+		const Individual& parent2);
 
 	typedef double(*fitness_function)(const Individual& individual);
 
@@ -54,7 +51,7 @@ namespace ES
 		Evo_Strategy(int iteration_limit, int children_population_ratio,
 			std::vector<Individual>::size_type population_size);
 
-		Evo_Strategy(int iteration_limit, int n_indv_obj_attr,
+		Evo_Strategy(int iteration_limit, int n_indv_obj_var,
 			int children_population_ratio,
 			std::vector<Individual>::size_type population_size,
 			stop_condition_function stop_condition_fn,
@@ -71,7 +68,7 @@ namespace ES
 	private:
 		std::vector<Individual> population;
 		int iteration_limit;
-		int n_indv_obj_attr;
+		int n_indv_obj_var;
 		double children_population_ratio;
 		bool initialized;
 		

@@ -6,22 +6,15 @@
 #include <vector>
 
 #include "individual.h"
+#include "random_engine.h"
 
 namespace ES
 {
-	// ============================================================================
-	// ============================ UTILITY FUNCTIONS =============================
-	// ============================================================================
-
-	// ============================================================================
-	// ======================= PARENT SELECTION FUNCTIONS =========================
-	// ============================================================================
-
 	std::pair<Individual, Individual> local_uniform_selection(
-		const std::vector<Individual>& population, const std::mt19937& random_engine);
+		const std::vector<Individual>& population);
 
 	std::pair<Individual, Individual> global_uniform_selection(
-		const std::vector<Individual>& population, const std::mt19937& random_engine);
+		const std::vector<Individual>& population);
 }
 
 #endif

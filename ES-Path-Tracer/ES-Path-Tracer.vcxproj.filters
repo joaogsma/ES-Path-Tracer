@@ -39,13 +39,16 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\Individual.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\evolutionary-strategy\evolutionary_strategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\evolutionary-strategy\parent_selection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\evolutionary-strategy\recombination.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\evolutionary-strategy\individual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,6 +81,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolutionary-strategy\parent_selection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolutionary-strategy\recombination.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolutionary-strategy\random_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

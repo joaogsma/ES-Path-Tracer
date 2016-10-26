@@ -6,6 +6,7 @@
 
 #include "evolutionary-strategy/individual.h"
 #include "evolutionary-strategy/parent_selection.h"
+#include "evolutionary-strategy/random_engine.h"
 
 using std::copy;
 using std::logic_error;
@@ -28,8 +29,8 @@ namespace ES
 		The values from the population individuals, as well as the vector sizes,
 		are extracted from the intervals specified by the iterator functions */
 	void global_fill_vector(vector<double>& parent1_vec, vector<double>& parent2_vec,
-		const vector<Individual>& population, mt19937& random_engine,
-		const_iterator_function begin, const_iterator_function end)
+		const vector<Individual>& population, const_iterator_function begin, 
+		const_iterator_function end)
 	{
 		parent1_vec.clear();
 		parent2_vec.clear();
@@ -44,9 +45,9 @@ namespace ES
 		{
 			vector<Individual>::size_type parent1_index, parent2_index;
 			// Select a first parent
-			parent1_index = indiv_dist(random_engine);
+			parent1_index = indiv_dist( ES::mt_engine );
 			// Select a second parent different from the first
-			while ((parent2_index = indiv_dist(random_engine)) == parent1_index);
+			while ( (parent2_index = indiv_dist(ES::mt_engine) ) == parent1_index);
 
 			// Get the selected parents
 			const Individual& parent1 = population[parent1_index];
@@ -73,7 +74,7 @@ namespace ES
 	/*	Local uniform selection. This function selects two different parents 
 		with uniform probability from amongst the population and returns them */
 	std::pair<Individual, Individual> local_uniform_selection(
-		const vector<Individual>& population, mt19937& random_engine)
+		const vector<Individual>& population)
 	{
 		if (population.empty())
 			throw logic_error("Empty population");
@@ -83,10 +84,10 @@ namespace ES
 			population.size() - 1);
 
 		// Select a first parent
-		vector<Individual>::size_type parent1_index = indiv_dist(random_engine);
+		vector<Individual>::size_type parent1_index = indiv_dist(ES::mt_engine);
 		// Select a second parent different from the first
 		vector<Individual>::size_type parent2_index;
-		while ((parent2_index = indiv_dist(random_engine)) == parent1_index);
+		while ((parent2_index = indiv_dist(ES::mt_engine)) == parent1_index);
 
 		return make_pair( population[parent1_index], population[parent2_index] );
 	}
@@ -97,7 +98,7 @@ namespace ES
 		attributes in both generated parents are guaranteed to come from 
 		different individuals in the population */
 	std::pair<Individual, Individual> global_uniform_selection(
-		const vector<Individual>& population, mt19937& random_engine)
+		const vector<Individual>& population)
 	{
 		if (population.empty())
 			throw logic_error("Empty population");
@@ -108,25 +109,25 @@ namespace ES
 
 		// Fill the object attributes vectors
 		global_fill_vector(object_attributes1, object_attributes2, population, 
-			random_engine, &Individual::obj_attr_begin, &Individual::obj_attr_end);
+			&Individual::obj_var_begin, &Individual::obj_var_end);
 
 		// Fill the standard deviations vectors
 		global_fill_vector(standard_deviations1, standard_deviations2, population,
-			random_engine, &Individual::std_dev_begin, &Individual::std_dev_end);
+			&Individual::std_dev_begin, &Individual::std_dev_end);
 
-		int num_obj_attr = (int) object_attributes1.size();
+		int num_obj_var = (int) object_attributes1.size();
 
 		// Create return parents
 		pair<Individual, Individual> parents = make_pair(
-			Individual(num_obj_attr, population[0].fitness_fn),
-			Individual(num_obj_attr, population[0].fitness_fn) );
+			Individual(num_obj_var, population[0].fitness_fn),
+			Individual(num_obj_var, population[0].fitness_fn) );
 
 		// Copy global generated object attributes into parents
 		copy( object_attributes1.begin(), object_attributes1.end(),
-			parents.first.obj_attr_begin() );
+			parents.first.obj_var_begin() );
 
 		copy( object_attributes2.begin(), object_attributes2.end(),
-			parents.second.obj_attr_begin() );
+			parents.second.obj_var_begin() );
 
 		// Copy global generated standard deviations into parents
 		copy( standard_deviations1.begin(), standard_deviations1.end(),

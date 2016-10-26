@@ -18,20 +18,20 @@ namespace ES
 	// Epsilon constant used in Individual comparations
 	const double Individual::COMP_EPSILON = 10E-9;
 
-	Individual::Individual(int num_obj_attr,
+	Individual::Individual(size_type num_obj_var,
 		double(*fitness_fn)(const Individual& individual))
 		: fitness_fn(fitness_fn), valid_fitness(false)
 	{
-		data.resize(num_obj_attr + 1);
+		data.resize(num_obj_var + 1);
 	}
 
-	Individual::Individual(int num_obj_attr, std::mt19937 random_engine,
+	Individual::Individual(size_type num_obj_var, std::mt19937 random_engine,
 		double(*fitness_fn)(const Individual& individual))
 		: fitness_fn(fitness_fn), valid_fitness(false)
 	{
 		uniform_real_distribution<double> dist(0, 1);
 
-		for (int i = 0; i < num_obj_attr + 1; i++)
+		for (int i = 0; i < num_obj_var + 1; i++)
 			data.push_back(dist(random_engine));
 	}
 

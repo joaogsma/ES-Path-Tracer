@@ -15,11 +15,12 @@ namespace ES
 		typedef std::vector<double>::size_type size_type;
 		typedef std::vector<double>::iterator iterator;
 		typedef std::vector<double>::const_iterator const_iterator;
+		typedef std::vector<double>::value_type value_type;
 
 		static const double COMP_EPSILON;
 
-		Individual(int num_obj_attr, double(*fitness_fn)(const Individual& individual));
-		Individual(int num_obj_attr, std::mt19937 random_engine,
+		Individual(size_type num_obj_var, double(*fitness_fn)(const Individual& individual));
+		Individual(size_type num_obj_var, std::mt19937 random_engine,
 			double(*fitness_fn)(const Individual& individual));
 		
 		// Fitness function pointer
@@ -32,10 +33,10 @@ namespace ES
 		const_iterator end() const { return data.end(); }
 
 		// Iterator functions for the individual's object attributes
-		iterator obj_attr_begin() { return data.begin(); }
-		iterator obj_attr_end() { return std_dev_begin(); }
-		const_iterator obj_attr_begin() const { return data.begin(); }
-		const_iterator obj_attr_end() const { return std_dev_begin(); }
+		iterator obj_var_begin() { return data.begin(); }
+		iterator obj_var_end() { return std_dev_begin(); }
+		const_iterator obj_var_begin() const { return data.begin(); }
+		const_iterator obj_var_end() const { return std_dev_begin(); }
 
 		// Iterator functions for the individual's standard deviation
 		iterator std_dev_begin() { return --data.end(); }
@@ -45,7 +46,7 @@ namespace ES
 
 		// Size functions
 		size_type size() const { return data.size(); }
-		size_type obj_attr_size() const { return obj_attr_end() - obj_attr_begin(); }
+		size_type obj_var_size() const { return obj_var_end() - obj_var_begin(); }
 		size_type std_dev_size() const { return std_dev_end() - std_dev_begin(); }
 
 		// Indexing operator
