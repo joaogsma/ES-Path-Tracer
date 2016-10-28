@@ -10,11 +10,14 @@
 
 namespace ES
 {
-	std::pair<Individual, Individual> local_uniform_selection(
-		const std::vector<Individual>& population);
+    namespace parent_selection
+    {
+        std::pair<Individual, Individual> local_uniform_selection(
+            const std::vector<Individual>& population);
 
-	std::pair<Individual, Individual> global_uniform_selection(
-		const std::vector<Individual>& population);
+        std::pair<Individual, Individual> global_uniform_selection(
+            const std::vector<Individual>& population);
+    }
 }
 
 #endif
