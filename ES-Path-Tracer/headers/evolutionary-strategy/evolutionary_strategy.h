@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include "fitness.h"
 #include "individual.h"
 #include "parent_selection.h"
 #include "recombination.h"

@@ -161,8 +161,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\evolutionary-strategy\evolutionary_strategy.cpp" />
+    <ClCompile Include="src\evolutionary-strategy\fitness.cpp" />
     <ClCompile Include="src\evolutionary-strategy\individual.cpp" />
     <ClCompile Include="src\evolutionary-strategy\parent_selection.cpp" />
+    <ClCompile Include="src\evolutionary-strategy\pixel_histogram.cpp" />
     <ClCompile Include="src\evolutionary-strategy\recombination.cpp" />
     <ClCompile Include="src\geometry\point3.cpp" />
     <ClCompile Include="src\geometry\ray.cpp" />
@@ -175,8 +177,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\evolutionary-strategy\evolutionary_strategy.h" />
+    <ClInclude Include="headers\evolutionary-strategy\fitness.h" />
     <ClInclude Include="headers\evolutionary-strategy\individual.h" />
     <ClInclude Include="headers\evolutionary-strategy\parent_selection.h" />
+    <ClInclude Include="headers\evolutionary-strategy\pixel_histogram.h" />
     <ClInclude Include="headers\evolutionary-strategy\random_engine.h" />
     <ClInclude Include="headers\evolutionary-strategy\recombination.h" />
     <ClInclude Include="headers\geometry\point3.h" />
