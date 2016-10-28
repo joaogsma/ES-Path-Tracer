@@ -11,6 +11,13 @@ namespace ES
 {
     namespace fitness
     {
+        void Pixel_Histogram::increase(unsigned int red, unsigned int green, 
+            unsigned int blue)
+        {
+            color_histogram[red][green][blue]++;
+            total_samples++;
+        }
+
         void Pixel_Histogram::mean_color(unsigned int& red, 
             unsigned int& green, unsigned int& blue) const
         {

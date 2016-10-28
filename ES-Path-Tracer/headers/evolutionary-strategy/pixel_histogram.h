@@ -9,11 +9,8 @@ namespace ES
     {
         class Pixel_Histogram {
         public:
-            // Element accessing functions
-            unsigned int& at(unsigned int red, unsigned int green,
-                unsigned int blue) { return color_histogram[red][green][blue]; }
-            const unsigned int& at(unsigned int red, unsigned int green, 
-                unsigned int blue) const { return color_histogram.at(red).at(green).at(blue); }
+            // Increases counter for the specified color
+            void increase(unsigned int red, unsigned int green, unsigned int blue);
 
             /*  Computation of the mean color based on the probabilities in the 
                 histogram. This is equivalent to the summation of (p * color),
