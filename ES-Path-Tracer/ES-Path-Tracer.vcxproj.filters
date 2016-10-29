@@ -39,22 +39,25 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\evolutionary_strategy.cpp">
+    <ClCompile Include="src\evolution-strategy\evolution_strategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\parent_selection.cpp">
+    <ClCompile Include="src\evolution-strategy\fitness.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\recombination.cpp">
+    <ClCompile Include="src\evolution-strategy\individual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\individual.cpp">
+    <ClCompile Include="src\evolution-strategy\parent_selection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\fitness.cpp">
+    <ClCompile Include="src\evolution-strategy\pixel_histogram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolutionary-strategy\pixel_histogram.cpp">
+    <ClCompile Include="src\evolution-strategy\recombination.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\evolution-strategy\survivor_selection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,25 +83,28 @@
     <ClInclude Include="headers\path-tracer\path_tracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\individual.h">
+    <ClInclude Include="headers\evolution-strategy\evolution_strategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\evolutionary_strategy.h">
+    <ClInclude Include="headers\evolution-strategy\fitness.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\parent_selection.h">
+    <ClInclude Include="headers\evolution-strategy\individual.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\recombination.h">
+    <ClInclude Include="headers\evolution-strategy\parent_selection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\random_engine.h">
+    <ClInclude Include="headers\evolution-strategy\pixel_histogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\fitness.h">
+    <ClInclude Include="headers\evolution-strategy\random_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolutionary-strategy\pixel_histogram.h">
+    <ClInclude Include="headers\evolution-strategy\recombination.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolution-strategy\survivor_selection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

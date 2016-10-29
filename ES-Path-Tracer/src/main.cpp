@@ -3,7 +3,7 @@
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
 #include "kd-tree/kd_tree.h"
-#include "evolutionary-strategy/individual.h"
+#include "evolution-strategy/individual.h"
 
 #include <iostream>
 #include <sstream>
