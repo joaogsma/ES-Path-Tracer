@@ -3,8 +3,9 @@
 
 #include <algorithm>
 #include <vector>
+#include <type_traits>
 
-class Point3;
+#include "point3.h"
 
 class Vector3 {
 public:
@@ -60,8 +61,11 @@ Vector3 cross_prod(const Vector3& a, const Vector3& b);
 double dot_prod(const Vector3& a, const Vector3& b);
 
 // Vector multiplication by a scalar
-template <class T> Vector3 operator*(const Vector3& vec, const T& scalar);
-template <class T> Vector3 operator*(const T& scalar, const Vector3& vec);
+Vector3 operator*(const Vector3& vec, double scalar);
+Vector3 operator*(double& scalar, const Vector3& vec);
+
+// Vector division
+Vector3 operator/(const Vector3& vec, double scalar);
 
 // Vector sum
 Vector3 operator+(const Vector3& vec1, const Vector3& vec2);
@@ -69,11 +73,5 @@ Vector3 operator+(const Vector3& vec1, const Vector3& vec2);
 // Vector subtraction
 Vector3 operator-(const Vector3& vec1, const Vector3& vec2);
 
-// Vector division
-template <class T> Vector3 operator/(const Vector3& vec, const T& scalar);
-
-
-// At the end of the header in order to avoid cyclic dependency
-#include "point3.h"
 
 #endif

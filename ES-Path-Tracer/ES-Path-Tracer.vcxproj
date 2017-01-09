@@ -99,7 +99,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS; WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\headers\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./headers/; ./src/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +114,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS; _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\headers\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./headers/; ./src/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +131,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS; WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\headers\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./headers/; ./src/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,7 +150,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS; NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\headers\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./headers/; ./src/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,14 +167,15 @@
     <ClCompile Include="src\evolution-strategy\pixel_histogram.cpp" />
     <ClCompile Include="src\evolution-strategy\recombination.cpp" />
     <ClCompile Include="src\evolution-strategy\survivor_selection.cpp" />
+    <ClCompile Include="src\geometry\plane.cpp" />
     <ClCompile Include="src\geometry\point3.cpp" />
     <ClCompile Include="src\geometry\ray.cpp" />
     <ClCompile Include="src\geometry\surface_point.cpp" />
+    <ClCompile Include="src\geometry\vector3.cpp" />
     <ClCompile Include="src\kd-tree\kd_tree.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\path-tracer\path_tracer.cpp" />
     <ClCompile Include="src\geometry\triangle.cpp" />
-    <ClCompile Include="src\geometry\vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="headers\evolution-strategy\random_engine.h" />
     <ClInclude Include="headers\evolution-strategy\recombination.h" />
     <ClInclude Include="headers\evolution-strategy\survivor_selection.h" />
+    <ClInclude Include="headers\geometry\plane.h" />
     <ClInclude Include="headers\geometry\point3.h" />
     <ClInclude Include="headers\geometry\ray.h" />
     <ClInclude Include="headers\geometry\surface_point.h" />

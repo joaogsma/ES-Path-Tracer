@@ -8,10 +8,12 @@ namespace es
 {
     namespace fitness
     {
+        /*
         double pixel_histogram_fitness_fn(const Individual& individual)
         {
-
+            return 0;
         }
+        */
 
     }
 }

@@ -119,7 +119,7 @@ bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 	return true;
 }
 
-bool Ray::hit(const Region &kd_region) const
+bool Ray::hit(const kd_tree::Region &kd_region) const
 {
 	// If the origin is inside the region, return true
 	if (kd_region.min_x <= origin.x && origin.x <= kd_region.max_x &&

@@ -1,10 +1,10 @@
-#ifndef  __GUARD_POINT3_H__
+#ifndef __GUARD_POINT3_H__
 #define __GUARD_POINT3_H__
 
 #include <algorithm>
 #include <vector> 
 
-#include "vector3.h"
+class Vector3;
 
 class Point3 {
 public:
@@ -45,5 +45,8 @@ private:
 };
 
 double distance(const Point3& a, const Point3& b);
+
+// At the end of the header in order to avoid cyclic dependency
+#include "vector3.h"
 
 #endif

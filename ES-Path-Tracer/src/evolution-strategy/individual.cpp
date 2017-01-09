@@ -38,7 +38,7 @@ namespace es
         {
             uniform_real_distribution<double> dist(0, 1);
 
-            for (int i = 0; i < num_obj_var + 1; i++)
+            for (size_type i = 0; i < num_obj_var + 1; i++)
                 data.push_back(dist(random_engine));
         }
 

@@ -5,34 +5,28 @@
 #include "geometry/vector3.h"
 #include "geometry/point3.h"
 
-using std::abs;
-using std::copy;
-using std::sqrt;
-using std::pow;
+const double Vector3::COMP_EPSILON = 1E-6;
 
-
-const double Vector3::COMP_EPSILON = 10E-9;
-
-Vector3::Vector3(double x, double y, double z) : x(coordinates[0]), 
+Vector3::Vector3(double x, double y, double z) : x(coordinates[0]),
 y(coordinates[1]), z(coordinates[2])
 {
-	coordinates[0] = x;
-	coordinates[1] = y;
-	coordinates[2] = z;
+    coordinates[0] = x;
+    coordinates[1] = y;
+    coordinates[2] = z;
 }
 
-Vector3::Vector3(const Point3& origin, const Point3& destination) 
-	: x( coordinates[0] ), y( coordinates[1] ), z( coordinates[2] )
+Vector3::Vector3(const Point3& origin, const Point3& destination)
+    : x(coordinates[0]), y(coordinates[1]), z(coordinates[2])
 {
-	coordinates[0] = destination.x - origin.x;
-	coordinates[1] = destination.y - origin.y;
-	coordinates[2] = destination.z - origin.z;
+    coordinates[0] = destination.x - origin.x;
+    coordinates[1] = destination.y - origin.y;
+    coordinates[2] = destination.z - origin.z;
 }
 
 Vector3::Vector3(const Point3& point) : x(coordinates[0]), 
 y(coordinates[1]), z(coordinates[2])
 {
-	copy(point.begin(), point.end(), begin());
+	std::copy(point.begin(), point.end(), begin());
 }
 
 // Copy constructor
@@ -77,7 +71,7 @@ double dot_prod(const Vector3& a, const Vector3& b)
 Vector3& Vector3::operator=(const Vector3& other)
 {
 	if ( &other != this )
-		copy(other.begin(), other.end(), coordinates);
+		std::copy(other.begin(), other.end(), coordinates);
 	
 	return *this;
 }
@@ -94,28 +88,14 @@ bool Vector3::operator==(const Vector3& other) const
 	return (abs(x_diff) + abs(y_diff) + abs(z_diff)) <= COMP_EPSILON;
 }
 
-template <class T>
-Vector3 operator*(const Vector3& vec, const T& scalar)
+Vector3 operator*(const Vector3& vec, double scalar)
 {
-	return Vector3(vec.x*T, vec.y*T, vec.z*T);
+    return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
 }
 
-template <class T>
-Vector3 operator*(const T& scalar, const Vector3& vec)
+Vector3 operator*(double& scalar, const Vector3& vec)
 {
-	return Vector3(vec.x*T, vec.y*T, vec.z*T);
-}
-
-template <class T>
-Vector3 operator/(const Vector3& vec, const T& scalar)
-{
-	return Vector3(vec.x/T, vec.y/T, vec.z/T);
-}
-
-template <class T>
-Vector3 operator/(const T& scalar, const Vector3& vec)
-{
-	return Vector3(vec.x/T, vec.y/T, vec.z/T);
+    return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
 }
 
 Vector3 operator+(const Vector3& vec1, const Vector3& vec2)
@@ -126,4 +106,9 @@ Vector3 operator+(const Vector3& vec1, const Vector3& vec2)
 Vector3 operator-(const Vector3& vec1, const Vector3& vec2)
 {
 	return Vector3(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z);
+}
+
+Vector3 operator/(const Vector3& vec, double scalar)
+{
+    return Vector3(vec.x / scalar, vec.y / scalar, vec.z / scalar);
 }

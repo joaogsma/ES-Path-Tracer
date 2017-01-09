@@ -30,7 +30,7 @@ string vector_to_string(Vector3 v)
 
 static Ray ray(Point3(5, 1, 0.1), Vector3(-1, 0, (-0.1/4)));
 
-bool contains_region(const Region& kd_region)
+bool contains_region(const kd_tree::Region& kd_region)
 {
 	return ray.contains_region(kd_region);
 }
@@ -42,7 +42,7 @@ bool hit(const Triangle& tri)
 	return ray.hit(tri, t, weights);
 }
 
-bool hit(const Region& kd_region)
+bool hit(const kd_tree::Region& kd_region)
 {
 	return ray.hit(kd_region);
 }
@@ -59,7 +59,7 @@ int main()
 
 	vector<const Triangle*> triangles = { &t1, &t2 };
 	
-	KD_Tree* tree = KD_Tree::build_tree(triangles);
+	kd_tree::KD_Tree* tree = kd_tree::KD_Tree::build_tree(triangles.begin(), triangles.end());
 
 	vector<const Triangle*> intersected;
 	tree->search(intersected, contains_region, hit, hit);

@@ -23,9 +23,9 @@ public:
 		std::vector<double> &bar_weights) const;
 
 	// KD-Tree Region intersection function
-	bool hit(const Region& kd_region) const;
+	bool hit(const kd_tree::Region& kd_region) const;
 
-	bool contains_region(const Region& kd_region) const { return false; }
+	bool contains_region(const kd_tree::Region& kd_region) const { return false; }
 };
 
 #endif
