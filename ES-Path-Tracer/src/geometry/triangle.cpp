@@ -1,5 +1,4 @@
 #include "geometry/point3.h"
-#include "geometry/surface_point.h"
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
 
@@ -12,7 +11,7 @@ using std::copy;
 using std::vector;
 using std::abs;
 
-Triangle::Triangle(Surface_Point* point1, Surface_Point* point2, Surface_Point* point3)
+Triangle::Triangle(Point3* point1, Point3* point2, Point3* point3)
 	: v1(vertices[0]), v2(vertices[1]), v3(vertices[2])
 {
 	vertices[0] = point1;

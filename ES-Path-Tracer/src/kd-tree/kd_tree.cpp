@@ -94,9 +94,9 @@ namespace kd_tree {
             for (std::vector<const Triangle*>::const_iterator tri_it = sorted_triangles[axis_idx].begin();
                 tri_it != sorted_triangles[axis_idx].end(); tri_it++)
             {
-                const Surface_Point& v1 = *(*tri_it)->v1;
-                const Surface_Point& v2 = *(*tri_it)->v2;
-                const Surface_Point& v3 = *(*tri_it)->v3;
+                const Point3& v1 = *(*tri_it)->v1;
+                const Point3& v2 = *(*tri_it)->v2;
+                const Point3& v3 = *(*tri_it)->v3;
 
                 if ( abs(v1[axis] - split_value) < KD_Tree::EPSILON || 
                     abs(v2[axis] - split_value) < KD_Tree::EPSILON ||
@@ -260,4 +260,183 @@ namespace kd_tree {
         }
 
     }
+}
+
+
+
+
+
+// ============================================================================
+// ============================ NEW IMPLEMENTATION ============================
+// ============================================================================
+
+#include <algorithm>
+#include <utility>
+
+struct Region { double min_x, max_x, min_y, max_y, min_z, max_z; };
+
+class KD_Node {
+public:
+    virtual ~KD_Node() = 0;
+};
+
+class KD_Middle_Node : public KD_Node {
+public:
+    const Plane split_plane;
+
+    const KD_Node * const left;
+    const KD_Node * const right;
+
+    KD_Middle_Node(Plane split_plane, const KD_Node* left_child, 
+        const KD_Node* right_child)
+        : split_plane(split_plane), left(left_child), right(right_child) {}
+
+    ~KD_Middle_Node() { delete left; delete right; }
+};
+
+class KD_Leaf : public KD_Node {
+public:
+    std::vector<const Triangle*> triangles;
+
+    KD_Leaf(const std::vector<const Triangle*>& triangles) : triangles(triangles) {}
+
+    ~KD_Leaf() {}
+};
+
+class KD_Tree {
+public:
+    // Dummy values
+    static const int TRAVERSAL_COST;
+    static const int TRIANGLE_INTERSECTION_COST;
+    static const double COST_FUNCTION_BIAS;
+
+    ~KD_Tree();
+
+    KD_Tree( const std::vector<const Triangle*>& triangles ) : 
+        root( rec_build_tree(triangles, bounding_box) ), 
+        bounding_box( compute_aabb(triangles) ) {}
+
+private:
+    const Region bounding_box;
+    const KD_Node* const root;
+    
+    KD_Node* rec_build_tree( const std::vector<const Triangle*>& triangles, Region region );
+    
+    Region compute_aabb( const std::vector<const Triangle*>& triangles );
+
+    Plane find_plane( const std::vector<const Triangle*>& triangles, Region region );
+
+    std::pair<Region, Region> split_region( Region region, Plane partition_plane );
+
+    bool intersects(const Triangle& tri, const Region& region);
+
+    bool terminate(const std::vector<const Triangle*>& triangles, Region region);
+
+    double surface_area(const Region& region);
+
+    double cost_bias( const std::vector<const Triangle*>& left_sublist,
+        const std::vector<const Triangle*>& right_sublist );
+};
+
+
+const int KD_Tree::TRAVERSAL_COST = 1;
+const int KD_Tree::TRIANGLE_INTERSECTION_COST = 3;
+const double KD_Tree::COST_FUNCTION_BIAS = 0.8;
+
+inline double KD_Tree::cost_bias( const std::vector<const Triangle*>& left_sublist,
+    const std::vector<const Triangle*>& right_sublist )
+{
+    if (left_sublist.size() == 0 || right_sublist.size() == 0)
+        return 0.8;
+    return 1;
+}
+
+double KD_Tree::surface_area(const Region& region)
+{
+    double delta_x = region.max_x - region.min_x;
+    double delta_y = region.max_y - region.min_y;
+    double delta_z = region.max_z - region.min_z;
+
+    return delta_x * delta_y * delta_z;
+}
+
+Region KD_Tree::compute_aabb(const std::vector<const Triangle*>& triangles)
+{
+    Region region;
+    region.max_x = region.max_y = region.max_z = INT_MIN;
+    region.min_x = region.min_y = region.min_z - INT_MAX;
+
+    // Compute bounding box for triangles
+    for (std::vector<const Triangle*>::const_iterator tri_it = triangles.begin();
+        tri_it != triangles.end(); ++tri_it)
+    {
+        for (Triangle::const_iterator vertex_it = (*tri_it)->begin();
+            vertex_it != (*tri_it)->end(); ++vertex_it)
+        {
+            // Update max region vertices
+            region.max_x = std::max(region.max_x, (*vertex_it)->x);
+            region.max_y = std::max(region.max_y, (*vertex_it)->y);
+            region.max_z = std::max(region.max_z, (*vertex_it)->z);
+            // Update min region vertices
+            region.min_x = std::min(region.min_x, (*vertex_it)->x);
+            region.min_y = std::min(region.min_y, (*vertex_it)->y);
+            region.min_z = std::min(region.min_z, (*vertex_it)->z);
+        }
+    }
+
+    return region;
+}
+
+KD_Node* KD_Tree::rec_build_tree(const std::vector<const Triangle*>& triangles, Region region)
+{
+    if ( terminate(triangles, region) )
+        return new KD_Leaf(triangles);
+
+    // Find the best partition plane
+    const Plane partition_plane = find_plane(triangles, region);
+    
+    // Divide the region into left and right subregions
+    const std::pair<Region, Region> split_regions = split_region(region, partition_plane);
+    const Region& left_subregion = split_regions.first;
+    const Region& right_subregion = split_regions.second;
+
+    std::vector<const Triangle*> left_triangles, right_triangles;
+    
+    // Add the triangles into the left and right sublists
+    for (std::vector<const Triangle*>::const_iterator tri_it = triangles.begin();
+        tri_it != triangles.end(); ++tri_it)
+    {
+        const Triangle* tri = *tri_it;
+
+        // Add the triangle to the list(s) it intersects
+        if ( intersects(*tri, left_subregion) )
+            left_triangles.push_back(tri);
+        if ( intersects(*tri, right_subregion) )
+            right_triangles.push_back(tri);
+    }
+
+    const KD_Node* left_child = rec_build_tree( left_triangles, left_subregion );
+    const KD_Node* right_child = rec_build_tree( right_triangles, right_subregion );
+
+    return new KD_Middle_Node( partition_plane, left_child, right_child );
+}
+
+Plane KD_Tree::find_plane( const std::vector<const Triangle*>& triangles, Region region )
+{
+
+}
+
+std::pair<Region, Region> KD_Tree::split_region( Region region, Plane partition_plane )
+{
+
+}
+
+bool KD_Tree::intersects( const Triangle& tri, const Region& region )
+{
+
+}
+
+bool KD_Tree::terminate( const std::vector<const Triangle*>& triangles, Region region )
+{
+
 }
