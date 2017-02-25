@@ -42,7 +42,7 @@ Vector3 Vector3::normalize() const
 	double mag = magnitude();
 	
 	// Normalization is not defined for the zero vector
-	const double epsilon2 = 1e-10;
+	const double epsilon2 = 10e-10;
 	if (mag < epsilon2)
 		return Vector3(x, y, z);
 

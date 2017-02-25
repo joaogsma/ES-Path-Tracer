@@ -103,8 +103,8 @@ bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 
 	const double dist = dot_prod(e2, r) / a;
 
-	static const double epsilon = 1e-7f;
-	static const double epsilon2 = 1e-10;
+	static const double epsilon = 10e-7f;
+	static const double epsilon2 = 10e-10;
 
 	if ( abs(a) <= epsilon || bar_weights[0] < -epsilon2 || 
 		bar_weights[1] < -epsilon2 || bar_weights[2] < -epsilon2 || 

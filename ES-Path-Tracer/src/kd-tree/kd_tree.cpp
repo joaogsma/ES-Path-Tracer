@@ -13,7 +13,7 @@
 namespace kd_tree {
     KD_Node::~KD_Node() {}
 
-    const double KD_Tree::EPSILON = 1e-6;
+    const double KD_Tree::EPSILON = 10e-6;
 
     KD_Tree::KD_Tree(KD_Node* root, Region bounding_box) : dim_counter(0),
         root(root), bounding_box(bounding_box) {}
@@ -56,7 +56,7 @@ namespace kd_tree {
         /*	There is more than one triangle, so the returned node will be a KD_Middle_Node */
 
         // ===== Compute the node's split value (median) =====
-        std::vector<const Triangle*>::size_type mid = triangles.size() / 2;
+        size_t mid = triangles.size() / 2;
         const Triangle* mid_triangle = triangles[mid];
         
         // Coordinate of mid triangle's barycenter
@@ -271,7 +271,35 @@ namespace kd_tree {
 // ============================================================================
 
 #include <algorithm>
+#include <cmath>
+#include <climits>
 #include <utility>
+#include <vector>
+
+static const double epsilon = 10e-6;
+
+class KD_Tree_Build_Event {
+public:
+    enum Type { END = 0, PLANE = 1, BEGIN = 2 };
+
+    const Triangle* tri;
+    const double position;
+    const Type type;
+
+    KD_Tree_Build_Event(const Triangle* triangle, double event_position, Type event_type)
+        : tri(triangle), position(event_position), type(event_type) {}
+};
+
+bool operator<(const KD_Tree_Build_Event& e1, const KD_Tree_Build_Event& e2)
+{
+    if ( std::abs(e1.position - e2.position) < epsilon && e1.type < e2.type )
+        return true;
+
+    if ( e1.position < e2.position )
+        return true;
+
+    return false;
+}
 
 struct Region { double min_x, max_x, min_y, max_y, min_z, max_z; };
 
@@ -324,54 +352,51 @@ private:
 
     KD_Node* rec_build_tree( const std::vector<const Triangle*>& triangles, Region region );
     
+    void sweep_plane(std::vector<KD_Tree_Build_Event> &event_queue, int axis, const Region &region, 
+        size_t num_triangles, double &best_cost, Plane &best_plane, KD_Tree::SIDE &best_side);
+
     Region compute_aabb( const std::vector<const Triangle*>& triangles );
     Region compute_aabb( const Triangle& triangle);
+
+    void create_events( const Triangle &tri, const Region &region, 
+        std::vector<KD_Tree_Build_Event> &x_event_queue, std::vector<KD_Tree_Build_Event> &y_event_queue,
+        std::vector<KD_Tree_Build_Event> &z_event_queue );
 
     Plane find_plane( const std::vector<const Triangle*>& triangles, Region region );
 
     std::pair<Region, Region> split_region( Region region, Plane partition_plane );
 
-    bool intersects(const Triangle& tri, const Region& region);
+    bool intersects( const Triangle& tri, const Region& region );
 
-    bool terminate(const std::vector<const Triangle*>& triangles, Region region);
-
-   //std::pair<Triangle*, Triangle*> clip_triangle(const Triangle& original_tri, 
-   //     const Region& region);
+    bool terminate( const std::vector<const Triangle*>& triangles, Region region );
     
-    bool clipped_triangle_aabb(const Triangle& triangle, const Region& region,
-        Region& clipped_region);
+    Region clipped_triangle_aabb( const Triangle& triangle, const Region& region );
 
     double surface_area(const Region& region);
 
-    double cost_bias( std::vector<const Triangle*>::size_type num_triangles_left,
-        std::vector<const Triangle*>::size_type num_triangles_right);
+    double cost_bias( size_t num_triangles_left, size_t num_triangles_right );
 
-    double cost( double prob_left, double prob_right, 
-        std::vector<const Triangle*>::size_type num_triangles_left,
-        std::vector<const Triangle*>::size_type num_triangles_right );
+    double cost( double prob_left, double prob_right, size_t num_triangles_left, 
+        size_t num_triangles_right );
 
-    std::pair<double, SIDE> sah( Plane split_plane, Region region,
-        std::vector<const Triangle*>::size_type num_triangles_left,
-        std::vector<const Triangle*>::size_type num_triangles_right,
-        std::vector<const Triangle*>::size_type num_triangles_plane );
+    std::pair<double, SIDE> sah( Plane split_plane, Region region, size_t num_triangles_left,
+        size_t num_triangles_right, size_t num_triangles_plane );
 };
 
-
+// Dummy values
 const int KD_Tree::TRAVERSAL_COST = 1;
 const int KD_Tree::TRIANGLE_INTERSECTION_COST = 3;
 const double KD_Tree::COST_FUNCTION_BIAS = 0.8;
 
-inline double KD_Tree::cost_bias( std::vector<const Triangle*>::size_type num_triangles_left,
-    std::vector<const Triangle*>::size_type num_triangles_right)
+inline double KD_Tree::cost_bias( size_t num_triangles_left, size_t num_triangles_right)
 {
     if (num_triangles_left == 0 || num_triangles_right == 0)
         return 0.8;
     return 1;
 }
 
-inline double KD_Tree::cost( double prob_left, double prob_right,
-    std::vector<const Triangle*>::size_type num_triangles_left,
-    std::vector<const Triangle*>::size_type num_triangles_right )
+inline double KD_Tree::cost( double prob_left, double prob_right, size_t num_triangles_left, 
+    size_t num_triangles_right )
 {
     double estimated_cost = KD_Tree::TRAVERSAL_COST + KD_Tree::TRIANGLE_INTERSECTION_COST * 
         (prob_left * num_triangles_left + prob_right * num_triangles_right);
@@ -388,9 +413,7 @@ inline double KD_Tree::surface_area(const Region& region)
 }
 
 std::pair<double, KD_Tree::SIDE> KD_Tree::sah(Plane split_plane, Region region,
-    std::vector<const Triangle*>::size_type num_triangles_left,
-    std::vector<const Triangle*>::size_type num_triangles_right,
-    std::vector<const Triangle*>::size_type num_triangles_plane )
+    size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane )
 {
     const std::pair<Region, Region>& subregions = split_region(region, split_plane);
     const Region& left_subregion = subregions.first;
@@ -415,7 +438,7 @@ Region KD_Tree::compute_aabb(const std::vector<const Triangle*>& triangles)
 {
     Region region;
     region.max_x = region.max_y = region.max_z = INT_MIN;
-    region.min_x = region.min_y = region.min_z - INT_MAX;
+    region.min_x = region.min_y = region.min_z = INT_MAX;
 
     // Compute bounding box for triangles
     for (std::vector<const Triangle*>::const_iterator tri_it = triangles.begin();
@@ -440,7 +463,7 @@ Region KD_Tree::compute_aabb(const Triangle& triangle)
 {
     Region region;
     region.max_x = region.max_y = region.max_z = INT_MIN;
-    region.min_x = region.min_y = region.min_z - INT_MAX;
+    region.min_x = region.min_y = region.min_z = INT_MAX;
 
     for (Triangle::const_iterator vertex_it = triangle.begin();
         vertex_it != triangle.end(); ++vertex_it)
@@ -492,47 +515,167 @@ KD_Node* KD_Tree::rec_build_tree(const std::vector<const Triangle*>& triangles, 
     return new KD_Middle_Node( partition_plane, left_child, right_child );
 }
 
-//std::pair<Triangle*, Triangle*> KD_Tree::clip_triangle(const Triangle& original_tri, 
-//    const Region& region)
-//{
-//    // Must copy vertices if necessary
-//    // The returned triangles must be deleted after use
-//    // If only one triangle, both pointers can point to it, or the second pointer can be nullptr
-//}
-
-bool KD_Tree::clipped_triangle_aabb( const Triangle& triangle, const Region& region,
-    Region& clipped_aabb )
+Region KD_Tree::clipped_triangle_aabb( const Triangle& triangle, const Region& region )
 {
     Region triangle_aabb = compute_aabb(triangle);
     
-    // ===== Clip triangle's AABB =====
-    triangle_aabb.max_x = std::min( triangle_aabb.max_x, region.max_x );
-    triangle_aabb.min_x = std::max( triangle_aabb.min_x, region.min_x );
+    triangle_aabb.max_x = std::min(triangle_aabb.max_x, region.max_x);
+    triangle_aabb.min_x = std::max(triangle_aabb.min_x, region.min_x);
 
     triangle_aabb.max_y = std::min(triangle_aabb.max_y, region.max_y);
     triangle_aabb.min_y = std::max(triangle_aabb.min_y, region.min_y);
 
     triangle_aabb.max_z = std::min(triangle_aabb.max_z, region.max_z);
     triangle_aabb.min_z = std::max(triangle_aabb.min_z, region.min_z);
-    // ================================
+    
+    return triangle_aabb;
+}
 
-    // Check if the clipped AABB exists
-    if (triangle_aabb.max_x < triangle_aabb.min_x ||
-        triangle_aabb.max_y < triangle_aabb.min_y ||
-        triangle_aabb.max_z < triangle_aabb.min_z)
+void KD_Tree::create_events(const Triangle &tri, const Region &region, 
+    std::vector<KD_Tree_Build_Event> &x_event_queue, std::vector<KD_Tree_Build_Event> &y_event_queue, 
+    std::vector<KD_Tree_Build_Event> &z_event_queue)
+{
+    Region clipped_tri_aabb = clipped_triangle_aabb( tri, region );
+
+    // ===== X axis events =====
+    if (std::abs(clipped_tri_aabb.max_x - clipped_tri_aabb.min_x) < epsilon)
     {
-        /* The clipped AABB does not exist, which means the triangle was outside the give region */
-        
-        return false;
+        x_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.min_x,
+            KD_Tree_Build_Event::Type::PLANE) );
     }
+    else
+    {
+        x_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.min_x,
+            KD_Tree_Build_Event::Type::BEGIN) );
+        x_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.max_x,
+            KD_Tree_Build_Event::Type::END) );
+    }
+    // =========================
 
-    clipped_aabb = triangle_aabb;
-    return true;
+
+    // ===== Y axis events =====
+    if (std::abs(clipped_tri_aabb.max_y - clipped_tri_aabb.min_y) < epsilon)
+    {
+        y_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.min_y,
+            KD_Tree_Build_Event::Type::PLANE) );
+    }
+    else
+    {
+        y_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.min_y,
+            KD_Tree_Build_Event::Type::BEGIN) );
+        y_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.max_y,
+            KD_Tree_Build_Event::Type::END) );
+    }
+    // =========================
+
+
+    // ===== Z axis events =====
+    if (std::abs(clipped_tri_aabb.max_z - clipped_tri_aabb.min_z) < epsilon)
+    {
+        z_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.min_z,
+            KD_Tree_Build_Event::Type::PLANE) );
+    }
+    else
+    {
+        z_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.min_z,
+            KD_Tree_Build_Event::Type::BEGIN) );
+        z_event_queue.push_back( KD_Tree_Build_Event( &tri, clipped_tri_aabb.max_z,
+            KD_Tree_Build_Event::Type::END) );
+    }
+    // =========================
 }
 
 Plane KD_Tree::find_plane( const std::vector<const Triangle*>& triangles, Region region )
 {
+    double best_cost = INT_MAX;
+    // Dummy initial best plane
+    Plane best_plane( Point3(0., 0., 0.), Vector3(0., 0., 1.) );
 
+    std::vector<KD_Tree_Build_Event> x_event_queue, y_event_queue, z_event_queue;
+    
+    // Create events for all triangles
+    for (std::vector<const Triangle*>::const_iterator tri_it = triangles.begin();
+        tri_it != triangles.end(); ++tri_it)
+    {
+        create_events( **tri_it, region, x_event_queue, y_event_queue, z_event_queue );
+    }
+
+    // Sort events based on their plane position
+    std::sort(x_event_queue.begin(), x_event_queue.end());
+    std::sort(y_event_queue.begin(), y_event_queue.end());
+    std::sort(z_event_queue.begin(), z_event_queue.end());
+
+}
+
+void KD_Tree::sweep_plane(std::vector<KD_Tree_Build_Event> &event_queue, int axis, const Region &region, 
+    size_t num_triangles, double &best_cost, Plane &best_plane, KD_Tree::SIDE &best_side)
+{
+    best_cost = INT_MAX;
+    // Number of triangles in the left, right and contained in the current plane
+    size_t num_tri_left = 0, num_tri_right = num_triangles, num_tri_plane = 0;
+
+    for (std::vector<KD_Tree_Build_Event>::const_iterator event_it = event_queue.begin();
+        event_it != event_queue.end(); ++event_it)
+    {
+        double plane_pos = event_it->position;
+
+        size_t plane_begin = 0, plane_end = 0, plane_on = 0;
+
+        // Count the triangles that end in this plane
+        while ( event_it != event_queue.end() && event_it->position == plane_pos &&
+            event_it->type == KD_Tree_Build_Event::Type::END )
+        {
+            ++plane_end;
+            ++event_it;
+        }
+
+        // Count the triangles that are contained in this plane
+        while ( event_it != event_queue.end() && event_it->position == plane_pos &&
+            event_it->type == KD_Tree_Build_Event::Type::PLANE )
+        {
+            ++plane_on;
+            ++event_it;
+        }
+
+        // Count the triangles that begin in this plane
+        while ( event_it != event_queue.end() && event_it->position == plane_pos &&
+            event_it->type == KD_Tree_Build_Event::Type::BEGIN )
+        {
+            ++plane_begin;
+            ++event_it;
+        }
+
+        // Update the triangle counters - sweeping plane is at plane_pos
+        num_tri_plane = plane_on;
+        num_tri_right -= plane_on;
+        num_tri_right -= plane_end;
+
+        // Compute the split plane
+        Plane split_plane(Point3(0, 0, 0), Vector3(0, 0, 1));  // Dummy initial value
+        switch (axis)
+        {
+        case 0: { split_plane = Plane(Point3(plane_pos, 0, 0), Vector3(1, 0, 0)); break; }
+        case 1: { split_plane = Plane(Point3(0, plane_pos, 0), Vector3(0, 1, 0)); break; }
+        case 2: { split_plane = Plane(Point3(0, 0, plane_pos), Vector3(0, 0, 1)); break; }
+        }
+        
+        // Compute the SAH cost of splitting the region by this plane
+        std::pair<double, KD_Tree::SIDE> sah_result = sah( split_plane, region, 
+            num_tri_left, num_tri_right, num_tri_plane );
+
+        // Update the best found plane if needed
+        if (sah_result.first < best_cost)
+        {
+            best_cost = sah_result.first;
+            best_side = sah_result.second;
+            best_plane = split_plane;
+        }
+
+        // Update the triangle counters - sweeping plane is over plane_pos
+        num_tri_plane = 0;
+        num_tri_left += plane_begin;
+        num_tri_left += plane_on;
+    }
 }
 
 std::pair<Region, Region> KD_Tree::split_region( Region region, Plane partition_plane )

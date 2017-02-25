@@ -9,7 +9,7 @@
 	of having a normal vector. */
 class Surface_Point : public Point3 {
 public:
-	const Vector3 normal;
+	Vector3 normal;
 
 	Surface_Point(double x, double y, double z);
 
