@@ -21,127 +21,91 @@ namespace kd_tree {
     };
 
 
-    /*	KD_Middle_Node objects correspond to non-leaf nodes in the kd-tree. They 
-	    contain the median value based on which they split the data, pointers to 
-	    the	left and right subtrees and a bound offset. The bound offset is the 
-	    ammount	by which the bounding box of the KD_Middle_Node's tree goes 
-	    beyond the plane defined by it's parent median_value. */
+    // KD_Middle_Node objects correspond to non-leaf nodes in the kd-tree
     class KD_Middle_Node : public KD_Node {
     public:
         const Plane split_plane;
-	    
+
         const KD_Node * const left;
         const KD_Node * const right;
-    
-        KD_Middle_Node(Plane split_plane, const KD_Node * const left_child, 
-		    const KD_Node * const right_child)
-		    : split_plane(split_plane), left(left_child), right(right_child) {}
 
-	    ~KD_Middle_Node() { delete left; delete right; }
+        KD_Middle_Node(Plane split_plane, const KD_Node* left_child,
+            const KD_Node* right_child)
+            : split_plane(split_plane), left(left_child), right(right_child) {}
+
+        ~KD_Middle_Node() { delete left; delete right; }
     };
 
 
-    /*	KD_Leaf objects correspond to leaf nodes in the kd-tree. They contain the
-	    corresponding triangle but no bounding box, as it's faster to intersect a
-	    ray with a triangle than with a box. */
+    /*	KD_Leaf objects correspond to leaf nodes in the kd-tree. They contain a list of triangles, 
+        because recursion stops as soon as a brute-force search is estimated to be more efficient 
+        than increasing the tree size. */
     class KD_Leaf : public KD_Node {
     public:
-        Triangle const * const tri;
+        std::vector<const Triangle*> triangles;
 
-	    KD_Leaf(Triangle const * const triangle) : tri(triangle) {}
+        KD_Leaf(const std::vector<const Triangle*>& triangles) : triangles(triangles) {}
 
         ~KD_Leaf() {}
     };
 
 
-    /*	KD_Tree objects correspond to an enture kd-tree. They are created throught 
-	    the build_tree function, and can be queries through the search function,
-	    which receives an intesection test function. */
+    class KD_Tree_Build_Event;
+
+    // KD_Tree objects correspond to an entire kd-tree
     class KD_Tree {
     public:
-        template<class Input_It>
-        static KD_Tree* build_tree(Input_It triangles_begin, Input_It triangles_end);
+        ~KD_Tree();
 
-	    ~KD_Tree();
-
-	    void search(std::vector<const Triangle*>& intersected,
-		    bool contains_region(const Region&),
-		    bool intersects_region(const Region&),
-		    bool intersects_triangle(const Triangle&)) const;
+        KD_Tree(const std::vector<const Triangle*>& triangles) :
+            root(rec_build_tree(triangles, bounding_box)),
+            bounding_box(compute_aabb(triangles)) {}
 
     private:
+        static const int TRAVERSAL_COST;
+        static const int TRIANGLE_INTERSECTION_COST;
+        static const double COST_FUNCTION_BIAS;
+        
+        const Region bounding_box;
         const KD_Node* const root;
-	    const Region bounding_box;
-	    unsigned int dim_counter;
-        static const double EPSILON;
 
-        KD_Tree(KD_Node* root, Region bounding_box);
+        enum SIDE { LEFT, RIGHT };
 
-	    static bool compare_by_x(const Triangle* a, const Triangle* b);
+        KD_Node* rec_build_tree(const std::vector<const Triangle*>& triangles, Region region);
+ 
+        void KD_Tree::find_plane(const std::vector<const Triangle*>& triangles, Region region,
+            int &axis, double &plane_pos, KD_Tree::SIDE &plane_side);
+        
+        void create_events(const Triangle &tri, const Region &region,
+            std::vector<KD_Tree_Build_Event> &x_event_queue, std::vector<KD_Tree_Build_Event> &y_event_queue,
+            std::vector<KD_Tree_Build_Event> &z_event_queue);
 
-	    static bool compare_by_y(const Triangle* a, const Triangle* b);
+        void sweep_plane(std::vector<KD_Tree_Build_Event> &event_queue, int axis, const Region &region,
+            size_t num_triangles, double &best_cost, double &best_plane, KD_Tree::SIDE &best_side);
 
-	    static bool compare_by_z(const Triangle* a, const Triangle* b);
+        std::pair<Region, Region> KD_Tree::split_region(Region region, int axis, double pos);
+        
+        Region compute_aabb(const std::vector<const Triangle*>& triangles);
+        Region compute_aabb(const Triangle& triangle);
 
-	    template<class Input_It>
-        static void sort_triangles(Input_It begin, Input_It end,
-            std::vector<std::vector<const Triangle*> >& sorted_triangles);
+        Region clipped_triangle_aabb(const Triangle& triangle, const Region& region);
+        
+        bool has_area(const Triangle &tri, const Region &region);
 
-	    static KD_Node* build_tree(
-            std::vector<std::vector<const Triangle*> >& sorted_triangles, int axis);
+        bool on_plane(const Triangle &tri, const Plane &plane);
 
-	    void search( const KD_Node* const current, Region &region, 
-		    int dimension, std::vector<const Triangle*>& intersected, 
-		    bool contains_region(const Region&),
-		    bool intersects_region(const Region&),
-		    bool intersects_triangle(const Triangle&) ) const;
+        bool terminate(int split_axis, int split_pos, const Region &region, size_t num_triangles_left,
+            size_t num_triangles_right, size_t num_triangles_plane);
 
-	    void report_subtree( const KD_Node* const root, 
-		    std::vector<const Triangle*>& intersected ) const;
+        double surface_area(const Region& region);
+
+        double cost(double prob_left, double prob_right, size_t num_triangles_left,
+            size_t num_triangles_right);
+
+        double cost_bias(size_t num_triangles_left, size_t num_triangles_right);
+
+        std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, int split_pos, Region region,
+            size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane);
     };
-
-    template<class Input_It>
-    void KD_Tree::sort_triangles(Input_It begin, Input_It end,
-        std::vector<std::vector<const Triangle*> >& sorted_triangles)
-    {
-        sorted_triangles.clear();
-
-        // Insert 3 copies of all the triangles, one for each axis-ordered vector
-        sorted_triangles.push_back(std::vector<const Triangle*>());
-        sorted_triangles.front().insert(sorted_triangles.front().end(), begin, end);
-        sorted_triangles.push_back(sorted_triangles.front());
-        sorted_triangles.push_back(sorted_triangles.front());
-
-        // Sort each axis-ordered vector by the corresponding axis values
-        sort(sorted_triangles[0].begin(), sorted_triangles[0].end(), compare_by_x);
-        sort(sorted_triangles[1].begin(), sorted_triangles[1].end(), compare_by_y);
-        sort(sorted_triangles[2].begin(), sorted_triangles[2].end(), compare_by_z);
-    }
-
-    template<class Input_It>
-    KD_Tree* KD_Tree::build_tree(Input_It triangles_begin, Input_It triangles_end)
-    {
-        // Check if Input_It is an iterator to [const] Triangle*
-        static_assert( 
-            std::is_convertible<std::iterator_traits<Input_It>::value_type, const Triangle*>::value,
-            "Must be Input Iterators to [const] Triangle*");
-
-        if (triangles_end == triangles_begin)
-            return nullptr;
-
-        /*	Sort the triangles by coordinates of their barycenters, in three vectors.
-        Each vector corresponds to a sorting done based in coordinates from a
-        different axis (X, Y, Z) */
-        vector<vector<const Triangle*> > sorted_triangles;
-        sort_triangles(triangles_begin, triangles_end, sorted_triangles);
-
-        Region inf_box;
-        inf_box.max_x = inf_box.max_y = inf_box.max_z = INT_MAX;
-        inf_box.min_x = inf_box.min_y = inf_box.min_z = INT_MIN;
-
-        KD_Node* root = build_tree(sorted_triangles, 0);
-
-        return new KD_Tree(root, inf_box);
-    }
 }
 #endif
