@@ -11,20 +11,31 @@
 #include <vector>
 
 namespace kd_tree
-{
+{    
     static const double epsilon = 10e-6;
-    
-    const int KD_Tree::TRAVERSAL_COST = 1;                  // Dummy value
-    const int KD_Tree::TRIANGLE_INTERSECTION_COST = 3;      // Dummy value
-    const double KD_Tree::COST_FUNCTION_BIAS = 0.8;
+
+
+    bool operator==(const Region &a, const Region &b)
+    {
+        return std::abs(a.min_x - b.min_x) < epsilon && std::abs(a.max_x - b.max_x) < epsilon &&
+            std::abs(a.min_y - b.min_y) < epsilon && std::abs(a.max_y - b.max_y) < epsilon &&
+            std::abs(a.min_z - b.min_z) < epsilon && std::abs(a.max_z - b.max_z) < epsilon;
+    }
+
+    KD_Node::~KD_Node() {};
+
+
+    // ============================================================================================
+    // =================================== KD-TTREE BUILD EVENT ===================================
+    // ============================================================================================
 
     class KD_Tree_Build_Event {
     public:
         enum Type { END = 0, PLANE = 1, BEGIN = 2 };
 
-        const Triangle* tri;
-        const double position;
-        const Type type;
+        Triangle const *tri;
+        double position;
+        Type type;
 
         KD_Tree_Build_Event(const Triangle* triangle, double event_position, Type event_type)
             : tri(triangle), position(event_position), type(event_type) {}
@@ -40,6 +51,18 @@ namespace kd_tree
 
         return false;
     }
+
+    // ============================================================================================
+
+
+
+    // ============================================================================================
+    // =================================== KD-TREE DEFINITIONS ====================================
+    // ============================================================================================
+
+    const int KD_Tree::TRAVERSAL_COST = 1;                  // Dummy value
+    const int KD_Tree::TRIANGLE_INTERSECTION_COST = 3;      // Dummy value
+    const double KD_Tree::COST_FUNCTION_BIAS = 0.8;
 
     inline double KD_Tree::cost_bias(size_t num_triangles_left, size_t num_triangles_right)
     {
@@ -62,10 +85,18 @@ namespace kd_tree
         double delta_y = region.max_y - region.min_y;
         double delta_z = region.max_z - region.min_z;
 
-        return delta_x * delta_y * delta_z;
+        // Number os sides orthogonal to the Z axis
+        int z_num_sides = (1 + (region.max_z - region.min_z >= epsilon));
+        // Number os sides orthogonal to the Y axis
+        int y_num_sides = (1 + (region.max_y - region.min_y >= epsilon));
+        // Number os sides orthogonal to the X axis
+        int x_num_sides = (1 + (region.max_x - region.min_x >= epsilon));
+
+        return (z_num_sides * delta_x * delta_y ) + (y_num_sides * delta_x * delta_z) + 
+            (x_num_sides * delta_y * delta_z);
     }
 
-    std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, int split_pos, Region region,
+    std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, double split_pos, Region region,
         size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane)
     {
         const std::pair<Region, Region>& subregions = split_region(region, split_axis, split_pos);
@@ -136,6 +167,9 @@ namespace kd_tree
 
     KD_Node* KD_Tree::rec_build_tree(const std::vector<const Triangle*>& triangles, Region region)
     {
+        if ( triangles.empty() )
+            return new KD_Leaf(triangles);
+
         // ========== Find the best partition plane ==========
         int axis;
         double plane_pos;
@@ -196,9 +230,19 @@ namespace kd_tree
         else
             right_triangles.insert(right_triangles.end(), plane_triangles.begin(), plane_triangles.end());
 
-        // Continue recursion
-        const KD_Node* left_child = rec_build_tree(left_triangles, left_subregion);
-        const KD_Node* right_child = rec_build_tree(right_triangles, right_subregion);
+        KD_Node *left_child, *right_child;
+
+        // Continue recursion in the left subtree
+        if ( left_subregion == region )
+            left_child = new KD_Leaf(left_triangles);    // Region was not changed - create a leaf
+        else
+            left_child = rec_build_tree(left_triangles, left_subregion);    // Continue recursion
+
+        // Continue recursion in the right subtree
+        if ( right_subregion == region )
+            right_child = new KD_Leaf(right_triangles);    // Region was not changed - create a leaf
+        else
+            right_child = rec_build_tree(right_triangles, right_subregion);    // Continue recursion
 
         return new KD_Middle_Node(partition_plane, left_child, right_child);
     }
@@ -291,10 +335,8 @@ namespace kd_tree
         std::sort(z_event_queue.begin(), z_event_queue.end());
 
         // Create vector of references for the comming loop
-        std::vector<std::vector<KD_Tree_Build_Event>&> queues;
-        queues.push_back(x_event_queue);
-        queues.push_back(y_event_queue);
-        queues.push_back(z_event_queue);
+        std::vector<std::vector<KD_Tree_Build_Event>*> queues = { &x_event_queue, 
+            &y_event_queue, &z_event_queue };
 
         // Best cost found so far
         double best_cost = INT_MAX;
@@ -304,13 +346,14 @@ namespace kd_tree
         {
             double cost, plane;
             KD_Tree::SIDE side;
-            sweep_plane(queues[i], i, region, triangles.size(), cost, plane, side);
+            sweep_plane(*queues[i], i, region, triangles.size(), cost, plane, side);
 
             if (cost < best_cost)
             {
                 axis = i;
                 plane_pos = plane;
                 plane_side = side;
+                best_cost = cost;
             }
         }
     }
@@ -322,8 +365,9 @@ namespace kd_tree
         // Number of triangles in the left, right and contained in the current plane
         size_t num_tri_left = 0, num_tri_right = num_triangles, num_tri_plane = 0;
 
-        for (std::vector<KD_Tree_Build_Event>::const_iterator event_it = event_queue.begin();
-            event_it != event_queue.end(); ++event_it)
+        std::vector<KD_Tree_Build_Event>::const_iterator event_it = event_queue.begin();
+
+        while ( event_it != event_queue.end() )
         {
             double plane_pos = event_it->position;
 
@@ -393,8 +437,9 @@ namespace kd_tree
 
     bool KD_Tree::on_plane(const Triangle &tri, const Plane &plane)
     {
-        return plane.evaluate(*tri.v1) < epsilon && plane.evaluate(*tri.v2) < epsilon &&
-            plane.evaluate(*tri.v3) < epsilon;
+        return std::abs(plane.evaluate(*tri.v1)) < epsilon && 
+            std::abs(plane.evaluate(*tri.v2)) < epsilon &&
+            std::abs(plane.evaluate(*tri.v3)) < epsilon;
     }
 
     bool KD_Tree::has_area(const Triangle& tri, const Region& region)
@@ -420,7 +465,7 @@ namespace kd_tree
         return nonzero_dims >= 2;
     }
 
-    bool KD_Tree::terminate(int split_axis, int split_pos, const Region &region,
+    bool KD_Tree::terminate(int split_axis, double split_pos, const Region &region,
         size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane)
     {
         double partitioning_cost = sah(split_axis, split_pos, region, num_triangles_left,
@@ -430,4 +475,6 @@ namespace kd_tree
 
         return partitioning_cost > KD_Tree::TRIANGLE_INTERSECTION_COST * all_triangles;
     }
+
+    // ============================================================================================
 }

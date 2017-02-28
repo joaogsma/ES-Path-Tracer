@@ -13,6 +13,7 @@ namespace kd_tree {
 	    in a kd-tree. */
     struct Region { double min_x, max_x, min_y, max_y, min_z, max_z; };
 
+    bool operator==(const Region &a, const Region &b);
 
     // Abstract node class
     class KD_Node {
@@ -55,7 +56,7 @@ namespace kd_tree {
     // KD_Tree objects correspond to an entire kd-tree
     class KD_Tree {
     public:
-        ~KD_Tree();
+        ~KD_Tree() { delete root; }
 
         KD_Tree(const std::vector<const Triangle*>& triangles) :
             root(rec_build_tree(triangles, bounding_box)),
@@ -94,7 +95,7 @@ namespace kd_tree {
 
         bool on_plane(const Triangle &tri, const Plane &plane);
 
-        bool terminate(int split_axis, int split_pos, const Region &region, size_t num_triangles_left,
+        bool terminate(int split_axis, double split_pos, const Region &region, size_t num_triangles_left,
             size_t num_triangles_right, size_t num_triangles_plane);
 
         double surface_area(const Region& region);
@@ -104,7 +105,7 @@ namespace kd_tree {
 
         double cost_bias(size_t num_triangles_left, size_t num_triangles_right);
 
-        std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, int split_pos, Region region,
+        std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, double split_pos, Region region,
             size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane);
     };
 }
