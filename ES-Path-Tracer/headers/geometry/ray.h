@@ -22,7 +22,8 @@ public:
 	bool hit(const Triangle &tri, double &t, 
 		std::vector<double> &bar_weights) const;
 
-	bool contains_region(const kd_tree::Region& kd_region) const { return false; }
+    // AABB intersection function
+    bool hit(const kd_tree::AAB &aabb, double &t) const;
 };
 
 #endif

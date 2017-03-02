@@ -9,11 +9,11 @@
 #include <type_traits>
 
 namespace kd_tree {
-    /*	The Region struct represents the region of the plane defined by each node 
+    /*	The AAB struct represents the region of the plane defined by each node 
 	    in a kd-tree. */
-    struct Region { double min_x, max_x, min_y, max_y, min_z, max_z; };
+    struct AAB { double min_x, max_x, min_y, max_y, min_z, max_z; };
 
-    bool operator==(const Region &a, const Region &b);
+    bool operator==(const AAB &a, const AAB &b);
 
     // Abstract node class
     class KD_Node {
@@ -67,45 +67,45 @@ namespace kd_tree {
         static const int TRIANGLE_INTERSECTION_COST;
         static const double COST_FUNCTION_BIAS;
         
-        const Region bounding_box;
+        const AAB bounding_box;
         const KD_Node* const root;
 
         enum SIDE { LEFT, RIGHT };
 
-        KD_Node* rec_build_tree(const std::vector<const Triangle*>& triangles, Region region);
+        KD_Node* rec_build_tree(const std::vector<const Triangle*>& triangles, AAB region);
  
-        void KD_Tree::find_plane(const std::vector<const Triangle*>& triangles, Region region,
+        void KD_Tree::find_plane(const std::vector<const Triangle*>& triangles, AAB region,
             int &axis, double &plane_pos, KD_Tree::SIDE &plane_side);
         
-        void create_events(const Triangle &tri, const Region &region,
+        void create_events(const Triangle &tri, const AAB &region,
             std::vector<KD_Tree_Build_Event> &x_event_queue, std::vector<KD_Tree_Build_Event> &y_event_queue,
             std::vector<KD_Tree_Build_Event> &z_event_queue);
 
-        void sweep_plane(std::vector<KD_Tree_Build_Event> &event_queue, int axis, const Region &region,
+        void sweep_plane(std::vector<KD_Tree_Build_Event> &event_queue, int axis, const AAB &region,
             size_t num_triangles, double &best_cost, double &best_plane, KD_Tree::SIDE &best_side);
 
-        std::pair<Region, Region> KD_Tree::split_region(Region region, int axis, double pos);
+        std::pair<AAB, AAB> KD_Tree::split_region(AAB region, int axis, double pos);
         
-        Region compute_aabb(const std::vector<const Triangle*>& triangles);
-        Region compute_aabb(const Triangle& triangle);
+        AAB compute_aabb(const std::vector<const Triangle*>& triangles);
+        AAB compute_aabb(const Triangle& triangle);
 
-        Region clipped_triangle_aabb(const Triangle& triangle, const Region& region);
+        AAB clipped_triangle_aabb(const Triangle& triangle, const AAB& region);
         
-        bool has_area(const Triangle &tri, const Region &region);
+        bool has_area(const Triangle &tri, const AAB &region);
 
         bool on_plane(const Triangle &tri, const Plane &plane);
 
-        bool terminate(int split_axis, double split_pos, const Region &region, size_t num_triangles_left,
+        bool terminate(int split_axis, double split_pos, const AAB &region, size_t num_triangles_left,
             size_t num_triangles_right, size_t num_triangles_plane);
 
-        double surface_area(const Region& region);
+        double surface_area(const AAB& region);
 
         double cost(double prob_left, double prob_right, size_t num_triangles_left,
             size_t num_triangles_right);
 
         double cost_bias(size_t num_triangles_left, size_t num_triangles_right);
 
-        std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, double split_pos, Region region,
+        std::pair<double, KD_Tree::SIDE> KD_Tree::sah(int split_axis, double split_pos, AAB region,
             size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane);
     };
 }

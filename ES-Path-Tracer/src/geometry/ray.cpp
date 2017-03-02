@@ -2,7 +2,11 @@
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
 
+#include <algorithm>
+#include <cmath>
 #include <vector>
+
+#define HANDLE_NAN true
 
 using std::vector;
 
@@ -28,48 +32,6 @@ Point3 Ray::at(double t) const
 	double z_ = origin.z + (t * direction.z);
 
 	return Point3(x_, y_, z_);
-}
-
-vector<Point3> box_top_vertices(const Point3 &center, const double x_dims,
-	const double y_dims, const double z_dims)
-{
-	double x_off = x_dims / 2;
-	double y_off = y_dims / 2;
-	double z_off = z_dims / 2;
-
-	vector<Point3> top_vertices;
-
-	top_vertices.push_back(
-		Point3(center.x + x_off, center.y + y_off, center.z + z_off));
-	top_vertices.push_back(
-		Point3(center.x + x_off, center.y + y_off, center.z - z_off));
-	top_vertices.push_back(
-		Point3(center.x - x_off, center.y + y_off, center.z - z_off));
-	top_vertices.push_back(
-		Point3(center.x - x_off, center.y + y_off, center.z + z_off));
-
-	return top_vertices;
-}
-
-vector<Point3> box_bot_vertices(const Point3 &center, const double x_dims,
-	const double y_dims, const double z_dims)
-{
-	double x_off = x_dims / 2;
-	double y_off = y_dims / 2;
-	double z_off = z_dims / 2;
-
-	vector<Point3> bot_vertices;
-
-	bot_vertices.push_back(
-		Point3(center.x + x_off, center.y - y_off, center.z + z_off));
-	bot_vertices.push_back(
-		Point3(center.x + x_off, center.y - y_off, center.z - z_off));
-	bot_vertices.push_back(
-		Point3(center.x - x_off, center.y - y_off, center.z - z_off));
-	bot_vertices.push_back(
-		Point3(center.x - x_off, center.y - y_off, center.z + z_off));
-
-	return bot_vertices;
 }
 
 // ============================================================================
@@ -117,6 +79,64 @@ bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 
 	t = dist;
 	return true;
+}
+
+bool Ray::hit(const kd_tree::AAB &aabb, double &t) const
+{
+    /*  Compute the inverse of the ray direction in each axis. Used as denominator 
+        and for sign checks on the ray direction */
+    double invdir_x = 1 / direction.x;
+    double invdir_y = 1 / direction.y;
+    double invdir_z = 1 / direction.z;
+
+    double tmin, tmax;
+
+    // X axis
+    double tx1 = (aabb.max_x - origin.x) * invdir_x;
+    double tx2 = (aabb.min_x - origin.x) * invdir_x;
+
+    tmin = std::min(tx1, tx2);
+    tmax = std::max(tx1, tx2);
+
+    // Y axis
+    double ty1 = (aabb.max_y - origin.y) * invdir_y;
+    double ty2 = (aabb.min_y - origin.y) * invdir_y;
+
+    if (HANDLE_NAN)
+    {
+        tmin = std::max(tmin, std::min(std::min(ty1, ty2), tmax));
+        tmax = std::min(tmax, std::max(std::max(ty1, ty2), tmin));
+    }
+    else
+    {
+        tmin = std::max(tmin, std::min(ty1, ty2));
+        tmax = std::min(tmax, std::max(ty1, ty2));
+    }
+
+    // Z axis
+    double tz1 = (aabb.max_z - origin.z) * invdir_z;
+    double tz2 = (aabb.min_z - origin.z) * invdir_z;
+
+    if (HANDLE_NAN)
+    {
+        tmax = std::min(tmax, std::max(std::max(tz1, tz2), tmin));
+        tmin = std::max(tmin, std::min(std::min(tz1, tz2), tmax));
+    }
+    else
+    {
+        tmin = std::max(tmin, std::min(tz1, tz2));
+        tmax = std::min(tmax, std::max(tz1, tz2));
+    }
+
+    double hit_t = (tmin < 0) ? tmax : tmin;
+
+    if ( tmax > std::max(tmin, 0.0) )
+    {
+        t = hit_t;
+        return true;
+    }
+
+    return false;
 }
 
 // ============================================================================

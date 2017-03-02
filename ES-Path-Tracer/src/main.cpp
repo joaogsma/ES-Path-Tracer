@@ -28,24 +28,20 @@ string vector_to_string(Vector3 v)
 	return ss.str();
 }
 
-static Ray ray(Point3(5, 1, 0.1), Vector3(-1, 0, (-0.1/4)));
-
 int main()
 {
-	Point3 p1(0, 0, 0);
-	Point3 p2(1, 0, 0);
-	Point3 p3(1, 1, 0);
-	Point3 p4(0, 1, 0);
+    Ray r(Point3(1, 0, 0), Vector3(0, 1, 0));
 	
-	Triangle t1(&p1, &p2, &p3);
-	Triangle t2(&p3, &p4, &p1);
+    kd_tree::AAB region;
+    region.min_x = region.min_y = region.min_z = -1;
+    region.max_x = region.max_y = region.max_z = 1;
 
-	vector<const Triangle*> triangles = { &t1, &t2 };
-	
-	kd_tree::KD_Tree tree(triangles);
+    double t;
+    if (r.hit(region, t))
+        std::cout << "hit with t = " << t << std::endl;
+    else
+        std::cout << "miss" << std::endl;
 
-	vector<const Triangle*> intersected;
-	
 	return 0;
 
 }
