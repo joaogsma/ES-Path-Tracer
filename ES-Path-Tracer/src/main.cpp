@@ -30,15 +30,15 @@ string vector_to_string(Vector3 v)
 
 int main()
 {
-    Ray r(Point3(1, 0, 0), Vector3(0, 1, 0));
+    Ray r(Point3(1, 1, 1), Vector3(1, 1, 1));
 	
     kd_tree::AAB region;
     region.min_x = region.min_y = region.min_z = -1;
     region.max_x = region.max_y = region.max_z = 1;
 
-    double t;
-    if (r.hit(region, t))
-        std::cout << "hit with t = " << t << std::endl;
+    double tn, tf;
+    if (r.hit(region, tn, tf))
+        std::cout << "hit with t = " << tn << ", " << tf << std::endl;
     else
         std::cout << "miss" << std::endl;
 

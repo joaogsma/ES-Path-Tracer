@@ -23,7 +23,7 @@ public:
 		std::vector<double> &bar_weights) const;
 
     // AABB intersection function
-    bool hit(const kd_tree::AAB &aabb, double &t) const;
+    bool hit(const kd_tree::AAB &aabb, double &t_near, double &t_far) const;
 };
 
 #endif

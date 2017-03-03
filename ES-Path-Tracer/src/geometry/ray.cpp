@@ -81,7 +81,7 @@ bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 	return true;
 }
 
-bool Ray::hit(const kd_tree::AAB &aabb, double &t) const
+bool Ray::hit(const kd_tree::AAB &aabb, double &t_near, double &t_far) const
 {
     /*  Compute the inverse of the ray direction in each axis. Used as denominator 
         and for sign checks on the ray direction */
@@ -128,14 +128,14 @@ bool Ray::hit(const kd_tree::AAB &aabb, double &t) const
         tmax = std::min(tmax, std::max(tz1, tz2));
     }
 
-    double hit_t = (tmin < 0) ? tmax : tmin;
-
-    if ( tmax > std::max(tmin, 0.0) )
+    if (tmax >= std::max(tmin, 0.0))
     {
-        t = hit_t;
+        t_near = tmin;
+        t_far = tmax;
+    
         return true;
     }
-
+    
     return false;
 }
 
