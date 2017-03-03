@@ -9,7 +9,8 @@
 #include <vector>
 #include <type_traits>
 
-namespace kd_tree {
+namespace kd_tree
+{
     /*	The AAB struct represents the region of the plane defined by each node 
 	    in a kd-tree. */
     struct AAB { double min_x, max_x, min_y, max_y, min_z, max_z; };
@@ -63,7 +64,7 @@ namespace kd_tree {
             root(rec_build_tree(triangles, bounding_box)),
             bounding_box(compute_aabb(triangles)) {}
 
-        bool search(const Ray &ray, Triangle const *&tri, double &t) const;
+        const Triangle* search(Ray ray) const;
 
     private:
         static const int TRAVERSAL_COST;

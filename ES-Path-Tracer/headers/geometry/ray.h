@@ -1,17 +1,21 @@
 #ifndef __GUARD_RAY_H__
 #define __GUARD_RAY_H__
 
-#include "kd-tree/kd_tree.h"
 #include "geometry/point3.h"
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
 
 #include <vector>
 
+namespace kd_tree
+{
+    struct AAB;
+}
+
 class Ray {
 public:
-	const Point3 origin;
-	const Vector3 direction;
+	Point3 origin;
+	Vector3 direction;
 
 	Ray(Point3 &origin, Vector3 &direction);
 
@@ -25,5 +29,7 @@ public:
     // AABB intersection function
     bool hit(const kd_tree::AAB &aabb, double &t_near, double &t_far) const;
 };
+
+#include "kd-tree/kd_tree.h"
 
 #endif

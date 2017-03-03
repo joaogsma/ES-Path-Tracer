@@ -39,13 +39,19 @@ namespace kd_tree
             : node(node), entry_t(entry_t), exit_t(exit_t) {}
     };
 
-    bool KD_Tree::search(const Ray &ray, Triangle const *&tri, double &t) const
+    const Triangle* KD_Tree::search(Ray ray) const
     {
+        // Add a small epsilon to zero coordinates in the ray direction
+        for (Vector3::iterator it = ray.direction.begin(); it != ray.direction.end(); ++it)
+            if (*it == 0) 
+                *it += 1e-10;
+        
         double entry_t, exit_t;
         if ( !ray.hit(bounding_box, entry_t, exit_t) )
             return false;    // Return false if ray does not intersect tree's AABB
 
         std::stack<Stack_Element> traversal_stack;
+        traversal_stack.push( Stack_Element(root, entry_t, exit_t) );
 
         while ( !traversal_stack.empty() )
         {
@@ -60,17 +66,74 @@ namespace kd_tree
             // Remove top element from the stack
             traversal_stack.pop();
 
-            while ( current_middle_node = dynamic_cast<const KD_Middle_Node*>(elem.node) )
+            while ( current_middle_node = dynamic_cast<const KD_Middle_Node*>(current_node) )
             {
-                // TODO...
+                /*  The tree is build with splitting plane's normal being 
+                    either [1, 0, 0], [0, 1, 0] or [0, 0, 1] */
+                int axis = (int) dot_prod(current_middle_node->split_plane.normal, Vector3(0, 1, 2));
+                double plane_pos = current_middle_node->split_plane.point[axis];
+
+                /*  Special cases for t:
+                        * + or - Inf for direction 0 in this axis
+                        * NaN for ray contained in the plane (avoided by adding epsilon before) */
+                double invdir = ray.direction[axis];
+                double t = (plane_pos - ray.origin[axis]) / invdir;
+
+                // Classify children as near and far
+                const KD_Node *near, *far;
+                if (invdir >= 0)
+                {
+                    near = current_middle_node->left;
+                    far = current_middle_node->right;
+                }
+                else
+                {
+                    near = current_middle_node->right;
+                    far = current_middle_node->left;
+                }
+
+                // ===== Handle t =====
+                if ( t >= exit_t )
+                    current_node = near;   // Skip the far node, the ray does not intersect it
+                else if ( t <= entry_t )
+                    current_node = far;    // Skip the near this node, the ray does not intersect it
+                else    // Both nodes need to be visited
+                {
+                    traversal_stack.push( Stack_Element(far, t, exit_t) );
+                    current_node = near;
+                    exit_t = t;
+                }
+                // ====================
             }
 
             const std::vector<const Triangle*> &triangles = ((const KD_Leaf*)current_node)->triangles;
 
+            double intersection_t = INFINITY;
+            const Triangle *intersection_tri = nullptr;
+
             // Intersect ray with each object
-            // TODO...
+            for (std::vector<const Triangle*>::const_iterator it = triangles.begin();
+                it != triangles.end(); ++it)
+            {
+                const Triangle &current_tri = **it;
+                double current_tri_t;
+                std::vector<double> current_tri_bar_weights;
+                
+                // Check if the current triangle is hit and if so, keep the best one
+                if ( ray.hit(current_tri, current_tri_t, current_tri_bar_weights) && 
+                    current_tri_t < intersection_t )
+                {
+                    intersection_t = current_tri_t;
+                    intersection_tri = &current_tri;
+                }
+            }
+
+            // Return an intersection, if found
+            if (intersection_t < INFINITY)
+                return intersection_tri;
         }
 
+        return nullptr;
     }
 
     // ============================================================================================

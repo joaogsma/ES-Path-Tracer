@@ -30,17 +30,19 @@ string vector_to_string(Vector3 v)
 
 int main()
 {
-    Ray r(Point3(1, 1, 1), Vector3(1, 1, 1));
-	
-    kd_tree::AAB region;
-    region.min_x = region.min_y = region.min_z = -1;
-    region.max_x = region.max_y = region.max_z = 1;
+    Point3 p1(0, 0, 0);
+    Point3 p2(1, 0, 0);
+    Point3 p3(1, 1, 0);
+    Point3 p4(0, 1, 0);
 
-    double tn, tf;
-    if (r.hit(region, tn, tf))
-        std::cout << "hit with t = " << tn << ", " << tf << std::endl;
-    else
-        std::cout << "miss" << std::endl;
+    Triangle t1(&p1, &p2, &p3);
+    Triangle t2(&p3, &p4, &p1);
+
+    std::vector<const Triangle*> tri_ptrs = {&t1, &t2};
+
+    kd_tree::KD_Tree kdtree(tri_ptrs);
+
+    kdtree.search( Ray(Point3(.4, .5, 2), Vector3(0, 0, -1)) );
 
 	return 0;
 
