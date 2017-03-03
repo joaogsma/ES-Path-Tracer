@@ -1,6 +1,7 @@
 #ifndef __GUARD_KD_TREE_H__
 #define __GUARD_KD_TREE_H__
 
+#include "geometry/ray.h"
 #include "geometry/plane.h"
 #include "geometry/triangle.h"
 
@@ -61,6 +62,8 @@ namespace kd_tree {
         KD_Tree(const std::vector<const Triangle*>& triangles) :
             root(rec_build_tree(triangles, bounding_box)),
             bounding_box(compute_aabb(triangles)) {}
+
+        bool search(const Ray &ray, Triangle const *&tri, double &t) const;
 
     private:
         static const int TRAVERSAL_COST;

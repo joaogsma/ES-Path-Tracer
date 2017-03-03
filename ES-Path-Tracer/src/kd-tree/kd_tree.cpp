@@ -1,3 +1,4 @@
+#include "geometry/ray.h"
 #include "geometry/plane.h"
 #include "geometry/point3.h"
 #include "geometry/triangle.h"
@@ -7,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <climits>
+#include <stack>
 #include <utility>
 #include <vector>
 
@@ -23,6 +25,56 @@ namespace kd_tree
     }
 
     KD_Node::~KD_Node() {};
+
+
+    // ============================================================================================
+    // ====================================== KD-TREE SEARCH ======================================
+    // ============================================================================================
+
+    struct Stack_Element {
+        KD_Node const *node;
+        double entry_t, exit_t;
+
+        Stack_Element(const KD_Node *node, double entry_t, double exit_t)
+            : node(node), entry_t(entry_t), exit_t(exit_t) {}
+    };
+
+    bool KD_Tree::search(const Ray &ray, Triangle const *&tri, double &t) const
+    {
+        double entry_t, exit_t;
+        if ( !ray.hit(bounding_box, entry_t, exit_t) )
+            return false;    // Return false if ray does not intersect tree's AABB
+
+        std::stack<Stack_Element> traversal_stack;
+
+        while ( !traversal_stack.empty() )
+        {
+            const Stack_Element &elem = traversal_stack.top();
+
+            // Update iteration variables
+            const KD_Node *current_node = elem.node;
+            const KD_Middle_Node *current_middle_node;
+            entry_t = elem.entry_t;
+            exit_t = elem.exit_t;
+
+            // Remove top element from the stack
+            traversal_stack.pop();
+
+            while ( current_middle_node = dynamic_cast<const KD_Middle_Node*>(elem.node) )
+            {
+                // TODO...
+            }
+
+            const std::vector<const Triangle*> &triangles = ((const KD_Leaf*)current_node)->triangles;
+
+            // Intersect ray with each object
+            // TODO...
+        }
+
+    }
+
+    // ============================================================================================
+
 
 
     // ============================================================================================
@@ -57,7 +109,7 @@ namespace kd_tree
 
 
     // ============================================================================================
-    // =================================== KD-TREE DEFINITIONS ====================================
+    // ================================ KD-TREE BUILD DEFINITIONS =================================
     // ============================================================================================
 
     const int KD_Tree::TRAVERSAL_COST = 1;                  // Dummy value
