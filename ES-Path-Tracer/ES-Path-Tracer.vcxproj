@@ -167,6 +167,7 @@
     <ClCompile Include="src\evolution-strategy\pixel_histogram.cpp" />
     <ClCompile Include="src\evolution-strategy\recombination.cpp" />
     <ClCompile Include="src\evolution-strategy\survivor_selection.cpp" />
+    <ClCompile Include="src\geometry\aab.cpp" />
     <ClCompile Include="src\geometry\plane.cpp" />
     <ClCompile Include="src\geometry\point3.cpp" />
     <ClCompile Include="src\geometry\ray.cpp" />
@@ -176,6 +177,9 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\path-tracer\path_tracer.cpp" />
     <ClCompile Include="src\geometry\triangle.cpp" />
+    <ClCompile Include="src\color\color3.cpp" />
+    <ClCompile Include="src\scene\mesh_object.cpp" />
+    <ClCompile Include="src\scene\scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
@@ -186,14 +190,20 @@
     <ClInclude Include="headers\evolution-strategy\random_engine.h" />
     <ClInclude Include="headers\evolution-strategy\recombination.h" />
     <ClInclude Include="headers\evolution-strategy\survivor_selection.h" />
+    <ClInclude Include="headers\geometry\aab.h" />
     <ClInclude Include="headers\geometry\plane.h" />
     <ClInclude Include="headers\geometry\point3.h" />
     <ClInclude Include="headers\geometry\ray.h" />
     <ClInclude Include="headers\geometry\surface_point.h" />
     <ClInclude Include="headers\kd-tree\kd_tree.h" />
+    <ClInclude Include="headers\color\bsdf.h" />
+    <ClInclude Include="headers\color\color3.h" />
+    <ClInclude Include="headers\scene\mesh_object.h" />
+    <ClInclude Include="headers\scene\object.h" />
     <ClInclude Include="headers\path-tracer\path_tracer.h" />
     <ClInclude Include="headers\geometry\triangle.h" />
     <ClInclude Include="headers\geometry\vector3.h" />
+    <ClInclude Include="headers\scene\scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

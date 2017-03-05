@@ -4,6 +4,7 @@
 #include "geometry/ray.h"
 #include "geometry/plane.h"
 #include "geometry/triangle.h"
+#include "geometry/aab.h"
 
 #include <iterator>
 #include <vector>
@@ -11,12 +12,6 @@
 
 namespace kd_tree
 {
-    /*	The AAB struct represents the region of the plane defined by each node 
-	    in a kd-tree. */
-    struct AAB { double min_x, max_x, min_y, max_y, min_z, max_z; };
-
-    bool operator==(const AAB &a, const AAB &b);
-
     // Abstract node class
     class KD_Node {
     public:
@@ -41,7 +36,7 @@ namespace kd_tree
 
 
     /*	KD_Leaf objects correspond to leaf nodes in the kd-tree. They contain a list of triangles, 
-        because recursion stops as soon as a brute-force search is estimated to be more efficient 
+        because recursion stops as soon as a brute-force hit is estimated to be more efficient 
         than increasing the tree size. */
     class KD_Leaf : public KD_Node {
     public:
@@ -64,7 +59,9 @@ namespace kd_tree
             root(rec_build_tree(triangles, bounding_box)),
             bounding_box(compute_aabb(triangles)) {}
 
-        const Triangle* search(Ray ray) const;
+        const Triangle* hit(Ray ray) const;
+
+        const AAB& aabb() const { return bounding_box; }
 
     private:
         static const int TRAVERSAL_COST;

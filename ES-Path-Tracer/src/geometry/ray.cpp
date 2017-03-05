@@ -81,7 +81,7 @@ bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 	return true;
 }
 
-bool Ray::hit(const kd_tree::AAB &aabb, double &t_near, double &t_far) const
+bool Ray::hit(const AAB &aabb, double &t_near, double &t_far) const
 {
     /*  Compute the inverse of the ray direction in each axis. Used as denominator 
         and for sign checks on the ray direction */
