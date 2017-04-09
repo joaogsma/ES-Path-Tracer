@@ -42,8 +42,8 @@ int main()
 
     kd_tree::KD_Tree kdtree(tri_ptrs);
 
-    kdtree.hit( Ray(Point3(.4, .5, 2), Vector3(0, 0, -1)) );
+    const Triangle* hit_triangle = kdtree.hit( Ray(Point3(0, 0, 0), Vector3(1, 1, 0)) );
 
-	return 0;
+    return 0;
 
 }

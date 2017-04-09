@@ -88,6 +88,20 @@ bool Vector3::operator==(const Vector3& other) const
 	return (abs(x_diff) + abs(y_diff) + abs(z_diff)) <= COMP_EPSILON;
 }
 
+void Vector3::operator+=(const Vector3& other)
+{
+    x += other.x;
+    y += other.y;
+    z += other.z;
+}
+
+void Vector3::operator-=(const Vector3& other)
+{
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+}
+
 Vector3 operator*(const Vector3& vec, double scalar)
 {
     return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);

@@ -26,7 +26,7 @@ public:
 	Vector3(const Point3& origin, const Point3& destination);
 
 	// Conversion constructor from Point3
-	Vector3(const Point3& point);
+	explicit Vector3(const Point3& point);
 
 	// Copy constructor
 	Vector3(const Vector3& other);
@@ -44,6 +44,9 @@ public:
 	Vector3& operator=(const Vector3& other);
 	
 	bool operator==(const Vector3& other) const;
+
+    void operator+=(const Vector3& other);
+    void operator-=(const Vector3& other);
 
 	// Returns a new Vector3 object corresponding to the normalized vector
 	Vector3 normalize() const;

@@ -65,3 +65,37 @@ bool Point3::operator==(const Point3& other) const
 
 	return ( abs(x_diff) + abs(y_diff) + abs(z_diff) ) <= COMP_EPSILON;
 }
+
+
+void Point3::operator+=(const Vector3& vec)
+{
+    x += vec.x;
+    y += vec.y;
+    z += vec.z;
+}
+
+
+void Point3::operator-=(const Vector3& vec)
+{
+    x -= vec.x;
+    y -= vec.y;
+    z -= vec.z;
+}
+
+
+Vector3 operator-(const Point3& a, const Point3& b)
+{
+    return Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+
+Point3 operator+(const Point3& p, const Vector3& v)
+{
+    return Point3(p.x + v.x, p.y + v.y, p.z + v.z);
+}
+
+
+Point3 operator+(const Vector3& v, const Point3& p)
+{
+    return Point3(p.x + v.x, p.y + v.y, p.z + v.z);
+}
