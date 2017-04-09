@@ -11,9 +11,12 @@ namespace scene
 {
     class Scene {
     public:
-        std::vector<Object> objects;
-
         bool hit(const Ray &ray, Color3 &color, Vector3 &normal);
+
+        void clear() { objects.clear(); };
+
+    private:
+        std::vector<Object> objects;
     };
 }
 
