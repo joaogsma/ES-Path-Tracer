@@ -11,26 +11,33 @@ using std::copy;
 using std::vector;
 using std::abs;
 
-Triangle::Triangle(Point3* point1, Point3* point2, Point3* point3)
-	: v1(vertices[0]), v2(vertices[1]), v3(vertices[2])
+Triangle::Triangle(Point3* point1, Point3* point2, Point3* point3,
+    Vector3* normal1, Vector3* normal2, Vector3* normal3)
 {
-	vertices[0] = point1;
-	vertices[1] = point2;
-	vertices[2] = point3;
+	m_vertices[0] = point1;
+	m_vertices[1] = point2;
+	m_vertices[2] = point3;
+
+    m_normals[0] = normal1;
+    m_normals[1] = normal2;
+    m_normals[2] = normal3;
 }
 
 
 Triangle::Triangle(const Triangle& other)
-	: v1(vertices[0]), v2(vertices[1]), v3(vertices[2])
 {
-	copy( other.begin(), other.end(), begin() );
+	copy( other.m_vertices, other.m_vertices + 3, m_vertices );
+    copy( other.m_normals, other.m_normals + 3, m_normals );
 }
 
 
 Triangle& Triangle::operator=(const Triangle& other)
 {
-	if (&other != this)
-		copy(other.begin(), other.end(), begin());
+    if ( &other != this )
+    {
+        copy( other.m_vertices, other.m_vertices + 3, m_vertices );
+        copy( other.m_normals, other.m_normals + 3, m_normals );
+    }
 
 	return *this;
 }
@@ -38,9 +45,9 @@ Triangle& Triangle::operator=(const Triangle& other)
 
 vector<double> Triangle::baricentric_coordinates(const Point3& p) const
 {
-	const Point3 &a = *v1;
-	const Point3 &b = *v2;
-	const Point3 &c = *v3;
+	const Point3 &a = *vertex(0);
+	const Point3 &b = *vertex(1);
+	const Point3 &c = *vertex(2);
 
 	double area_abc = cross_prod( Vector3(a, b), Vector3(a, c) ).magnitude();
 

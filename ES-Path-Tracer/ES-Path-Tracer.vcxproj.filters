@@ -30,9 +30,6 @@
     <ClCompile Include="src\geometry\ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\geometry\surface_point.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,15 +72,15 @@
     <ClCompile Include="src\color\color3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\obj_reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\geometry\point3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\geometry\ray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\geometry\surface_point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\geometry\triangle.h">
@@ -141,6 +138,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\color\bsdf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\scene\obj_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

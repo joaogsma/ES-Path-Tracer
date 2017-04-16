@@ -16,7 +16,7 @@ namespace scene
         void clear() { objects.clear(); };
 
     private:
-        std::vector<Object> objects;
+        std::vector<Object*> objects;
     };
 }
 

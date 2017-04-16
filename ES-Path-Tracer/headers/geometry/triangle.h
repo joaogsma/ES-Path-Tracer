@@ -10,33 +10,22 @@
 class Triangle {
 
 public:
-	typedef Point3** iterator;
-	typedef Point3* const * const_iterator;
-
-	Point3*& v1;
-	Point3*& v2;
-	Point3*& v3;
-
-	Triangle(Point3* point1, Point3* point2, Point3* point3);
+    Triangle(Point3* point1, Point3* point2, Point3* point3, 
+        Vector3* normal1, Vector3* normal2, Vector3* normal3);
 
 	Triangle(const Triangle& other);
 
-	// Iterator functions
-	iterator begin() { return &vertices[0]; }
-	iterator end() { return &vertices[3]; }
-	const_iterator begin() const { return &vertices[0]; }
-	const_iterator end() const { return &vertices[3]; }
-
-	// Vertex indexing
-	Point3*& operator[](int i) { return vertices[i]; }
-	Point3* const & operator[](int i) const { return vertices[i]; }
+	// Accessor functions
+    Point3* vertex(int i) const { return m_vertices[i]; };
+    Vector3* normal(int i) const { return m_normals[i]; };
 
 	std::vector<double> baricentric_coordinates(const Point3& p) const;
 
 	Triangle& operator=(const Triangle& other);
 
 private:
-	Point3* vertices[3];
+	Point3* m_vertices[3];
+    Vector3* m_normals[3];
 };
 
 #endif

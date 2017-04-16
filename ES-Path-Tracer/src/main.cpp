@@ -35,14 +35,16 @@ int main()
     Point3 p3(1, 1, 0);
     Point3 p4(0, 1, 0);
 
-    Triangle t1(&p1, &p2, &p3);
-    Triangle t2(&p3, &p4, &p1);
+    Vector3 normal(0, 0, 1);
+
+    Triangle t1(&p1, &p2, &p3, &normal, &normal, &normal);
+    Triangle t2(&p3, &p4, &p1, &normal, &normal, &normal);
 
     std::vector<const Triangle*> tri_ptrs = {&t1, &t2};
 
     kd_tree::KD_Tree kdtree(tri_ptrs);
 
-    const Triangle* hit_triangle = kdtree.hit( Ray(Point3(0, 0, 0), Vector3(1, 1, 0)) );
+    const Triangle* hit_triangle = kdtree.hit( Ray(Point3(0, 0, 1), Vector3(0, 0, -1)) );
 
     return 0;
 

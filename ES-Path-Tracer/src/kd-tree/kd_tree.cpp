@@ -37,7 +37,7 @@ namespace kd_tree
         // Add a small epsilon to zero coordinates in the ray direction
         for (Vector3::iterator it = ray.direction.begin(); it != ray.direction.end(); ++it)
             if (*it == 0) 
-                *it += 1e-10;
+                *it += 1e-8;
         
         double entry_t, exit_t;
         if ( !ray.hit(bounding_box, entry_t, exit_t) )
@@ -257,17 +257,16 @@ namespace kd_tree
         region.max_x = region.max_y = region.max_z = INT_MIN;
         region.min_x = region.min_y = region.min_z = INT_MAX;
 
-        for (Triangle::const_iterator vertex_it = triangle.begin();
-            vertex_it != triangle.end(); ++vertex_it)
+        for (int i = 0; i < 3; ++i)
         {
-            // Update max region vertices
-            region.max_x = std::max(region.max_x, (*vertex_it)->x);
-            region.max_y = std::max(region.max_y, (*vertex_it)->y);
-            region.max_z = std::max(region.max_z, (*vertex_it)->z);
-            // Update min region vertices
-            region.min_x = std::min(region.min_x, (*vertex_it)->x);
-            region.min_y = std::min(region.min_y, (*vertex_it)->y);
-            region.min_z = std::min(region.min_z, (*vertex_it)->z);
+            // Update max region m_vertices
+            region.max_x = std::max(region.max_x, triangle.vertex(i)->x);
+            region.max_y = std::max(region.max_y, triangle.vertex(i)->y);
+            region.max_z = std::max(region.max_z, triangle.vertex(i)->z);
+            // Update min region m_vertices
+            region.min_x = std::min(region.min_x, triangle.vertex(i)->x);
+            region.min_y = std::min(region.min_y, triangle.vertex(i)->y);
+            region.min_z = std::min(region.min_z, triangle.vertex(i)->z);
         }
 
         return region;
@@ -545,9 +544,9 @@ namespace kd_tree
 
     bool KD_Tree::on_plane(const Triangle &tri, const Plane &plane)
     {
-        return std::abs(plane.evaluate(*tri.v1)) < epsilon && 
-            std::abs(plane.evaluate(*tri.v2)) < epsilon &&
-            std::abs(plane.evaluate(*tri.v3)) < epsilon;
+        return std::abs(plane.evaluate(*tri.vertex(0))) < epsilon && 
+            std::abs(plane.evaluate(*tri.vertex(1))) < epsilon &&
+            std::abs(plane.evaluate(*tri.vertex(2))) < epsilon;
     }
 
     bool KD_Tree::has_area(const Triangle& tri, const AAB& region)

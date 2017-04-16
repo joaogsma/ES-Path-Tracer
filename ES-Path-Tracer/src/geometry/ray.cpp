@@ -44,9 +44,9 @@ Point3 Ray::at(double t) const
 
 bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 {
-	const Point3 &v1 = *tri.v1;
-	const Point3 &v2 = *tri.v2;
-	const Point3 &v3 = *tri.v3;
+	const Point3 &v1 = *tri.vertex(0);
+	const Point3 &v2 = *tri.vertex(1);
+	const Point3 &v3 = *tri.vertex(2);
 	
 	Vector3 e1(v1, v2);
 	Vector3 e2(v1, v3);

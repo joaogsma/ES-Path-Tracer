@@ -171,7 +171,6 @@
     <ClCompile Include="src\geometry\plane.cpp" />
     <ClCompile Include="src\geometry\point3.cpp" />
     <ClCompile Include="src\geometry\ray.cpp" />
-    <ClCompile Include="src\geometry\surface_point.cpp" />
     <ClCompile Include="src\geometry\vector3.cpp" />
     <ClCompile Include="src\kd-tree\kd_tree.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -179,6 +178,7 @@
     <ClCompile Include="src\geometry\triangle.cpp" />
     <ClCompile Include="src\color\color3.cpp" />
     <ClCompile Include="src\scene\mesh_object.cpp" />
+    <ClCompile Include="src\scene\obj_reader.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -194,7 +194,6 @@
     <ClInclude Include="headers\geometry\plane.h" />
     <ClInclude Include="headers\geometry\point3.h" />
     <ClInclude Include="headers\geometry\ray.h" />
-    <ClInclude Include="headers\geometry\surface_point.h" />
     <ClInclude Include="headers\kd-tree\kd_tree.h" />
     <ClInclude Include="headers\color\bsdf.h" />
     <ClInclude Include="headers\color\color3.h" />
@@ -203,6 +202,7 @@
     <ClInclude Include="headers\path-tracer\path_tracer.h" />
     <ClInclude Include="headers\geometry\triangle.h" />
     <ClInclude Include="headers\geometry\vector3.h" />
+    <ClInclude Include="headers\scene\obj_reader.h" />
     <ClInclude Include="headers\scene\scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
