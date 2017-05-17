@@ -19,7 +19,8 @@ public:
     double& y;
     double& z;
 
-	// Constructor based on coordinates
+    // Constructors based on coordinates
+    Vector3(double val);
     Vector3(double x, double y, double z);
 
 	// Constructor based on initial and end points
@@ -65,10 +66,11 @@ double dot_prod(const Vector3& a, const Vector3& b);
 
 // Vector multiplication by a scalar
 Vector3 operator*(const Vector3& vec, double scalar);
-Vector3 operator*(double& scalar, const Vector3& vec);
+Vector3 operator*(double scalar, const Vector3& vec);
 
-// Vector division
+// Vector division by a scalar
 Vector3 operator/(const Vector3& vec, double scalar);
+Vector3 operator/=(const Vector3& vec, double scalar);
 
 // Vector sum
 Vector3 operator+(const Vector3& vec1, const Vector3& vec2);

@@ -7,6 +7,12 @@
 
 const double Vector3::COMP_EPSILON = 1E-6;
 
+Vector3::Vector3(double val) : x(coordinates[0]),
+y(coordinates[1]), z(coordinates[2])
+{
+    x = y = z = val;
+}
+
 Vector3::Vector3(double x, double y, double z) : x(coordinates[0]),
 y(coordinates[1]), z(coordinates[2])
 {
@@ -107,7 +113,7 @@ Vector3 operator*(const Vector3& vec, double scalar)
     return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
 }
 
-Vector3 operator*(double& scalar, const Vector3& vec)
+Vector3 operator*(double scalar, const Vector3& vec)
 {
     return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
 }
@@ -125,4 +131,11 @@ Vector3 operator-(const Vector3& vec1, const Vector3& vec2)
 Vector3 operator/(const Vector3& vec, double scalar)
 {
     return Vector3(vec.x / scalar, vec.y / scalar, vec.z / scalar);
+}
+
+Vector3 operator/=(const Vector3& vec, double scalar)
+{
+    vec.x /= scalar;
+    vec.y /= scalar;
+    vec.z /= scalar;
 }

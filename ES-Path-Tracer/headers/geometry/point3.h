@@ -20,6 +20,8 @@ public:
 	double& y;
 	double& z;
 
+    // Constructors based on coordinates
+    Point3(double val);
 	Point3(double x, double y, double z);
 
 	// Conversion constructor from Vector3

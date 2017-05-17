@@ -14,7 +14,7 @@ using std::vector;
 // =============================== CONSTRUCTOR ================================
 // ============================================================================
 
-Ray::Ray(Point3& origin, Vector3& direction) : origin(origin), 
+Ray::Ray(const Point3& origin, const Vector3& direction) : origin(origin), 
 	direction( direction.normalize() ) {}
 
 // ============================================================================
@@ -42,19 +42,19 @@ Point3 Ray::at(double t) const
 // ========================== INTERSECTION FUNCTIONS ==========================
 // ============================================================================
 
-bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
+bool Ray::intersect(const Triangle &tri, double &t, vector<double> &bar_weights) const
 {
-	const Point3 &v1 = *tri.vertex(0);
-	const Point3 &v2 = *tri.vertex(1);
-	const Point3 &v3 = *tri.vertex(2);
+	const Point3 &v0 = *tri.vertex(0);
+	const Point3 &v1 = *tri.vertex(1);
+	const Point3 &v2 = *tri.vertex(2);
 	
-	Vector3 e1(v1, v2);
-	Vector3 e2(v1, v3);
+	Vector3 e1(v0, v1);
+	Vector3 e2(v0, v2);
 	Vector3 q = cross_prod(direction, e2);
 
 	double a = dot_prod(e1, q);
 
-	const Vector3 s(v1, origin);
+	const Vector3 s(v0, origin);
 	const Vector3 &r = cross_prod(s, e1);
 
 	// Barycentric vertex weights
@@ -81,10 +81,10 @@ bool Ray::hit(const Triangle &tri, double &t, vector<double> &bar_weights) const
 	return true;
 }
 
-bool Ray::hit(const AAB &aabb, double &t_near, double &t_far) const
+bool Ray::intersect(const AAB &aabb, double &t_near, double &t_far) const
 {
-    /*  Compute the inverse of the ray direction in each axis. Used as denominator 
-        and for sign checks on the ray direction */
+    /*  Compute the inverse of the ray normalize in each axis. Used as denominator 
+        and for sign checks on the ray normalize */
     double invdir_x = 1 / direction.x;
     double invdir_y = 1 / direction.y;
     double invdir_z = 1 / direction.z;

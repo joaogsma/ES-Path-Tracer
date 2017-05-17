@@ -6,7 +6,7 @@
 
 #include <vector>
 
-/*	Triangle objects correspond to triangles in scene object meshes */
+/*	Triangle m_objects correspond to triangles in scene object meshes */
 class Triangle {
 
 public:

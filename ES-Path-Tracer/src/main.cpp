@@ -44,7 +44,7 @@ int main()
 
     kd_tree::KD_Tree kdtree(tri_ptrs);
 
-    const Triangle* hit_triangle = kdtree.hit( Ray(Point3(0, 0, 1), Vector3(0, 0, -1)) );
+    const Triangle* hit_triangle = kdtree.intersect( Ray(Point3(0, 0, 1), Vector3(0, 0, -1)) );
 
     return 0;
 

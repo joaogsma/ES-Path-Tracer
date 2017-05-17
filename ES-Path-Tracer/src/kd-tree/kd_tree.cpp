@@ -17,7 +17,7 @@ namespace kd_tree
     static const double epsilon = 10e-6;
 
 
-    KD_Node::~KD_Node() {};
+    KD_Node::~KD_Node() {}
 
 
     // ============================================================================================
@@ -32,15 +32,15 @@ namespace kd_tree
             : node(node), entry_t(entry_t), exit_t(exit_t) {}
     };
 
-    const Triangle* KD_Tree::hit(Ray ray) const
+    const Triangle* KD_Tree::intersect(Ray ray) const
     {
-        // Add a small epsilon to zero coordinates in the ray direction
+        // Add a small epsilon to zero coordinates in the ray normalize
         for (Vector3::iterator it = ray.direction.begin(); it != ray.direction.end(); ++it)
             if (*it == 0) 
                 *it += 1e-8;
         
         double entry_t, exit_t;
-        if ( !ray.hit(bounding_box, entry_t, exit_t) )
+        if ( !ray.intersect(bounding_box, entry_t, exit_t) )
             return false;    // Return false if ray does not intersect tree's AABB
 
         std::stack<Stack_Element> traversal_stack;
@@ -67,7 +67,7 @@ namespace kd_tree
                 double plane_pos = current_middle_node->split_plane.point[axis];
 
                 /*  Special cases for t:
-                        * + or - Inf for direction 0 in this axis
+                        * + or - Inf for normalize 0 in this axis
                         * NaN for ray contained in the plane (avoided by adding epsilon before) */
                 double invdir = ray.direction[axis];
                 double t = (plane_pos - ray.origin[axis]) / invdir;
@@ -112,8 +112,8 @@ namespace kd_tree
                 double current_tri_t;
                 std::vector<double> current_tri_bar_weights;
                 
-                // Check if the current triangle is hit and if so, keep the best one
-                if ( ray.hit(current_tri, current_tri_t, current_tri_bar_weights) && 
+                // Check if the current triangle is intersect and if so, keep the best one
+                if ( ray.intersect(current_tri, current_tri_t, current_tri_bar_weights) && 
                     current_tri_t < intersection_t )
                 {
                     intersection_t = current_tri_t;

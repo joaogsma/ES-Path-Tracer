@@ -177,8 +177,9 @@
     <ClCompile Include="src\path-tracer\path_tracer.cpp" />
     <ClCompile Include="src\geometry\triangle.cpp" />
     <ClCompile Include="src\color\color3.cpp" />
+    <ClCompile Include="src\scene\area_light.cpp" />
     <ClCompile Include="src\scene\mesh_object.cpp" />
-    <ClCompile Include="src\scene\obj_reader.cpp" />
+    <ClCompile Include="src\scene\point_light.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,15 +196,17 @@
     <ClInclude Include="headers\geometry\point3.h" />
     <ClInclude Include="headers\geometry\ray.h" />
     <ClInclude Include="headers\kd-tree\kd_tree.h" />
-    <ClInclude Include="headers\color\bsdf.h" />
     <ClInclude Include="headers\color\color3.h" />
+    <ClInclude Include="headers\scene\area_light.h" />
+    <ClInclude Include="headers\scene\light.h" />
     <ClInclude Include="headers\scene\mesh_object.h" />
     <ClInclude Include="headers\scene\object.h" />
     <ClInclude Include="headers\path-tracer\path_tracer.h" />
     <ClInclude Include="headers\geometry\triangle.h" />
     <ClInclude Include="headers\geometry\vector3.h" />
-    <ClInclude Include="headers\scene\obj_reader.h" />
+    <ClInclude Include="headers\scene\point_light.h" />
     <ClInclude Include="headers\scene\scene.h" />
+    <ClInclude Include="headers\scene\surface_element.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

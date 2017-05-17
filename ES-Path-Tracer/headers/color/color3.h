@@ -8,6 +8,7 @@ public:
 
     double& r, &g, &b;
 
+    Color3(double val);
     Color3(double x, double y, double z);
 
     // Copy constructor
@@ -26,10 +27,27 @@ public:
     Color3& operator=(const Color3& other);
 
     bool operator==(const Color3& other) const;
+    
+    Color3 operator+(const Color3& other) const;
+    Color3 operator-(const Color3& other) const;
+    
+    Color3 operator/(double scalar) const;
+
+    void operator+=(const Color3& other);
+    void operator-=(const Color3& other);
+    void operator*=(double scalar);
+    void operator/=(double scalar);
+
+    static Color3 zero() { return Color3(0, 0, 0); }
 
 private:
     double coordinates[3];
 };
 
+Color3 operator*(const Color3& c, double scalar);
+Color3 operator*(double scalar, const Color3& c);
+
+typedef Color3 Radiance3;
+typedef Color3 Irradiance3;
 
 #endif

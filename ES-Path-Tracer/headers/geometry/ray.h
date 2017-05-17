@@ -13,17 +13,17 @@ public:
 	Point3 origin;
 	Vector3 direction;
 
-	Ray(Point3 &origin, Vector3 &direction);
+	Ray(const Point3 &origin, const Vector3 &direction);
 
 	// Compute the resulting point of the ray given parameter t
 	Point3 at(double t) const;
 
 	// Triangle intersection function
-	bool hit(const Triangle &tri, double &t, 
+	bool intersect(const Triangle &tri, double &t, 
 		std::vector<double> &bar_weights) const;
 
     // AABB intersection function
-    bool hit(const AAB &aabb, double &t_near, double &t_far) const;
+    bool intersect(const AAB &aabb, double &t_near, double &t_far) const;
 };
 
 #include "kd-tree/kd_tree.h"

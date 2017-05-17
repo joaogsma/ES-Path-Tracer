@@ -64,7 +64,7 @@ namespace es {
 
                 /*  Add the chosen value (chosen[0]) and the corresponding next two
                     values (chosen[1] and chosen[2]). These correspond to the
-                    direction of a diffuse reflected ray, if the type of secondary
+                    normalize of a diffuse reflected ray, if the type of secondary
                     ray specified by chosen[0] is diffuse reflection */
                 recomb_vec.push_back(chosen[0]);
                 recomb_vec.push_back(chosen[1]);

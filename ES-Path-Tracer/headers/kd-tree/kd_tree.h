@@ -19,7 +19,7 @@ namespace kd_tree
     };
 
 
-    // KD_Middle_Node objects correspond to non-leaf nodes in the kd-tree
+    // KD_Middle_Node m_objects correspond to non-leaf nodes in the kd-tree
     class KD_Middle_Node : public KD_Node {
     public:
         const Plane split_plane;
@@ -35,8 +35,8 @@ namespace kd_tree
     };
 
 
-    /*	KD_Leaf objects correspond to leaf nodes in the kd-tree. They contain a list of triangles, 
-        because recursion stops as soon as a brute-force hit is estimated to be more efficient 
+    /*	KD_Leaf m_objects correspond to leaf nodes in the kd-tree. They contain a list of triangles, 
+        because recursion stops as soon as a brute-force intersect is estimated to be more efficient 
         than increasing the tree size. */
     class KD_Leaf : public KD_Node {
     public:
@@ -50,7 +50,7 @@ namespace kd_tree
 
     class KD_Tree_Build_Event;
 
-    // KD_Tree objects correspond to an entire kd-tree
+    // KD_Tree m_objects correspond to an entire kd-tree
     class KD_Tree {
     public:
         ~KD_Tree() { delete root; }
@@ -59,7 +59,7 @@ namespace kd_tree
             root(rec_build_tree(triangles, bounding_box)),
             bounding_box(compute_aabb(triangles)) {}
 
-        const Triangle* hit(Ray ray) const;
+        const Triangle* intersect(Ray ray) const;
 
         const AAB& aabb() const { return bounding_box; }
 

@@ -72,7 +72,10 @@
     <ClCompile Include="src\color\color3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\obj_reader.cpp">
+    <ClCompile Include="src\scene\point_light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\area_light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,10 +140,16 @@
     <ClInclude Include="headers\color\color3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\color\bsdf.h">
+    <ClInclude Include="headers\scene\surface_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\scene\obj_reader.h">
+    <ClInclude Include="headers\scene\light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\scene\point_light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\scene\area_light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
