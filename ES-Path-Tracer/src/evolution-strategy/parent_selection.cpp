@@ -29,7 +29,7 @@ namespace es
         typedef Individual::const_iterator(Individual::*const_iterator_function)() const;
 
         /*	This function fills the specified vectors with values globally uniformly
-            selected (using the specified random engine) from the given population.
+            selected (using the specified next engine) from the given population.
             The values from the population individuals, as well as the vector sizes,
             are extracted from the intervals specified by the iterator functions */
         void global_fill_vector(vector<double>& parent1_vec, vector<double>& parent2_vec,

@@ -14,7 +14,7 @@ namespace scene
     {
         const Vector3& n = shading.normal;
 
-        /*  Choose a random number on [0, 1], then reduce it by each kind of 
+        /*  Choose a next number on [0, 1], then reduce it by each kind of 
             scaterring's probability until it becomes negative */
         double r = rnd.next();
 
