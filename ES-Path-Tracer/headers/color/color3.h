@@ -30,7 +30,7 @@ public:
     
     Color3 operator+(const Color3& other) const;
     Color3 operator-(const Color3& other) const;
-    
+
     Color3 operator/(double scalar) const;
 
     void operator+=(const Color3& other);
@@ -44,6 +44,7 @@ private:
     double coordinates[3];
 };
 
+Color3 operator*(const Color3& a, const Color3& b);
 Color3 operator*(const Color3& c, double scalar);
 Color3 operator*(double scalar, const Color3& c);
 

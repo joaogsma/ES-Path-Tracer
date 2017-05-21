@@ -1,13 +1,16 @@
 #ifndef __GUARD_SURFACE_ELEMENT_H__
 #define __GUARD_SURFACE_ELEMENT_H__
 
+#include "color/color3.h"
 #include "geometry/vector3.h"
 #include "geometry/point3.h"
+#include "path-tracer/random_sequence.h"
 
 namespace scene
 {
     class Surface_Element {
-    public:    // Data structures
+    public:    
+        // ========== Data structures ==========
         struct Shading_Data {
             /*  The normal is the interpolated vertex normal to be used during shading.
             The tangent vectors are the u and v basis of the tangent plane, and form
@@ -43,10 +46,15 @@ namespace scene
             Light_Impulse(const Vector3& direction, double magnitude)
                 : direction(direction), magnitude(magnitude) {}
         };
-
-        // Member variables
+        // =====================================
+        
+        // ========== Member variables ==========
         Shading_Data shading;
         Geometric_Data geometric;
+        // ======================================
+
+        bool scatter(const Vector3& w_i, Vector3& w_o, Color3& weight_o, double& eta_o, 
+            /*Color3& extinction_o,*/ Random_Sequence& rnd) const;
     };
 }
 

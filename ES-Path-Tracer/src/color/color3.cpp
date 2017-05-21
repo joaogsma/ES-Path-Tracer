@@ -97,6 +97,10 @@ void Color3::operator*=(double scalar)
     b *= scalar;
 }
 
+Color3 operator*(const Color3& a, const Color3& b)
+{
+    return Color3( a.r * b.r, a.g * b.g, a.b * b.b );
+}
 Color3 operator*(const Color3& c, double scalar)
 {
     return Color3(c.r * scalar, c.g * scalar, c.b * scalar);

@@ -45,6 +45,7 @@ public:
 	Vector3& operator=(const Vector3& other);
 	
 	bool operator==(const Vector3& other) const;
+    bool operator!=(const Vector3& other) const { return !operator==(other); }
 
     void operator+=(const Vector3& other);
     void operator-=(const Vector3& other);

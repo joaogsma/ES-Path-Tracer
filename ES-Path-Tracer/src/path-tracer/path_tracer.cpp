@@ -7,6 +7,7 @@
 #include "color/color3.h"
 #include "geometry/ray.h"
 #include "path-tracer/path_tracer.h"
+#include "path-tracer/random_sequence.h"
 #include "scene/area_light.h"
 #include "scene/point_light.h"
 #include "scene/scene.h"
@@ -20,7 +21,7 @@ class Path_Tracer {
     const bool m_area_lights = true;
     const bool m_direct_s = true;
 
-    Radiance3 path_trace(const Ray& ray, const scene::Scene& scene, bool is_eye_ray)
+    Radiance3 path_trace(const Ray& ray, const scene::Scene& scene, Random_Sequence& rnd, bool is_eye_ray)
     {
         /*  Compute the radiance BACK along the given ray. In the event that the ray is an eye-ray, 
             include light emitted by the first surface encountered. For subsequent rays, such light 
@@ -42,11 +43,11 @@ class Path_Tracer {
             if ( !is_eye_ray || m_direct )
             {
                 l_o += estimate_direct_light_from_point_lights(scene, surfel, ray);
-                l_o += estimate_direct_light_from_area_lights(scene, surfel, ray);
+                l_o += estimate_direct_light_from_area_lights(scene, rnd, surfel, ray);
             }
         
             if ( !is_eye_ray || m_indirect )
-                l_o += estimate_indirect_light(scene, surfel, ray, is_eye_ray);
+                l_o += estimate_indirect_light(scene, rnd, surfel, ray, is_eye_ray);
         
         }
 
@@ -90,7 +91,7 @@ class Path_Tracer {
     }
 
     Radiance3 estimate_direct_light_from_area_lights(const scene::Scene& scene, 
-        const scene::Surface_Element& surfel, const Ray& ray)
+        Random_Sequence& rnd, const scene::Surface_Element& surfel, const Ray& ray)
     {
         Radiance3 l_o(0.0);
 
@@ -101,7 +102,7 @@ class Path_Tracer {
             {
                 const scene::Area_Light& light = *ptr;
 
-                const scene::Surface_Element& light_surfel = light.sample_point();
+                const scene::Surface_Element& light_surfel = light.sample_point(rnd);
 
                 // Displace surface points slightly along the triangle normals
                 const Point3& surface_point_position = surfel.geometric.position + 
@@ -146,6 +147,38 @@ class Path_Tracer {
                         l_o += surfel2.material.emit * impulse.magnitude;
                 }
             }
+        }
+
+        return l_o;
+    }
+
+    Radiance3 estimate_indirect_light(const scene::Scene& scene, Random_Sequence& rnd, 
+        const scene::Surface_Element& surfel, const Ray& ray, bool is_eye_ray)
+    {
+        Radiance3 l_o(0.0);
+
+        /*  Use recursion to estimate light running back along ray from surfel, but ONLY light that
+            arrives from INDIRECT sources, by making a single-sample estimate of the arriving light */
+
+        Vector3& w_o = -1 * ray.direction;
+        Vector3 w_i(0);
+        Color3 coeff(0);
+        double eta_o = 0.f;
+        //Color3 extinction_o(0.0);
+        
+        if ( (!is_eye_ray || m_indirect) && 
+            surfel.scatter(w_i, w_o, coeff, eta_o, /*extinction_o,*/ rnd) )
+        {
+            float eta_i = surfel.material.eta_reflect;
+            float refractive_scale = std::pow(eta_i / eta_o, 2);
+
+            double dot_product_val = dot_prod(surfel.geometric.normal, w_o);
+            double sign = (0.0 < dot_product_val) - (dot_product_val < 0.0);
+
+            const Point3& bumped_position = surfel.geometric.position + 
+                (sign * 1e-4 * surfel.geometric.normal);
+
+            l_o += refractive_scale * coeff * path_trace( Ray(bumped_position, w_o), scene, rnd, false );
         }
 
         return l_o;

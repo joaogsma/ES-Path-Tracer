@@ -181,6 +181,7 @@
     <ClCompile Include="src\scene\mesh_object.cpp" />
     <ClCompile Include="src\scene\point_light.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
+    <ClCompile Include="src\scene\surface_element.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="headers\geometry\ray.h" />
     <ClInclude Include="headers\kd-tree\kd_tree.h" />
     <ClInclude Include="headers\color\color3.h" />
+    <ClInclude Include="headers\path-tracer\random_sequence.h" />
     <ClInclude Include="headers\scene\area_light.h" />
     <ClInclude Include="headers\scene\light.h" />
     <ClInclude Include="headers\scene\mesh_object.h" />
