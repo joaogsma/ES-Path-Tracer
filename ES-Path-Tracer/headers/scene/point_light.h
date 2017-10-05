@@ -1,7 +1,7 @@
 #ifndef __GUARD_POINT_LIGHT_H__
 #define __GUARD_POINT_LIGHT_H__
 
-#include "color/color3.h"
+#include "shading/color3.h"
 #include "geometry/point3.h"
 #include "light.h"
 

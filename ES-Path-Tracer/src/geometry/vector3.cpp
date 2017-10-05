@@ -108,6 +108,20 @@ void Vector3::operator-=(const Vector3& other)
     z -= other.z;
 }
 
+void Vector3::operator*=(double scalar)
+{
+	x *= scalar;
+	y *= scalar;
+	z *= scalar;
+}
+
+void Vector3::operator/=(double scalar)
+{
+	x /= scalar;
+	y /= scalar;
+	z /= scalar;
+}
+
 Vector3 operator*(const Vector3& vec, double scalar)
 {
     return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
@@ -117,6 +131,7 @@ Vector3 operator*(double scalar, const Vector3& vec)
 {
     return Vector3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
 }
+
 
 Vector3 operator+(const Vector3& vec1, const Vector3& vec2)
 {
@@ -131,11 +146,4 @@ Vector3 operator-(const Vector3& vec1, const Vector3& vec2)
 Vector3 operator/(const Vector3& vec, double scalar)
 {
     return Vector3(vec.x / scalar, vec.y / scalar, vec.z / scalar);
-}
-
-Vector3 operator/=(const Vector3& vec, double scalar)
-{
-    vec.x /= scalar;
-    vec.y /= scalar;
-    vec.z /= scalar;
 }

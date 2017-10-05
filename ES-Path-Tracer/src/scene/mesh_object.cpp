@@ -4,7 +4,7 @@
 #include "geometry/triangle.h"
 #include "scene/mesh_object.h"
 #include "scene/object.h"
-#include "scene/surface_element.h"
+#include "shading/surface_element.h"
 
 using std::vector;
 
@@ -42,7 +42,8 @@ namespace scene
         surfel.geometric.position = ray.origin + t * ray.direction;
         // ====================================================
 
-        // TODO: tangent0 and tangent1
+		surfel.geometric.tangent0 = edge1;
+		surfel.geometric.tangent1 = cross_prod(edge1, surfel.geometric.normal);
 
         return true;
     }

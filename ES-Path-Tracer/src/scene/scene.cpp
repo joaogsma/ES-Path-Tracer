@@ -1,11 +1,11 @@
 #include <vector>
 #include <cfloat>
 
-#include "color/color3.h"
+#include "shading/color3.h"
 #include "geometry/vector3.h"
 #include "scene/object.h"
 #include "scene/scene.h"
-#include "scene/surface_element.h"
+#include "shading/surface_element.h"
 
 using std::vector;
 

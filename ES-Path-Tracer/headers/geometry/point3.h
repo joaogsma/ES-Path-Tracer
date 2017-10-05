@@ -43,6 +43,7 @@ public:
 	Point3& operator=(const Point3& other);
 
 	bool operator==(const Point3& other) const;
+    bool operator!=(const Point3& other) const { return !operator==(other); }
     void operator+=(const Vector3& vec);
     void operator-=(const Vector3& vec);
 

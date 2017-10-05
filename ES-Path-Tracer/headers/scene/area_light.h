@@ -3,13 +3,13 @@
 
 #include <vector>
 
-#include "color/color3.h"
+#include "shading/color3.h"
 #include "geometry/aab.h"
 #include "geometry/ray.h"
 #include "geometry/triangle.h"
 #include "kd-tree/kd_tree.h"
 #include "light.h"
-#include "surface_element.h"
+#include "shading/surface_element.h"
 
 namespace scene
 {

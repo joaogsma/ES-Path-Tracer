@@ -6,7 +6,7 @@
 
 #include "geometry/vector3.h"
 #include "path-tracer/uniform_random_sequence.h"
-#include "scene/surface_element.h"
+#include "shading/surface_element.h"
 
 double Uniform_Random_Sequence::next()
 {
@@ -23,7 +23,7 @@ double Uniform_Random_Sequence::next()
 }
 
 Vector3 Uniform_Random_Sequence::cos_hemisphere_random(
-    const scene::Surface_Element::Shading_Data& shading_data)
+    const scene::Surface_Element::Geometric_Data& geometric_data)
 {
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
@@ -54,6 +54,6 @@ Vector3 Uniform_Random_Sequence::cos_hemisphere_random(
 
     Vector3 sample( r * cos(theta), y, r * sin(theta) );
 
-    return (sample[0] * shading_data.tangent0) + (sample[1] * shading_data.normal) + 
-        (sample[2] * shading_data.tangent1);
+    return (sample[0] * geometric_data.tangent0) + (sample[1] * geometric_data.normal) + 
+        (sample[2] * geometric_data.tangent1);
 }

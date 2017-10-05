@@ -49,6 +49,9 @@ public:
 
     void operator+=(const Vector3& other);
     void operator-=(const Vector3& other);
+	
+	void operator*=(double scalar);
+	void operator/=(double scalar);
 
 	// Returns a new Vector3 object corresponding to the normalized vector
 	Vector3 normalize() const;
@@ -71,7 +74,6 @@ Vector3 operator*(double scalar, const Vector3& vec);
 
 // Vector division by a scalar
 Vector3 operator/(const Vector3& vec, double scalar);
-Vector3 operator/=(const Vector3& vec, double scalar);
 
 // Vector sum
 Vector3 operator+(const Vector3& vec1, const Vector3& vec2);

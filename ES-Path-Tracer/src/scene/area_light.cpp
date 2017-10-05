@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "color/color3.h"
+#include "shading/color3.h"
 #include "geometry/triangle.h"
 #include "scene/area_light.h"
 #include "scene/light.h"

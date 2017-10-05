@@ -4,14 +4,14 @@
 #include <numeric>
 #include <cmath>
 
-#include "color/color3.h"
+#include "shading/color3.h"
 #include "geometry/ray.h"
 #include "path-tracer/path_tracer.h"
 #include "path-tracer/random_sequence.h"
 #include "scene/area_light.h"
 #include "scene/point_light.h"
 #include "scene/scene.h"
-#include "scene/surface_element.h"
+#include "shading/surface_element.h"
 
 class Path_Tracer {
     const bool m_indirect = true;
@@ -33,20 +33,20 @@ class Path_Tracer {
 
         double dist = std::numeric_limits<double>::infinity();
 
-        if ( scene.intersect(ray, dist, surfel) )
+        if (scene.intersect(ray, dist, surfel))
         {
             // This point could be an emitter
             if (is_eye_ray && m_emit)
                 l_o += surfel.material.emit;
         
             // Shade this point (direct illumination)
-            if ( !is_eye_ray || m_direct )
+            if (!is_eye_ray || m_direct)
             {
-                l_o += estimate_direct_light_from_point_lights(scene, surfel, ray);
+                //l_o += estimate_direct_light_from_point_lights(scene, surfel, ray);
                 l_o += estimate_direct_light_from_area_lights(scene, rnd, surfel, ray);
             }
         
-            if ( !is_eye_ray || m_indirect )
+            if (!is_eye_ray || m_indirect)
                 l_o += estimate_indirect_light(scene, rnd, surfel, ray, is_eye_ray);
         
         }
@@ -54,6 +54,7 @@ class Path_Tracer {
         return l_o;
     }
 
+	/*
     Radiance3 estimate_direct_light_from_point_lights(const scene::Scene& scene, 
         const scene::Surface_Element& surfel, const Ray& ray)
     {
@@ -89,6 +90,7 @@ class Path_Tracer {
 
         return l_o;
     }
+	*/
 
     Radiance3 estimate_direct_light_from_area_lights(const scene::Scene& scene, 
         Random_Sequence& rnd, const scene::Surface_Element& surfel, const Ray& ray)
@@ -119,16 +121,18 @@ class Path_Tracer {
 
                 scene::Surface_Element dummy_surfel;
 
-                if ( !scene.intersect(shadow_ray, distance, dummy_surfel) )
+                if (!scene.intersect(shadow_ray, distance, dummy_surfel))
                 {
                     double geometric_term = std::max( 0.0, dot_prod(w_i, surfel.shading.normal) ) *
                         std::max( 0.0, dot_prod(-1 * w_i, light_surfel.geometric.normal) / (distance * distance) );
 
-                    l_o += surfel.evaluate_bsdf( w_i, -1 * ray.direction ) * 
-                        ( light.power / M_PI ) * geometric_term;
+					// Add surface color
+                    l_o += surfel.evaluate_bsdf(w_i, -1 * ray.direction) * 
+						(light.power / M_PI) * geometric_term;
                 }
             }
 
+			/*
             // Now add in impulse-reflected light as well
             if (m_direct_s)
             {
@@ -147,6 +151,7 @@ class Path_Tracer {
                         l_o += surfel2.material.emit * impulse.magnitude;
                 }
             }
+			*/
         }
 
         return l_o;
@@ -164,10 +169,9 @@ class Path_Tracer {
         Vector3 w_i(0);
         Color3 coeff(0);
         double eta_o = 0.f;
-        //Color3 extinction_o(0.0);
-        
+
         if ( (!is_eye_ray || m_indirect) && 
-            surfel.scatter(w_i, w_o, coeff, eta_o, /*extinction_o,*/ rnd) )
+            surfel.scatter(w_i, w_o, coeff, eta_o, rnd) )
         {
             float eta_i = surfel.material.eta_reflect;
             float refractive_scale = std::pow(eta_i / eta_o, 2);
@@ -178,7 +182,8 @@ class Path_Tracer {
             const Point3& bumped_position = surfel.geometric.position + 
                 (sign * 1e-4 * surfel.geometric.normal);
 
-            l_o += refractive_scale * coeff * path_trace( Ray(bumped_position, w_o), scene, rnd, false );
+            l_o += refractive_scale * coeff * 
+				path_trace(Ray(bumped_position, w_o), scene, rnd, false);
         }
 
         return l_o;

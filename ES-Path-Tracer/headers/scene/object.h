@@ -3,7 +3,7 @@
 
 #include "geometry/ray.h"
 #include "geometry/aab.h"
-#include "scene/surface_element.h"
+#include "shading/surface_element.h"
 
 namespace scene
 {

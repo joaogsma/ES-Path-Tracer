@@ -1,7 +1,7 @@
 #ifndef __GUARD_LIGHT_H__
 #define __GUARD_LIGHT_H__
 
-#include "color/color3.h"
+#include "shading/color3.h"
 
 namespace scene
 {

@@ -4,11 +4,11 @@
 #include <vector>
 
 #include "area_light.h"
-#include "color/color3.h"
+#include "shading/color3.h"
 #include "geometry/vector3.h"
 #include "object.h"
 #include "point_light.h"
-#include "scene/surface_element.h"
+#include "shading/surface_element.h"
 
 class Path_Tracer;
 

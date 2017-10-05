@@ -8,7 +8,7 @@
 #include "geometry/triangle.h"
 #include "kd-tree/kd_tree.h"
 #include "object.h"
-#include "surface_element.h"
+#include "shading/surface_element.h"
 
 namespace scene
 {
