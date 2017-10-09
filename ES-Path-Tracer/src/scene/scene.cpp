@@ -23,7 +23,8 @@ namespace scene
             delete ptr;
     }
 
-    bool Scene::intersect(const Ray& ray, double& t, Surface_Element& result) const
+    bool Scene::intersect(const Ray& ray, double& t, Surface_Element& result,
+		double refractive_index) const
     {
         bool found_intersection = false;
 
@@ -32,10 +33,11 @@ namespace scene
             double hit_t;
             Surface_Element surfel;
 
-            if ( obj->intersect(ray, hit_t, surfel) && hit_t < t )
+            if (obj->intersect(ray, hit_t, surfel) && hit_t < t)
             {
                 t = hit_t;
-                result = surfel;
+				surfel.material.refractive_index_exterior = refractive_index;
+				result = surfel;
                 found_intersection = true;
             }
         }

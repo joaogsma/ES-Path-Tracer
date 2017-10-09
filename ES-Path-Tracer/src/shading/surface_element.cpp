@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+
+#include <cmath>
 #include <algorithm>
 #include <limits>
 
@@ -9,82 +12,47 @@
 
 namespace scene
 {
-    bool Surface_Element::scatter(Vector3& w_i, const Vector3& w_o, Color3& coefficient,
-        double& eta_o, Random_Sequence& rnd) const
+    bool Surface_Element::scatter(const Vector3& w_i, Vector3& w_o, Color3& coefficient, 
+		Random_Sequence& rnd) const
     {
         const Vector3& n = geometric.normal;
 
         /*  Choose a next number on [0, 1], then reduce it by each kind of 
-            scaterring's probability until it becomes negative */
+            scatering's probability until it becomes negative */
         double r = rnd.next();
-
-        const Color3& zero = Color3::zero();
+        
+		static const Color3& zero_color = Color3::zero();
+		static const Vector3& zero_vector = Vector3(0.0);
 
         // ========== Lambertian scattering ==========
-        if (material.lambertian_reflect != zero)
+        if (material.lambertian_reflect != zero_color)
         {
-            double prob_lambertian_avg = (material.lambertian_reflect[0] + 
-                material.lambertian_reflect[1] + material.lambertian_reflect[2]) / 3.0;
-
+            double prob_lambertian_avg = (material.lambertian_reflect[0]
+				+ material.lambertian_reflect[1] + material.lambertian_reflect[2]) / 3.0;
             r -= prob_lambertian_avg;
             
             if (r < 0.0)
             {
-                coefficient = material.lambertian_reflect / prob_lambertian_avg;
-                w_i = rnd.cos_hemisphere_random(geometric);
-                eta_o = material.eta_reflect;
-
+				double prob_times_density = prob_lambertian_avg * (1.0 / (2 * M_PI));
+                w_o = rnd.uniform_distributed_hemisphere_sample(geometric);
+                coefficient = material.lambertian_reflect / prob_times_density;
                 return true;
             }
         }
         // ===========================================
 
 
-        // ========== Glossy scattering ==========
-        //Color3 f(0, 0, 0); // Fresnel term
-        //bool f_init = false;
-
-        if (material.glossy_reflect != zero)
+        // ========== Specular scattering ==========
+        if (material.specular_reflect != zero_color)
         {
-            /*
-			// Cosine of the angle of incidence, for computing the Fresnel term
-            const double cos_i = std::max( 1e-3, dot_prod(w_i, n) );
-            f = compute_fresnel_term(material.glossy_reflect, w_i);
-            f_init = true;
-			
-            const Color3& prob_specular = f;
-            const double prob_specular_avg = (prob_specular[0] + prob_specular[1] + 
-                prob_specular[2]) / 3.0;
-			*/
-
-			const double prob_specular_avg = (material.glossy_reflect[0] 
-					+ material.glossy_reflect[1] + material.glossy_reflect[2]) / 3.0;
-
+            const double prob_specular_avg = (material.specular_reflect[0] 
+					+ material.specular_reflect[1] + material.specular_reflect[2]) / 3.0;
             r -= prob_specular_avg;
+
             if (r < 0.0)
             {
-                /*
-				if (material.glossy_exponent != std::numeric_limits<double>::infinity())    // Glossy (non-mirror) case
-                {
-                    double intensity = glossy_scatter(w_i, material.glossy_exponent, rnd, w_o) / 
-                        prob_specular_avg;
-                    
-                    if (intensity < 0.0)    // Absorb
-                        return false;
-
-                    coefficient = prob_specular * intensity;
-                }
-                else    // Mirror
-                {
-                    w_i = reflect_about(w_o);
-                    coefficient = prob_specular / prob_specular_avg;
-                }
-				*/
-				w_i = reflect_about(w_o);
-				coefficient = material.glossy_reflect / prob_specular_avg;
-
-                eta_o = material.eta_reflect;
-                
+                w_o = mirror_reflect(w_i);
+				coefficient = material.specular_reflect / prob_specular_avg;
                 return true;
             }
         }
@@ -92,36 +60,17 @@ namespace scene
 
 
         // ========== Transmissive scattering ==========
-        if (material.transmit != zero)
+        if (material.transmit != zero_color)
         {
-            // Fresnel transmissive coefficient
-            Color3 f_t(0.0);
-
-            if (f_init)
-                f_t = Color3(1.0) - f;
-            else
-            {
-                // Cosine of the angle of incidence, for computing F
-                const double cos_i = std::max(1e-3, dot_prod(w_i, n));
-                // Schlik approximation
-                f_t = Color3( 1.0 - std::pow(1.0 - cos_i, 5) );
-            }
-
-            const Color3& t0 = material.transmit;
-            const Color3& prob_transmit = f_t * t0;
-            
-            const double prob_transmit_avg = (prob_transmit[0] + prob_transmit[1] + 
-                prob_transmit[2]) / 3.0;
-
+            const double prob_transmit_avg = (material.transmit[0] + material.transmit[1]
+				+ material.transmit[2]) / 3.0;
             r -= prob_transmit_avg;
+
             if (r < 0.0)
             {
-                coefficient = prob_transmit / prob_transmit_avg;
-                w_o = refraction_direction(-1 * w_i, n, material.eta_transmit, material.eta_reflect);
-                eta_o = material.eta_transmit;
-
-                // w_o is zero  on total internal refraction
-                return w_o != Vector3(0.0);
+                coefficient = material.transmit / prob_transmit_avg;
+                w_o = refract(w_i);
+                return w_o != zero_vector;    // w_o is zero on total internal refraction
             }
         }
         // =============================================
@@ -130,14 +79,45 @@ namespace scene
         return false;
     }
 
-	Vector3 Surface_Element::reflect_about(const Vector3& vec) const
+	// Assumes incoming is pointing inwards
+	Vector3 Surface_Element::mirror_reflect(const Vector3& incoming) const
 	{
-		Vector3 reflected = geometric.normal;
+		Vector3 normal = geometric.normal;
+		double cosine = dot_prod(incoming, -1 * geometric.normal);
+		
+		// Light is coming from the object's interior - flip the normal and restart
+		if (cosine < 0.0)
+		{
+			normal *= -1;
+			cosine = dot_prod(incoming, geometric.normal);
+		}
 
-		double cos_i = -dot_prod(vec, reflected);
-		reflected *= 2 * cos_i;
-		reflected += vec;
+		// Flip the normal vector if light is coming from the object's interior
+		return incoming + 2 * cosine * normal;
+	}
 
-		return reflected;
+	Vector3 Surface_Element::refract(const Vector3& incoming) const
+	{
+		Vector3 normal = geometric.normal;
+		double cos_i = dot_prod(incoming, -1 * geometric.normal);
+		double refractive_index_i = material.refractive_index_exterior;
+		double refractive_index_o = material.refractive_index_interior;
+		
+		// Light is coming from the object's interior - flip the normal and restart
+		if (cos_i < 0.0)
+		{
+			normal *= -1;
+			double cos_i = dot_prod(incoming, geometric.normal);
+			std::swap(refractive_index_i, refractive_index_o);
+		}
+
+		double ratio = refractive_index_i / refractive_index_o;
+		double sin_o = ratio * sqrt(1 - cos_i * cos_i);
+
+		if (sin_o > 1.0 - 1e-4)    // Critical angle - ray is absorbed
+			return Vector3(0.0);
+
+		double cos_o = sqrt(1 - sin_o * sin_o);
+		return (incoming * ratio) + (ratio * cos_i - cos_o) * normal;
 	}
 }

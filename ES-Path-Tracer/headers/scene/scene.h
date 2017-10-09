@@ -23,7 +23,8 @@ namespace scene
     public:
         ~Scene();
         
-        bool intersect(const Ray &ray, double& max_t, Surface_Element& surfel) const;
+        bool intersect(const Ray &ray, double& max_t, Surface_Element& surfel,
+			double refractive_index) const;
 
         void clear() { m_objects.clear(); m_point_lights.clear(); m_area_lights.clear(); };
 
