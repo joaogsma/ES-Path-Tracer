@@ -73,7 +73,7 @@ namespace es
             normal_distribution<double> ndist;
             // Mutate step size
             double& step_size = *step_size_begin();
-            step_size *= exp( proportionality_constant * ndist(es::mt_engine) );
+            step_size *= exp( proportionality_constant * ndist(es::m_mt_engine) );
             step_size = max( MIN_STEP_SIZE, step_size );
 
             // Mutate object variables
@@ -82,7 +82,7 @@ namespace es
             {
                 double& value = *it;
                 // Mutate the value
-                value += step_size * ndist(es::mt_engine);
+                value += step_size * ndist(es::m_mt_engine);
                 
                 // Keep the values in the [0, 1] range
                 while (value > 1) value -= 1;

@@ -41,7 +41,7 @@ namespace kd_tree
         
         double entry_t, exit_t;
         if ( !ray.intersect(bounding_box, entry_t, exit_t) )
-            return false;    // Return false if ray does not intersect tree's AABB
+            return nullptr;    // Return false if ray does not intersect tree's AABB
 
         std::stack<Stack_Element> traversal_stack;
         traversal_stack.push( Stack_Element(root, entry_t, exit_t) );

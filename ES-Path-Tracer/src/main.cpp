@@ -1,12 +1,19 @@
+#define _USE_MATH_DEFINES
+
 #include "geometry/point3.h"
 #include "geometry/ray.h"
 #include "geometry/triangle.h"
 #include "geometry/vector3.h"
-#include "kd-tree/kd_tree.h"
-#include "evolution-strategy/individual.h"
+#include "scene/mesh_object.h"
+#include "scene/scene.h"
+#include "shading/surface_element.h"
+#include "path-tracer/uniform_random_sequence.h"
+
+#include "path-tracer/path_tracer.cpp"
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -28,24 +35,118 @@ string vector_to_string(Vector3 v)
 	return ss.str();
 }
 
+string color_to_string(Color3 c)
+{
+	stringstream ss;
+	ss << "(" << c.r << ", " << c.g << ", " << c.b << ")";
+	return ss.str();
+}
+
 int main()
 {
-    Point3 p1(0, 0, 0);
-    Point3 p2(1, 0, 0);
-    Point3 p3(1, 1, 0);
-    Point3 p4(0, 1, 0);
+	const float ground_y = -1.f;
+	
+	scene::Scene scene;
 
-    Vector3 normal(0, 0, 1);
+	vector<Point3> points = {
+		Point3(0, 1, -2),
+		Point3(-1.9, -1, -2),
+		Point3(1.6, -0.5, -2),
+		
+		Point3(-10, ground_y, -10),
+		Point3(-10, ground_y, -0.01f),
+		Point3(10, ground_y, -0.01f),
 
-    Triangle t1(&p1, &p2, &p3, &normal, &normal, &normal);
-    Triangle t2(&p3, &p4, &p1, &normal, &normal, &normal);
+		Point3(-10, ground_y, -10),
+		Point3(10, ground_y, -0.01f),
+		Point3(10, ground_y, -10),
 
-    std::vector<const Triangle*> tri_ptrs = {&t1, &t2};
+		Point3(0, 2, 1),
+		Point3(1, 3, 1),
+		Point3(2, 2, 1)
+	};
 
-    kd_tree::KD_Tree kdtree(tri_ptrs);
+	vector<Vector3> normals = {
+		Vector3(0, 0.6, 1).normalize(),
+		Vector3(-0.4, -0.4, 1).normalize(),
+		Vector3(0.4, -0.4, 1).normalize(),
 
-    const Triangle* hit_triangle = kdtree.intersect( Ray(Point3(0, 0, 1), Vector3(0, 0, -1)) );
+		Vector3(0, 1, 0),
+		Vector3(0, 1, 0),
+		Vector3(0, 1, 0),
 
-    return 0;
+		Vector3(0, 1, 0),
+		Vector3(0, 1, 0),
+		Vector3(0, 1, 0),
 
+		Vector3(0, 0, -1),
+		Vector3(0, 0, -1),
+		Vector3(0, 0, -1)
+	};
+
+	vector<Triangle> triangles;
+	vector<scene::Object*> objects;
+	
+	for (int i = 0; i < 12; i += 3)
+	{
+		triangles.push_back(
+			Triangle(
+				&points[i],
+				&points[i + 1],
+				&points[i + 2],
+				&normals[i],
+				&normals[i + 1],
+				&normals[i + 2]));
+	}
+
+	// ==================== Add the triangle ====================
+	scene::Surface_Element::Material_Data triangle_material(
+		Irradiance3(0),
+		Color3(0.0, 0.8, 0.0),
+		Color3(0.2, 0.2, 0.2),
+		Color3(0.0),
+		5,
+		1.0,
+		1.0);
+
+	objects.push_back(
+		new scene::Mesh_Object(std::vector<const Triangle*>(1, &triangles[0]), triangle_material));
+	
+	// ==========================================================
+
+
+	// ==================== Add the ground ====================
+	scene::Surface_Element::Material_Data ground_material(
+		Irradiance3(0),
+		Color3(0.8f, 0.8f, 0.8f),
+		Color3(0.0, 0.0, 0.0),
+		Color3(0.0),
+		5,
+		1.0,
+		1.0);
+	
+	vector<const Triangle*> ground_triangle_pointers = { &triangles[1], &triangles[2] };
+	objects.push_back(new scene::Mesh_Object(ground_triangle_pointers, ground_material));
+	// ========================================================
+
+	
+	// Add the light source
+	scene.add_area_light(new scene::Area_Light(Radiance3(10.0), std::vector<const Triangle*>(1, &triangles[3])));
+
+	for (scene::Object* obj : objects)
+		scene.add_object(obj);
+
+	Path_Tracer path_tracer;
+
+	Uniform_Random_Sequence rnd;
+
+	Radiance3 result = path_tracer.path_trace(
+		Ray(Point3(0), Vector3(Point3(0), Point3(-0.1, -1.0 / 6.0, -2.0))),
+		scene,
+		rnd,
+		true);
+
+	std::cout << color_to_string(result) << std::endl;
+
+	return 0;
 }

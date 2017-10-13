@@ -6,7 +6,7 @@
 namespace es
 {
 	static std::random_device rd;
-	static std::mt19937 mt_engine( rd() );
+	static std::mt19937 m_mt_engine( rd() );
 }
 
 #endif

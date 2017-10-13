@@ -49,9 +49,9 @@ namespace es
             {
                 vector<Individual>::size_type parent1_index, parent2_index;
                 // Select a first parent
-                parent1_index = indiv_dist(es::mt_engine);
+                parent1_index = indiv_dist(es::m_mt_engine);
                 // Select a second parent different from the first
-                while ((parent2_index = indiv_dist(es::mt_engine)) == parent1_index);
+                while ((parent2_index = indiv_dist(es::m_mt_engine)) == parent1_index);
 
                 // Get the selected parents
                 const Individual& parent1 = population[parent1_index];
@@ -88,10 +88,10 @@ namespace es
                 population.size() - 1);
 
             // Select a first parent
-            vector<Individual>::size_type parent1_index = indiv_dist(es::mt_engine);
+            vector<Individual>::size_type parent1_index = indiv_dist(es::m_mt_engine);
             // Select a second parent different from the first
             vector<Individual>::size_type parent2_index;
-            while ((parent2_index = indiv_dist(es::mt_engine)) == parent1_index);
+            while ((parent2_index = indiv_dist(es::m_mt_engine)) == parent1_index);
 
             return make_pair(population[parent1_index], population[parent2_index]);
         }

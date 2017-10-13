@@ -10,40 +10,38 @@ using std::vector;
 
 namespace scene
 {
-    Mesh_Object::Mesh_Object(const vector<const Triangle*> &triangles) : m_kd_tree(triangles) {}
+    Mesh_Object::Mesh_Object(
+		const vector<const Triangle*> &triangles,
+		Surface_Element::Material_Data material)
+		: m_kd_tree(triangles), m_material(material) {}
     
     bool Mesh_Object::intersect(const Ray &ray, double &t, Surface_Element& surfel) const
     {
         const Triangle *tri_ptr = m_kd_tree.intersect(ray);
 
-        if ( !tri_ptr )
+        if (!tri_ptr)
             return false;
 
-        double t;
         std::vector<double> bar_weights;
         ray.intersect(*tri_ptr, t, bar_weights);
 
-        // ========== Compute the shading normal ==========
+        // Compute the shading normal
         surfel.shading.normal = bar_weights[0] * (*tri_ptr->normal(0)) + 
             bar_weights[1] * (*tri_ptr->normal(1)) + 
             bar_weights[2] * (*tri_ptr->normal(2));
-        // ================================================
-
-
-        // ========== Compute the geometric normal ==========
-        const Vector3& edge0 = Vector3(*tri_ptr->vertex(0), *tri_ptr->vertex(1));
-        const Vector3& edge1 = Vector3(*tri_ptr->vertex(0), *tri_ptr->vertex(2));
-
-        surfel.geometric.normal = cross_prod(edge0, edge1).normalize();
-        // ==================================================
         
-
-        // ========== Compute the geometric position ==========
+        // Compute the geometric normal
+        surfel.geometric.normal = tri_ptr->normal();
+        
+        // Compute the geometric position
         surfel.geometric.position = ray.origin + t * ray.direction;
-        // ====================================================
+        
+		// Compute the tangent plane vectors
+        const Vector3& edge = Vector3(*tri_ptr->vertex(0), *tri_ptr->vertex(2));
+		surfel.geometric.tangent0 = edge;
+		surfel.geometric.tangent1 = cross_prod(edge, surfel.geometric.normal);
 
-		surfel.geometric.tangent0 = edge1;
-		surfel.geometric.tangent1 = cross_prod(edge1, surfel.geometric.normal);
+		surfel.material = m_material;
 
         return true;
     }

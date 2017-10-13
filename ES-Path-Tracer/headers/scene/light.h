@@ -7,14 +7,14 @@ namespace scene
 {
     class Light {
     public:
-        Radiance3 power;
+        Radiance3 m_power;
 
-        Light(const Radiance3& power) : power(power) {}
+        Light(const Radiance3& m_power) : m_power(m_power) {}
 
         virtual ~Light() = 0;
     };
 
-    Light::~Light() {}
+    inline Light::~Light() {}
 }
 
 #endif

@@ -16,12 +16,12 @@ Point3::Point3(double val) : x(coordinates[0]),
 }
 
 // Point3 constructor
-Point3::Point3(double x, double y, double z) : x(coordinates[0]), 
+Point3::Point3(double _x, double _y, double _z) : x(coordinates[0]), 
 	y(coordinates[1]), z(coordinates[2]) 
 {
-	coordinates[0] = x;
-	coordinates[1] = y;
-	coordinates[2] = z;
+	coordinates[0] = _x;
+	coordinates[1] = _y;
+	coordinates[2] = _z;
 }
 
 

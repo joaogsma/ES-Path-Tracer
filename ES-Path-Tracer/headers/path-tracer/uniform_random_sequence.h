@@ -14,10 +14,8 @@ public:
     Uniform_Random_Sequence(const std::vector<double>& values) : sequence(values) {}
     
     double next();
-	Vector3 uniform_distributed_hemisphere_sample(
-		const scene::Surface_Element::Geometric_Data& geometric_data);
-    Vector3 cos_distributed_hemisphere_sample(
-		const scene::Surface_Element::Geometric_Data& geometric_data);
+	Vector3 uniform_distributed_hemisphere_sample();
+    Vector3 cos_distributed_hemisphere_sample();
 
 private:
     std::vector<double> sequence;

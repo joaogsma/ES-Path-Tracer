@@ -15,10 +15,14 @@ public:
 
 	Triangle(const Triangle& other);
 
-	// Accessor functions
-    Point3* vertex(int i) const { return m_vertices[i]; };
-    Vector3* normal(int i) const { return m_normals[i]; };
-
+	Point3* vertex(int i) const { return m_vertices[i]; };
+    
+	Vector3* normal(int i) const { return m_normals[i]; };
+	
+	Vector3 normal() const { return m_normal; }
+	
+	double area() const;
+	
 	std::vector<double> baricentric_coordinates(const Point3& p) const;
 
 	Triangle& operator=(const Triangle& other);
@@ -26,6 +30,7 @@ public:
 private:
 	Point3* m_vertices[3];
     Vector3* m_normals[3];
+	Vector3 m_normal;
 };
 
 #endif

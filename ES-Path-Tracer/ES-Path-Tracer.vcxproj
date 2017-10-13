@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\common\random_number_engine.cpp" />
     <ClCompile Include="src\evolution-strategy\evolution_strategy.cpp" />
     <ClCompile Include="src\evolution-strategy\fitness.cpp" />
     <ClCompile Include="src\evolution-strategy\individual.cpp" />
@@ -180,11 +181,11 @@
     <ClCompile Include="src\path-tracer\uniform_random_sequence.cpp" />
     <ClCompile Include="src\scene\area_light.cpp" />
     <ClCompile Include="src\scene\mesh_object.cpp" />
-    <ClCompile Include="src\scene\point_light.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\shading\surface_element.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\common\random_number_engine.h" />
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
     <ClInclude Include="headers\evolution-strategy\fitness.h" />
     <ClInclude Include="headers\evolution-strategy\individual.h" />
@@ -208,7 +209,6 @@
     <ClInclude Include="headers\path-tracer\path_tracer.h" />
     <ClInclude Include="headers\geometry\triangle.h" />
     <ClInclude Include="headers\geometry\vector3.h" />
-    <ClInclude Include="headers\scene\point_light.h" />
     <ClInclude Include="headers\scene\scene.h" />
     <ClInclude Include="headers\shading\surface_element.h" />
   </ItemGroup>

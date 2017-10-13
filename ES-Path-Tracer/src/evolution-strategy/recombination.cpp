@@ -35,7 +35,7 @@ namespace es {
 
             while (begin1 != end1)
             {
-                if (coin(es::mt_engine))
+                if (coin(es::m_mt_engine))
                     recomb_vec.push_back(*begin1);
                 else
                     recomb_vec.push_back(*begin2);
@@ -57,7 +57,7 @@ namespace es {
             {
                 Individual::const_iterator chosen;
 
-                if (coin(es::mt_engine))
+                if (coin(es::m_mt_engine))
                     chosen = begin1;
                 else
                     chosen = begin2;
@@ -146,7 +146,7 @@ namespace es {
             if (random_alpha)
             {
                 uniform_real_distribution<double> dist(0, 1);
-                alpha = dist(es::mt_engine);
+                alpha = dist(es::m_mt_engine);
             }
 
             Individual& child = recombination(parent1, parent2, interpolation_recombination,
@@ -167,7 +167,7 @@ namespace es {
             if (random_alpha)
             {
                 uniform_real_distribution<double> dist(0, 1);
-                alpha = dist(es::mt_engine);
+                alpha = dist(es::m_mt_engine);
             }
 
             Individual& child = recombination(parent1, parent2, discrete_recombination,

@@ -69,9 +69,6 @@
     <ClCompile Include="src\scene\scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\point_light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\area_light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -82,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\shading\color3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\random_number_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,9 +146,6 @@
     <ClInclude Include="headers\scene\light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\scene\point_light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="headers\scene\area_light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -162,6 +159,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\shading\color3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\common\random_number_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

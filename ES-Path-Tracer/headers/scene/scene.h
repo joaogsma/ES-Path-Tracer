@@ -7,7 +7,6 @@
 #include "shading/color3.h"
 #include "geometry/vector3.h"
 #include "object.h"
-#include "point_light.h"
 #include "shading/surface_element.h"
 
 class Path_Tracer;
@@ -26,17 +25,18 @@ namespace scene
         bool intersect(const Ray &ray, double& max_t, Surface_Element& surfel,
 			double refractive_index) const;
 
-        void clear() { m_objects.clear(); m_point_lights.clear(); m_area_lights.clear(); };
+		void clear();
 
         // Insertion functions
         void add_object(Object* ptr) { m_objects.push_back(ptr); }
-        void add_point_light(Point_Light* ptr) { m_point_lights.push_back(ptr); }
-        void add_area_light(Area_Light* ptr) { m_area_lights.push_back(ptr); }
+        //void add_point_light(Point_Light* ptr) { m_point_lights.push_back(ptr); }
+		void add_area_light(Area_Light* ptr);
 
     private:
         std::vector<Object*> m_objects;
-        std::vector<Point_Light*> m_point_lights;
+        //std::vector<Point_Light*> m_point_lights;
         std::vector<Area_Light*> m_area_lights;
+		double m_total_light_area;
     };
 }
 

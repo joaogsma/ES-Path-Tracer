@@ -11,8 +11,14 @@ using std::copy;
 using std::vector;
 using std::abs;
 
-Triangle::Triangle(Point3* point1, Point3* point2, Point3* point3,
-    Vector3* normal1, Vector3* normal2, Vector3* normal3)
+Triangle::Triangle(
+	Point3* point1,
+	Point3* point2,
+	Point3* point3,
+    Vector3* normal1,
+	Vector3* normal2,
+	Vector3* normal3)
+	: m_normal(0.0)
 {
 	m_vertices[0] = point1;
 	m_vertices[1] = point2;
@@ -21,10 +27,15 @@ Triangle::Triangle(Point3* point1, Point3* point2, Point3* point3,
     m_normals[0] = normal1;
     m_normals[1] = normal2;
     m_normals[2] = normal3;
+
+	const Vector3& edge0 = Vector3(*m_vertices[0], *m_vertices[1]);
+	const Vector3& edge1 = Vector3(*m_vertices[0], *m_vertices[2]);
+
+	m_normal = cross_prod(edge0, edge1).normalize();
 }
 
 
-Triangle::Triangle(const Triangle& other)
+Triangle::Triangle(const Triangle& other) : m_normal(other.m_normal)
 {
 	copy( other.m_vertices, other.m_vertices + 3, m_vertices );
     copy( other.m_normals, other.m_normals + 3, m_normals );
@@ -33,15 +44,23 @@ Triangle::Triangle(const Triangle& other)
 
 Triangle& Triangle::operator=(const Triangle& other)
 {
-    if ( &other != this )
+    if (&other != this)
     {
         copy( other.m_vertices, other.m_vertices + 3, m_vertices );
         copy( other.m_normals, other.m_normals + 3, m_normals );
+		m_normal = other.m_normal;
     }
 
 	return *this;
 }
 
+double Triangle::area() const
+{
+	const Vector3& edge0 = Vector3(*m_vertices[0], *m_vertices[1]);
+	const Vector3& edge1 = Vector3(*m_vertices[0], *m_vertices[2]);
+
+	return cross_prod(edge0, edge1).magnitude() * 0.5;
+}
 
 vector<double> Triangle::baricentric_coordinates(const Point3& p) const
 {

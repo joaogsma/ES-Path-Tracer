@@ -18,9 +18,9 @@ Color3::Color3(double val) : r(coordinates[0]), g(coordinates[1]), b(coordinates
 Color3::Color3(double red, double green, double blue) : r(coordinates[0]),
 g(coordinates[1]), b(coordinates[2])
 {
-    coordinates[0] = r;
-    coordinates[1] = g;
-    coordinates[2] = b;
+    coordinates[0] = red;
+    coordinates[1] = green;
+    coordinates[2] = blue;
 }
 
 

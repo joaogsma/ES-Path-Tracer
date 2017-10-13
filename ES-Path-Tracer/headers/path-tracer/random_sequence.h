@@ -3,27 +3,21 @@
 
 #include <random>
 
+#include "common/random_number_engine.h"
 #include "geometry/vector3.h"
-
-class Shading_Data;
 
 class Random_Sequence
 {
 public:
-    Random_Sequence() : mt_engine(std::random_device()()), index(0) {}
+    Random_Sequence() : m_mt_engine(random::mt_engine_singleton()), m_index(0) {}
 
     virtual double next() = 0;
-	virtual Vector3 uniform_distributed_hemisphere_sample(
-		const scene::Surface_Element::Geometric_Data& geometric_data) = 0;
-    virtual Vector3 cos_distributed_hemisphere_sample(
-		const scene::Surface_Element::Geometric_Data& shading_data) = 0;
+	virtual Vector3 uniform_distributed_hemisphere_sample() = 0;
+    virtual Vector3 cos_distributed_hemisphere_sample() = 0;
 
 protected:
-    std::mt19937 mt_engine;
-    size_t index;
-}
-
-// Ate the end to prevent cyclic dependency
-#include "shading/surface_element.h"
+    std::mt19937& m_mt_engine;
+    size_t m_index;
+};
 
 #endif

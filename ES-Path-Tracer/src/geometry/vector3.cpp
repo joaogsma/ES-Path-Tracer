@@ -13,12 +13,12 @@ y(coordinates[1]), z(coordinates[2])
     x = y = z = val;
 }
 
-Vector3::Vector3(double x, double y, double z) : x(coordinates[0]),
+Vector3::Vector3(double _x, double _y, double _z) : x(coordinates[0]),
 y(coordinates[1]), z(coordinates[2])
 {
-    coordinates[0] = x;
-    coordinates[1] = y;
-    coordinates[2] = z;
+    coordinates[0] = _x;
+    coordinates[1] = _y;
+    coordinates[2] = _z;
 }
 
 Vector3::Vector3(const Point3& origin, const Point3& destination)

@@ -52,7 +52,7 @@ namespace scene
                 transmit(transmit), refractive_index_exterior(refractive_index_exterior), 
 				refractive_index_interior(refractive_index_interior), glossy_exponent(glossy_exponent)
             {
-                if ( !valid() )
+                if (!valid())
                     throw std::domain_error("Invalid_parameters");
             }
 
@@ -77,18 +77,6 @@ namespace scene
                 return valid;
             }
         };
-        
-		/*
-        struct Light_Impulse {
-            Vector3 direction;
-            double magnitude;
-
-            Light_Impulse() : direction(0), magnitude(0) {}
-            Light_Impulse(const Vector3& direction, double magnitude)
-                : direction(direction), magnitude(magnitude) {}
-        };
-		*/
-
         // =====================================
         
         // ========== Member variables ==========
@@ -97,13 +85,19 @@ namespace scene
         Material_Data material;
         // ======================================
 
-        bool scatter(const Vector3& w_i, Vector3& w_o, Color3& weight_o,
+        bool scatter(
+			const Vector3& w_i,
+			Vector3& w_o,
+			Color3& coefficient,
 			Random_Sequence& rnd) const;
 
+		// Assumes both vectors point outwards
+		Radiance3 evaluate_bsdf(const Vector3& w_i, const Vector3& w_o) const;
+
 	private:
-		Vector3 mirror_reflect(const Vector3& incident) const;
-		Vector3 refract(const Vector3& incoming) const;
+		Vector3 mirror_reflect(const Vector3& incident, Vector3 normal = Vector3(0.0)) const;
+		Vector3 refract(const Vector3& incoming, Vector3 normal = Vector3(0.0)) const;
     };
-}
+};
 
 #endif
