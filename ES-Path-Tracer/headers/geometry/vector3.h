@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <string>
 #include <type_traits>
 
 #include "point3.h"
@@ -58,6 +59,11 @@ public:
 
 	double magnitude() const;
 
+	std::string to_string() const
+	{
+		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+	}
+
 private:
 	double coordinates[N_DIMS];
 
@@ -80,6 +86,5 @@ Vector3 operator+(const Vector3& vec1, const Vector3& vec2);
 
 // Vector subtraction
 Vector3 operator-(const Vector3& vec1, const Vector3& vec2);
-
 
 #endif

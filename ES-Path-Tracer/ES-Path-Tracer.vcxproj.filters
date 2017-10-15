@@ -164,5 +164,8 @@
     <ClInclude Include="headers\common\random_number_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="headers\path-tracer\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

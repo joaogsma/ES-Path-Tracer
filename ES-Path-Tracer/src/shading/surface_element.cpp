@@ -18,7 +18,10 @@ namespace scene
 		Color3& coefficient, 
 		Random_Sequence& rnd) const
     {
-        const Vector3& n = geometric.normal;
+		const Vector3& inv_geometric_normal = -1 * geometric.normal;
+		const Vector3& normal = dot_prod(w_i, inv_geometric_normal) > 0
+			? geometric.normal
+			: inv_geometric_normal;
 
         /*  Choose a next number on [0, 1], then reduce it by each kind of 
             scatering's probability until it becomes negative */
@@ -36,11 +39,10 @@ namespace scene
             
             if (r < 0.0)
             {
-				double prob_times_density = prob_lambertian_avg * (1.0 / (2 * M_PI));
-                coefficient = material.lambertian_reflect / prob_times_density;
-				Vector3 sample = rnd.uniform_distributed_hemisphere_sample();
+				coefficient = material.lambertian_reflect / prob_lambertian_avg;
+				Vector3 sample = rnd.cos_distributed_hemisphere_sample();
 				w_o = (sample[0] * geometric.tangent0)
-					+ (sample[1] * geometric.normal)
+					+ (sample[1] * normal)
 					+ (sample[2] * geometric.tangent1);
                 return true;
             }

@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <cassert>
 #include <numeric>
-#include <vector> 
+#include <string>
+#include <vector>
 
 class Vector3;
 
@@ -46,6 +47,11 @@ public:
     bool operator!=(const Point3& other) const { return !operator==(other); }
     void operator+=(const Vector3& vec);
     void operator-=(const Vector3& vec);
+
+	std::string to_string() const
+	{
+		return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+	}
 
 private:
 	double coordinates[N_DIMS];

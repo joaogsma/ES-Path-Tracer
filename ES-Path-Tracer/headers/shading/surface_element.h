@@ -43,7 +43,7 @@ namespace scene
             double refractive_index_exterior, refractive_index_interior, glossy_exponent;
 
             Material_Data() : emit(0), lambertian_reflect(0), specular_reflect(0), transmit(0), 
-                refractive_index_exterior(0), refractive_index_interior(0), glossy_exponent(0) {}
+                refractive_index_exterior(1), refractive_index_interior(1), glossy_exponent(0) {}
             
             Material_Data(const Irradiance3& emit, const Color3& lambertian_reflect,
                 const Color3& specular_reflect, const Color3& transmit, double glossy_exponent,
