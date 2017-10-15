@@ -90,29 +90,24 @@ namespace scene
 	// Assumes both vectors point outwards
 	Radiance3 Surface_Element::evaluate_bsdf(const Vector3& w_i, const Vector3& w_o) const
 	{
-		const Vector3& reflection_geometric_normal = (dot_prod(w_i, geometric.normal) > 0)
+		const Vector3& geometric_normal = dot_prod(w_i, geometric.normal) > 0
 			? geometric.normal
 			: -1 * geometric.normal;
-		const Vector3& transmission_geometric_normal = -1 * reflection_geometric_normal;
-
-		const Vector3& reflection_shading_normal = (reflection_geometric_normal == geometric.normal)
+		const Vector3& shading_normal = geometric_normal == geometric.normal
 			? shading.normal
-			: reflection_geometric_normal;
-		const Vector3& transmission_shading_normal = (transmission_geometric_normal == geometric.normal)
-			? shading.normal
-			: transmission_geometric_normal;
-		
+			: geometric_normal;
 			
-		const Vector3& reflected_vec = mirror_reflect(-1 * w_i, reflection_shading_normal);
-		const Vector3& refracted_vec = refract(-1 * w_i, transmission_shading_normal);
+		const Vector3& inv_w_i = -1 * w_i;
+		const Vector3& reflected_vec = mirror_reflect(inv_w_i, shading_normal);
+		const Vector3& refracted_vec = refract(inv_w_i, shading_normal);
 
-		if (dot_prod(w_o, transmission_geometric_normal) > 0)
+		if (dot_prod(w_o, geometric_normal) < 0)
 		{
-			// w_o and w_i are on opposite sides of the surface; only transmissive part
+			// w_o and w_i are on opposite sides of the surface - only transmissive part
 			return std::max(0.0, dot_prod(w_o, refracted_vec)) * material.transmit;
 		}
 		
-		const Radiance3& diffuse_part = std::max(0.0, dot_prod(w_i, reflection_shading_normal))
+		const Radiance3& diffuse_part = std::max(0.0, dot_prod(w_i, shading_normal))
 			* material.lambertian_reflect;
 
 		const Radiance3& specular_part =

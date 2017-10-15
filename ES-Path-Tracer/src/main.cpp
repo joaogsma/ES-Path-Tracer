@@ -118,9 +118,9 @@ int main()
 	// ==================== Add the triangle ====================
 	scene::Surface_Element::Material_Data triangle_material(
 		Irradiance3(0),
-		Color3(0.0, 0.8, 0.0),
-		Color3(0.2, 0.2, 0.2),
-		Color3(0.0),
+		Color3(0.0, 0.0, 0.0),
+		Color3(0.0, 0.0, 0.0),
+		Color3(0.8, 0.8, 0.8),
 		5,
 		1.0,
 		1.0);
@@ -154,14 +154,14 @@ int main()
 
 	Uniform_Random_Sequence random_seq;
 
-	Camera camera(Point3(0, 0, 6), Vector3(0, 0, -1), Vector3(0, 1, 0), 5);
+	Camera camera(Point3(0, 1, 6), Vector3(0, -0.1, -1), Vector3(0, 1, 0), 3);
 	Path_Tracer path_tracer(
 		&camera,
 		&scene,
 		3,           // Window width
-		1,    // Aspect ratio
+		4./3.,      // Aspect ratio
 		680,         // Width resolution
-		500,           // Samples per pixel
+		100,         // Samples per pixel
 		6);          // Number of threads
 	std::vector<std::vector<Radiance3>> image;
 	path_tracer.compute_image(image);

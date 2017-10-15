@@ -25,6 +25,8 @@
 #include "shading/color3.h"
 #include "shading/surface_element.h"
 
+int depth = 0;
+
 Path_Tracer::Path_Tracer(
 	const Camera* camera,
 	const scene::Scene* scene,
@@ -130,6 +132,8 @@ Radiance3 Path_Tracer::path_trace(
 	if (!m_scene->intersect(ray, dist, surfel, refractive_index))
 		return Radiance3(0.0);
     	
+	depth += 1;
+
 	const Vector3& w_o = -1 * ray.direction;
 
     // This point could be an emitter
@@ -144,6 +148,8 @@ Radiance3 Path_Tracer::path_trace(
     if (!is_eye_ray || m_indirect)
 		l_o += estimate_indirect_light(random_seq, surfel, w_o, is_eye_ray);
     
+	depth -= 1;
+
 	return l_o;
 }
 
@@ -153,6 +159,9 @@ Radiance3 Path_Tracer::estimate_direct_light_from_area_lights(
 	const Vector3& w_o,
 	double current_refractive_index)
 {
+	if (surfel.material.lambertian_reflect.r == 0 && depth >= 2 && dot_prod(w_o, surfel.geometric.normal) < 0)
+		int a = 0;
+
     Radiance3 l_o(0.0);
 
     // Estimate radiance back along ray due to direct illumination from area lights
@@ -300,9 +309,11 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 
 			m_pixel_lock.lock();
 
-			if (PRINT_PROGRESS && row % (resolution_height / 20) == 0 && col == 0)
+			if (PRINT_PROGRESS
+				&& col == m_resolution_width - 1
+				&& (row % (resolution_height / 20) == 0 || row == resolution_height-1))
 			{
-				int completed_pixels = std::max(0, m_current_row - 1) * m_resolution_width + m_current_col;
+				int completed_pixels = (row + 1) * m_resolution_width;
 				double progress_ratio = (double) completed_pixels / (resolution_height * m_resolution_width);
 				std::cout << '\r' << concurrent_compute_image(progress_ratio);
 			}
