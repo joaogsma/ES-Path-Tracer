@@ -58,6 +58,7 @@ private:
 };
 
 double distance(const Point3& a, const Point3& b);
+double distance2(const Point3& a, const Point3& b);
 
 Vector3 operator-(const Point3& a, const Point3& b);
 Point3 operator+(const Point3& p, const Vector3& v);

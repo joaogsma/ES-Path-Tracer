@@ -185,6 +185,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\path-tracer\path_tracer.cpp" />
     <ClCompile Include="src\geometry\triangle.cpp" />
+    <ClCompile Include="src\scene\sphere.cpp" />
     <ClCompile Include="src\shading\color3.cpp" />
     <ClCompile Include="src\path-tracer\uniform_random_sequence.cpp" />
     <ClCompile Include="src\scene\area_light.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="headers\geometry\ray.h" />
     <ClInclude Include="headers\kd-tree\kd_tree.h" />
     <ClInclude Include="headers\path-tracer\camera.h" />
+    <ClInclude Include="headers\scene\sphere.h" />
     <ClInclude Include="headers\shading\color3.h" />
     <ClInclude Include="headers\path-tracer\random_sequence.h" />
     <ClInclude Include="headers\path-tracer\uniform_random_sequence.h" />

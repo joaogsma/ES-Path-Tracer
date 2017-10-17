@@ -44,11 +44,17 @@ y(coordinates[1]), z(coordinates[2])
 // Euclidean point distance
 double distance(const Point3& a, const Point3& b)
 {
+	return distance2(a, b);
+}
+
+// Euclidean squared point distance
+double distance2(const Point3& a, const Point3& b)
+{
 	double x_diff = a.x - b.x;
 	double y_diff = a.y - b.y;
 	double z_diff = a.z - b.z;
 
-	return sqrt(pow(x_diff, 2) + pow(y_diff, 2) + pow(z_diff, 2));
+	return pow(x_diff, 2) + pow(y_diff, 2) + pow(z_diff, 2);
 }
 
 

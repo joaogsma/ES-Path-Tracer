@@ -30,7 +30,7 @@ namespace scene
 		static const Color3& zero_color = Color3::zero();
 		static const Vector3& zero_vector = Vector3(0.0);
 
-        // ========== Lambertian scattering ==========
+        // Lambertian scattering
         if (material.lambertian_reflect != zero_color)
         {
             double prob_lambertian_avg = (material.lambertian_reflect[0]
@@ -47,10 +47,8 @@ namespace scene
                 return true;
             }
         }
-        // ===========================================
 
-
-        // ========== Specular scattering ==========
+        // Specular scattering
         if (material.specular_reflect != zero_color)
         {
             const double prob_specular_avg = (material.specular_reflect[0] 
@@ -64,10 +62,8 @@ namespace scene
                 return true;
             }
         }
-        // =======================================
-
-
-        // ========== Transmissive scattering ==========
+        
+        // Transmissive scattering
         if (material.transmit != zero_color)
         {
             const double prob_transmit_avg = (material.transmit[0] + material.transmit[1]
@@ -81,8 +77,7 @@ namespace scene
                 return w_o != zero_vector;    // w_o is zero on total internal refraction
             }
         }
-        // =============================================
-
+        
         // Absorbed
         return false;
     }

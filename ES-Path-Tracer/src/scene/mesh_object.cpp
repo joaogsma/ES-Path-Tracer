@@ -13,7 +13,7 @@ namespace scene
     Mesh_Object::Mesh_Object(
 		const vector<const Triangle*> &triangles,
 		Surface_Element::Material_Data material)
-		: m_kd_tree(triangles), m_material(material) {}
+		: Object(material), m_kd_tree(triangles) {}
     
     bool Mesh_Object::intersect(const Ray &ray, double &t, Surface_Element& surfel) const
     {

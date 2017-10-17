@@ -9,10 +9,18 @@ namespace scene
 {
     class Object {
     public:
-        virtual bool intersect(const Ray &ray, double &t, Surface_Element& surfel) const = 0;
+		Object(const Surface_Element::Material_Data& material) { set_material(material); }
+
+		virtual bool intersect(const Ray &ray, double &t, Surface_Element& surfel) const = 0;
         virtual const AAB& aabb() const = 0;
 
-        virtual ~Object() {};
+		virtual const Surface_Element::Material_Data& material() const { return m_material; }
+		virtual void set_material(const Surface_Element::Material_Data& material) { m_material = material; }
+        
+		virtual ~Object() {};
+
+	protected:
+		Surface_Element::Material_Data m_material;
     };
 }
 

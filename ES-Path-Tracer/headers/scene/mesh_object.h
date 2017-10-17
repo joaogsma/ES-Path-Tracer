@@ -18,13 +18,11 @@ namespace scene
 			const std::vector<const Triangle*> &triangles, 
 			Surface_Element::Material_Data material);
         
-        bool intersect(const Ray &ray, double &t, Surface_Element& surfel) const;
+		bool intersect(const Ray &ray, double &t, Surface_Element& surfel) const;
         const AAB& aabb() const;
-		Surface_Element::Material_Data& material() { return m_material; }
 
     private:
         kd_tree::KD_Tree m_kd_tree;
-		Surface_Element::Material_Data m_material;
     };
 }
 
