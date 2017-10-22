@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <functional>
 #include <random>
 #include <stdexcept>
 #include <utility>
@@ -9,6 +10,7 @@
 #include "random/random_number_engine.h"
 
 using std::copy;
+using std::function;
 using std::logic_error;
 using std::make_pair;
 using std::mt19937;
@@ -26,6 +28,26 @@ namespace es
 		throw std::runtime_error("Class must not be instantiated");
 	}
 
+	Individual::const_iterator Parent_Selection::object_var_begin(const Individual& individual)
+	{
+		return individual.obj_var_begin();
+	}
+
+	Individual::const_iterator Parent_Selection::object_var_end(const Individual& individual)
+	{
+		return individual.obj_var_end();
+	}
+
+	Individual::const_iterator Parent_Selection::step_size_begin(const Individual& individual)
+	{
+		return individual.step_size_begin();
+	}
+
+	Individual::const_iterator Parent_Selection::step_size_end(const Individual& individual)
+	{
+		return individual.step_size_end();
+	}
+
 	// ========================================================================
     // =============================== UTILITY ================================
     // ========================================================================
@@ -38,13 +60,13 @@ namespace es
 		vector<double>& parent1_vec,
 		vector<double>& parent2_vec,
         const vector<Individual>& population,
-		const_iterator_function begin,
-        const_iterator_function end)
+		function<Individual::const_iterator(const Individual&)> begin_it,
+        function<Individual::const_iterator(const Individual&)> end_it)
     {
         parent1_vec.clear();
         parent2_vec.clear();
 
-		vector<double>::size_type size = (population[0].*begin)() - (population[0].*end)();
+		vector<double>::size_type size = end_it(population[0]) - begin_it(population[0]);
 
         // Uniform distribution for the m_population vector
         uniform_int_distribution<vector<Individual>::size_type> indiv_dist(0,
@@ -64,8 +86,8 @@ namespace es
             const Individual& parent2 = population[parent2_index];
 
             // Get the values from the parents
-            double value_parent1 = (parent1.*begin)()[i];
-            double value_parent2 = (parent2.*begin)()[i];
+            double value_parent1 = begin_it(parent1)[i];
+            double value_parent2 = begin_it(parent2)[i];
 
             // Store the values
             parent1_vec[i] = value_parent1;
@@ -119,12 +141,15 @@ namespace es
             step_sizes2;
 
         // Fill the object attributes vectors
-        global_fill_vector(object_attributes1, object_attributes2, m_population,
-            &Individual::obj_var_begin, &Individual::obj_var_end);
+		global_fill_vector(
+			object_attributes1,
+			object_attributes2,
+			m_population,
+			object_var_begin,
+			object_var_end);
 
         // Fill the step size vectors
-        global_fill_vector(step_sizes1, step_sizes2, m_population,
-            &Individual::step_size_begin, &Individual::step_size_end);
+		global_fill_vector(step_sizes1, step_sizes2, m_population, step_size_begin, step_size_end);
 
         int num_obj_var = (int)object_attributes1.size();
 
