@@ -26,6 +26,4 @@ public:
     bool intersect(const AAB &aabb, double &t_near, double &t_far) const;
 };
 
-#include "kd-tree/kd_tree.h"
-
 #endif

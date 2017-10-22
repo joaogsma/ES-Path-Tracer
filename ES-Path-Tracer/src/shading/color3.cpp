@@ -6,7 +6,7 @@
 using std::copy;
 using std::abs;
 
-static const double epsilon = 10E-9;
+static const double epsilon = 1e-7;
 
 // Color3 constructor
 Color3::Color3(double val) : r(coordinates[0]), g(coordinates[1]), b(coordinates[2])
@@ -23,7 +23,6 @@ g(coordinates[1]), b(coordinates[2])
     coordinates[2] = blue;
 }
 
-
 // Copy constructor
 Color3::Color3(const Color3& other) : r(coordinates[0]),
 g(coordinates[1]), b(coordinates[2])
@@ -31,7 +30,6 @@ g(coordinates[1]), b(coordinates[2])
     double* other_coord = &other.r;
     copy(other_coord, other_coord + 3, begin());
 }
-
 
 Color3& Color3::operator=(const Color3& other)
 {

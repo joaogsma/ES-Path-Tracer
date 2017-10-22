@@ -3,10 +3,10 @@
 
 #include <stdexcept>
 
-#include "shading/color3.h"
-#include "geometry/vector3.h"
-#include "geometry/point3.h"
-#include "path-tracer/random_sequence.h"
+#include "../geometry/vector3.h"
+#include "../geometry/point3.h"
+#include "../random/random_sequence.h"
+#include "../shading/color3.h"
 
 namespace scene
 {
@@ -89,7 +89,7 @@ namespace scene
 			const Vector3& w_i,
 			Vector3& w_o,
 			Color3& coefficient,
-			Random_Sequence& rnd) const;
+			random::Random_Sequence& rnd) const;
 
 		// Assumes both vectors point outwards
 		Radiance3 evaluate_bsdf(const Vector3& w_i, const Vector3& w_o) const;

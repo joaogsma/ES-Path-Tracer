@@ -3,8 +3,8 @@
 
 #include <stdexcept>
 
-#include "geometry/point3.h"
-#include "geometry/vector3.h"
+#include "../geometry/point3.h"
+#include "../geometry/vector3.h"
 
 class Camera {
 public:

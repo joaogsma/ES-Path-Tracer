@@ -11,9 +11,6 @@ class Vector3;
 
 class Point3 {
 public:
-	static const int N_DIMS = 3;
-	static const double COMP_EPSILON;
-
 	typedef double* iterator;
 	typedef const double* const_iterator;
 
@@ -54,6 +51,8 @@ public:
 	}
 
 private:
+	static const int N_DIMS = 3;
+	static const double COMP_EPSILON;
 	double coordinates[N_DIMS];
 };
 

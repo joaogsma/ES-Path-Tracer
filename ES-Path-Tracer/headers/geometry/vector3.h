@@ -4,14 +4,11 @@
 #include <algorithm>
 #include <vector>
 #include <string>
-#include <type_traits>
 
 #include "point3.h"
 
 class Vector3 {
 public:
-	static const int N_DIMS = 3;
-	static const double COMP_EPSILON;
 
 	typedef double* iterator;
 	typedef const double* const_iterator;
@@ -65,10 +62,10 @@ public:
 	}
 
 private:
+	static const int N_DIMS = 3;
+	static const double COMP_EPSILON;
 	double coordinates[N_DIMS];
-
 };
-
 
 // Cross and dot products
 Vector3 cross_prod(const Vector3& a, const Vector3& b);

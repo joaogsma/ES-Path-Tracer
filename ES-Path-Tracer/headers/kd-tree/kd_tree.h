@@ -1,14 +1,14 @@
 #ifndef __GUARD_KD_TREE_H__
 #define __GUARD_KD_TREE_H__
 
-#include "geometry/ray.h"
-#include "geometry/plane.h"
-#include "geometry/triangle.h"
-#include "geometry/aab.h"
-
 #include <iterator>
 #include <vector>
 #include <type_traits>
+
+#include "../geometry/ray.h"
+#include "../geometry/plane.h"
+#include "../geometry/triangle.h"
+#include "../geometry/aab.h"
 
 namespace kd_tree
 {
@@ -110,4 +110,5 @@ namespace kd_tree
             size_t num_triangles_left, size_t num_triangles_right, size_t num_triangles_plane);
     };
 }
+
 #endif

@@ -19,7 +19,7 @@
 #include "shading/surface_element.h"
 #include "path-tracer/camera.h"
 #include "path-tracer/path_tracer.h"
-#include "path-tracer/uniform_random_sequence.h"
+#include "random/uniform_random_sequence.h"
 
 int ppm_gamma_encode(double radiance, double d)
 {
@@ -198,7 +198,7 @@ int main()
 	for (scene::Object* obj : objects)
 		scene.add_object(obj);
 
-	Uniform_Random_Sequence random_seq;
+	random::Uniform_Random_Sequence random_seq;
 
 	Camera camera(Point3(0, 1, 6), Vector3(0, -0.1, -1), Vector3(0, 1, 0), 3);
 	Path_Tracer path_tracer(

@@ -1,8 +1,8 @@
 #include <random>
 #include <vector>
 
-#include "common/random_number_engine.h"
 #include "geometry/triangle.h"
+#include "random/random_number_engine.h"
 #include "scene/area_light.h"
 #include "scene/light.h"
 #include "shading/color3.h"

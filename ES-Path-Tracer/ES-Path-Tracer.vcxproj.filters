@@ -36,9 +36,6 @@
     <ClCompile Include="src\evolution-strategy\evolution_strategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolution-strategy\fitness.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\evolution-strategy\individual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,22 +66,25 @@
     <ClCompile Include="src\scene\area_light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\path-tracer\uniform_random_sequence.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\shading\surface_element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\shading\color3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\random_number_engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolution-strategy\color_histogram.cpp">
+    <ClCompile Include="src\random\uniform_random_sequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\random\random_number_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\evolution-strategy\color_histogram_fitness.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\path-tracer\color_histogram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -108,9 +108,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\evolution-strategy\fitness.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolution-strategy\individual.h">
@@ -146,19 +143,10 @@
     <ClInclude Include="headers\scene\area_light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\path-tracer\random_sequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\path-tracer\uniform_random_sequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="headers\shading\surface_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\shading\color3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\common\random_number_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\path-tracer\camera.h">
@@ -167,7 +155,19 @@
     <ClInclude Include="headers\scene\sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\evolution-strategy\color_histogram.h">
+    <ClInclude Include="headers\random\random_number_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\random\random_sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\random\uniform_random_sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolution-strategy\color_histogram_fitness.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\path-tracer\color_histogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,10 +1,10 @@
 #ifndef __GUARD_TRIANGLE_H__
 #define __GUARD_TRIANGLE_H__
 
-#include "geometry/point3.h"
-#include "geometry/vector3.h"
-
 #include <vector>
+
+#include "point3.h"
+#include "vector3.h"
 
 /*	Triangle m_objects correspond to triangles in scene object meshes */
 class Triangle {

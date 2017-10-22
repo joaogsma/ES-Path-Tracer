@@ -4,9 +4,9 @@
 #include <utility>
 #include <vector>
 
-#include "common/random_number_engine.h"
 #include "evolution-strategy/individual.h"
 #include "evolution-strategy/parent_selection.h"
+#include "random/random_number_engine.h"
 
 using std::copy;
 using std::logic_error;

@@ -13,13 +13,13 @@
 #include <thread>
 #include <vector>
 
-#include "common/random_number_engine.h"
 #include "geometry/ray.h"
 #include "geometry/vector3.h"
 #include "path-tracer/camera.h"
 #include "path-tracer/path_tracer.h"
-#include "path-tracer/random_sequence.h"
-#include "path-tracer/uniform_random_sequence.h"
+#include "random/random_number_engine.h"
+#include "random/random_sequence.h"
+#include "random/uniform_random_sequence.h"
 #include "scene/area_light.h"
 #include "scene/scene.h"
 #include "shading/color3.h"
@@ -43,6 +43,17 @@ Path_Tracer::Path_Tracer(
 	set_resolution_width(resolution_width);
 	set_samples_per_pixel(samples_per_pixel);
 	set_num_threads(num_threads);
+}
+
+Path_Tracer::Path_Tracer(const Path_Tracer& other) : m_pixel_lock(), m_image_lock()
+{
+	set_camera(other.m_camera);
+	set_scene(other.m_scene);
+	set_window_width(other.m_window_width);
+	set_aspect_ratio(other.m_aspect_ratio);
+	set_resolution_width(other.m_resolution_width);
+	set_samples_per_pixel(other.m_samples_per_pixel);
+	set_num_threads(other.m_num_threads);
 }
 
 void Path_Tracer::set_camera(const Camera* camera)
@@ -115,7 +126,7 @@ void Path_Tracer::compute_image(std::vector<std::vector<Radiance3>>& image)
 
 Radiance3 Path_Tracer::path_trace(
 	const Ray& ray,
-	Random_Sequence& random_seq,
+	random::Random_Sequence& random_seq,
 	bool is_eye_ray,
 	double refractive_index)
 {
@@ -154,7 +165,7 @@ Radiance3 Path_Tracer::path_trace(
 }
 
 Radiance3 Path_Tracer::estimate_direct_light_from_area_lights(
-	Random_Sequence& random_seq,
+	random::Random_Sequence& random_seq,
 	const scene::Surface_Element& surfel,
 	const Vector3& w_o,
 	double current_refractive_index)
@@ -221,7 +232,7 @@ Radiance3 Path_Tracer::estimate_direct_light_from_area_lights(
 }
 
 Radiance3 Path_Tracer::estimate_indirect_light(
-	Random_Sequence& random_seq,
+	random::Random_Sequence& random_seq,
     const scene::Surface_Element& surfel,
 	const Vector3& w_o,
 	bool is_eye_ray)
@@ -297,7 +308,7 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 				+ row * down_increment
 				+ col * right_increment;
 			const Ray ray(m_camera->position(), Vector3(m_camera->position(), pixel_center));
-			Uniform_Random_Sequence random_seq;
+			random::Uniform_Random_Sequence random_seq;
 
 			Radiance3 sample_estimate_sum = 0;
 			for (int i = 0; i < m_samples_per_pixel; ++i)

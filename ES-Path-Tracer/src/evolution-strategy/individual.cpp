@@ -5,8 +5,8 @@
 #include <random>
 #include <vector>
 
-#include "common/random_number_engine.h"
 #include "evolution-strategy/individual.h"
+#include "random/random_number_engine.h"
 
 using std::abs;
 using std::back_inserter;

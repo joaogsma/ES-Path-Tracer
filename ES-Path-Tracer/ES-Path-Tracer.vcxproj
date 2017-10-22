@@ -168,12 +168,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\random_number_engine.cpp" />
+    <ClCompile Include="src\random\random_number_engine.cpp" />
     <ClCompile Include="src\evolution-strategy\evolution_strategy.cpp" />
-    <ClCompile Include="src\evolution-strategy\fitness.cpp" />
+    <ClCompile Include="src\evolution-strategy\color_histogram_fitness.cpp" />
     <ClCompile Include="src\evolution-strategy\individual.cpp" />
     <ClCompile Include="src\evolution-strategy\parent_selection.cpp" />
-    <ClCompile Include="src\evolution-strategy\color_histogram.cpp" />
+    <ClCompile Include="src\path-tracer\color_histogram.cpp" />
     <ClCompile Include="src\evolution-strategy\recombination.cpp" />
     <ClCompile Include="src\evolution-strategy\survivor_selection.cpp" />
     <ClCompile Include="src\geometry\aab.cpp" />
@@ -187,19 +187,19 @@
     <ClCompile Include="src\geometry\triangle.cpp" />
     <ClCompile Include="src\scene\sphere.cpp" />
     <ClCompile Include="src\shading\color3.cpp" />
-    <ClCompile Include="src\path-tracer\uniform_random_sequence.cpp" />
+    <ClCompile Include="src\random\uniform_random_sequence.cpp" />
     <ClCompile Include="src\scene\area_light.cpp" />
     <ClCompile Include="src\scene\mesh_object.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\shading\surface_element.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\common\random_number_engine.h" />
+    <ClInclude Include="headers\random\random_number_engine.h" />
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
-    <ClInclude Include="headers\evolution-strategy\fitness.h" />
+    <ClInclude Include="headers\evolution-strategy\color_histogram_fitness.h" />
     <ClInclude Include="headers\evolution-strategy\individual.h" />
     <ClInclude Include="headers\evolution-strategy\parent_selection.h" />
-    <ClInclude Include="headers\evolution-strategy\color_histogram.h" />
+    <ClInclude Include="headers\path-tracer\color_histogram.h" />
     <ClInclude Include="headers\evolution-strategy\recombination.h" />
     <ClInclude Include="headers\evolution-strategy\survivor_selection.h" />
     <ClInclude Include="headers\geometry\aab.h" />
@@ -210,8 +210,8 @@
     <ClInclude Include="headers\path-tracer\camera.h" />
     <ClInclude Include="headers\scene\sphere.h" />
     <ClInclude Include="headers\shading\color3.h" />
-    <ClInclude Include="headers\path-tracer\random_sequence.h" />
-    <ClInclude Include="headers\path-tracer\uniform_random_sequence.h" />
+    <ClInclude Include="headers\random\random_sequence.h" />
+    <ClInclude Include="headers\random\uniform_random_sequence.h" />
     <ClInclude Include="headers\scene\area_light.h" />
     <ClInclude Include="headers\scene\light.h" />
     <ClInclude Include="headers\scene\mesh_object.h" />

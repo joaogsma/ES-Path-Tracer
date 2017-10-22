@@ -5,14 +5,14 @@
 #include <stdexcept>
 #include <vector>
 
-#include "geometry/ray.h"
-#include "geometry/vector3.h"
-#include "path-tracer/camera.h"
-#include "path-tracer/random_sequence.h"
-#include "scene/area_light.h"
-#include "scene/scene.h"
-#include "shading/color3.h"
-#include "shading/surface_element.h"
+#include "../geometry/ray.h"
+#include "../geometry/vector3.h"
+#include "../path-tracer/camera.h"
+#include "../random/random_sequence.h"
+#include "../scene/area_light.h"
+#include "../scene/scene.h"
+#include "../shading/color3.h"
+#include "../shading/surface_element.h"
 
 class Path_Tracer {
 public:
@@ -28,6 +28,8 @@ public:
 		int resolution_width,
 		int samples_per_pixel,
 		int num_threads = 4);
+
+	Path_Tracer(const Path_Tracer& other);
 
 	void compute_image(std::vector<std::vector<Radiance3>>& image);
 
@@ -66,18 +68,18 @@ private:
 
 	Radiance3 path_trace(
 		const Ray& ray,
-		Random_Sequence& random_seq,
+		random::Random_Sequence& random_seq,
 		bool is_eye_ray,
 		double refractive_index = 1.0);
 	
 	Radiance3 estimate_direct_light_from_area_lights(
-		Random_Sequence& random_seq,
+		random::Random_Sequence& random_seq,
 		const scene::Surface_Element& surfel,
 		const Vector3& w_o,
 		double current_refractive_index);
 
 	Radiance3 estimate_indirect_light(
-		Random_Sequence& random_seq,
+		random::Random_Sequence& random_seq,
 		const scene::Surface_Element& surfel,
 		const Vector3& w_o,
 		bool is_eye_ray);

@@ -1,9 +1,9 @@
 #ifndef __GUARD_OBJECT_H__
 #define __GUARD_OBJECT_H__
 
-#include "geometry/ray.h"
-#include "geometry/aab.h"
-#include "shading/surface_element.h"
+#include "../geometry/ray.h"
+#include "../geometry/aab.h"
+#include "../shading/surface_element.h"
 
 namespace scene
 {
