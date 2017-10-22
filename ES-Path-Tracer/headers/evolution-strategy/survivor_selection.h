@@ -7,16 +7,25 @@
 
 namespace es
 {
-    namespace survivor_selection
-    {
-        void generational_selection(
-            std::vector<individual::Individual>& population, 
-            std::vector<individual::Individual> children);
+    class Survivor_Selection {
+	public:
+		static void generational_selection(
+            std::vector<Individual>& m_population, 
+            std::vector<Individual> children);
 
-        void nongenerational_selection(
-            std::vector<individual::Individual>& population,
-            std::vector<individual::Individual> children);
-    }
+        static void nongenerational_selection(
+            std::vector<Individual>& m_population,
+            std::vector<Individual> children);
+
+	private:
+		Survivor_Selection();
+
+		static bool compare(Individual& indiv1, Individual& indiv2);
+		
+		static void Survivor_Selection::select_survivors(
+			std::vector<Individual>& individual_vec,
+			std::vector<Individual>::size_type num_survivors);
+	};
 }
 
 #endif

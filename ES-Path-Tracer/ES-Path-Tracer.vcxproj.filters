@@ -45,9 +45,6 @@
     <ClCompile Include="src\evolution-strategy\parent_selection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolution-strategy\pixel_histogram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\evolution-strategy\recombination.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
     <ClCompile Include="src\scene\sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\evolution-strategy\color_histogram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\geometry\point3.h">
@@ -117,12 +117,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolution-strategy\parent_selection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\evolution-strategy\pixel_histogram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\evolution-strategy\random_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolution-strategy\recombination.h">
@@ -171,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\scene\sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolution-strategy\color_histogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

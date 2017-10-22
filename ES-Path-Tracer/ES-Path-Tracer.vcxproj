@@ -173,7 +173,7 @@
     <ClCompile Include="src\evolution-strategy\fitness.cpp" />
     <ClCompile Include="src\evolution-strategy\individual.cpp" />
     <ClCompile Include="src\evolution-strategy\parent_selection.cpp" />
-    <ClCompile Include="src\evolution-strategy\pixel_histogram.cpp" />
+    <ClCompile Include="src\evolution-strategy\color_histogram.cpp" />
     <ClCompile Include="src\evolution-strategy\recombination.cpp" />
     <ClCompile Include="src\evolution-strategy\survivor_selection.cpp" />
     <ClCompile Include="src\geometry\aab.cpp" />
@@ -199,8 +199,7 @@
     <ClInclude Include="headers\evolution-strategy\fitness.h" />
     <ClInclude Include="headers\evolution-strategy\individual.h" />
     <ClInclude Include="headers\evolution-strategy\parent_selection.h" />
-    <ClInclude Include="headers\evolution-strategy\pixel_histogram.h" />
-    <ClInclude Include="headers\evolution-strategy\random_engine.h" />
+    <ClInclude Include="headers\evolution-strategy\color_histogram.h" />
     <ClInclude Include="headers\evolution-strategy\recombination.h" />
     <ClInclude Include="headers\evolution-strategy\survivor_selection.h" />
     <ClInclude Include="headers\geometry\aab.h" />

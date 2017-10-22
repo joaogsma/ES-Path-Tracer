@@ -4,16 +4,28 @@
 #include "../path-tracer/path_tracer.h"
 
 #include "individual.h"
-#include "pixel_histogram.h"
+#include "color_histogram.h"
 
 namespace es
 {
-    namespace fitness
-    {
-        static Pixel_Histogram histogram;
+	class Color_Histogram_Fitness {
+	public:
+		Color_Histogram_Fitness(int radius = 4) { set_radius(radius); }
 
-        double pixel_histogram_fitness_fn(const individual::Individual& individual);
-    }
+		double operator()(const Individual& individual);
+
+		// Acessor functions
+		const Color_Histogram& color_histogram() const { return m_color_histogram; }
+		int radius() const { return m_radius; }
+		// Setters
+		void set_color_histogram(const Color_Histogram& histogram);
+		void set_radius(int radius);
+
+	private:
+		Color_Histogram m_color_histogram;
+		int m_radius;
+	};
+
 }
 
 #endif

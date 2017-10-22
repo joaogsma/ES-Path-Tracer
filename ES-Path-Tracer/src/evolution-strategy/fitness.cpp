@@ -1,19 +1,24 @@
-#include "path-tracer/path_tracer.h"
+#include <stdexcept>
 
 #include "evolution-strategy/fitness.h"
-
-using es::individual::Individual;
+#include "evolution-strategy/individual.h"
 
 namespace es
 {
-    namespace fitness
-    {
-        /*
-        double pixel_histogram_fitness_fn(const Individual& individual)
-        {
-            return 0;
-        }
-        */
+	void Color_Histogram_Fitness::set_color_histogram(const Color_Histogram& histogram)
+	{
+		m_color_histogram = histogram;
+	}
+	
+	void Color_Histogram_Fitness::set_radius(int radius)
+	{
+		if (radius <= 0)
+			throw std::invalid_argument("Distance must be positive");
+		m_radius = radius;
+	}
 
-    }
+	double Color_Histogram_Fitness::operator()(const Individual& individual)
+	{
+		// TODO: path trace...
+	}
 }
