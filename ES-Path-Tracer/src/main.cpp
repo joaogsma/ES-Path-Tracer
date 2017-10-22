@@ -21,15 +21,7 @@
 #include "path-tracer/path_tracer.h"
 #include "random/uniform_random_sequence.h"
 
-int ppm_gamma_encode(double radiance, double d)
-{
-	return int(
-		std::pow(
-			std::min(1.0, std::max(0.0, radiance * d)),
-			1.0 / 2.2) * 255.0);
-}
-
-void save_image(const std::string& filename, const std::vector<std::vector<Radiance3>>& image, double d)
+void save_image(const std::string& filename, const std::vector<std::vector<Radiance3>>& image)
 {
 	std::stringstream ss;
 
@@ -44,10 +36,7 @@ void save_image(const std::string& filename, const std::vector<std::vector<Radia
 		for (int x = 0; x < width; ++x)
 		{
 			const Radiance3& color(image[y][x]);
-			ss << ppm_gamma_encode(color.r, d)
-				<< ' ' << ppm_gamma_encode(color.g, d)
-				<< ' ' << ppm_gamma_encode(color.b, d)
-				<< std::endl;
+			ss << color.r << ' ' << color.g << ' ' << color.b << std::endl;
 		}
 	}
 
@@ -208,12 +197,14 @@ int main()
 		16./9.,      // Aspect ratio
 		680,         // Width resolution
 		100,         // Samples per pixel
+		6,           // Gamma encoding coefficient
+		1.0 / 2.5,   // Gamma encoding exponent
 		6);          // Number of threads
 	std::vector<std::vector<Radiance3>> image;
 	path_tracer.compute_image(image);
 
 	std::string filename = "result_image.ppm";
-	save_image(filename, image, 7);
+	save_image(filename, image);
 
 	cv::Mat img_file = cv::imread(filename);
 

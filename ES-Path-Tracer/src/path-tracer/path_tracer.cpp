@@ -34,6 +34,8 @@ Path_Tracer::Path_Tracer(
 	double aspect_ratio,
 	int resolution_width,
 	int samples_per_pixel,
+	double gamma_coefficient,
+	double gamma_exponent,
 	int num_threads)
 {
 	set_camera(camera);
@@ -42,6 +44,8 @@ Path_Tracer::Path_Tracer(
 	set_aspect_ratio(aspect_ratio);
 	set_resolution_width(resolution_width);
 	set_samples_per_pixel(samples_per_pixel);
+	set_gamma_coefficient(gamma_coefficient);
+	set_gamma_exponent(gamma_exponent);
 	set_num_threads(num_threads);
 }
 
@@ -96,6 +100,20 @@ void Path_Tracer::set_samples_per_pixel(int samples_per_pixel)
 	if (samples_per_pixel <= 0)
 		throw std::invalid_argument("Number of samples per pixel must be positive");
 	m_samples_per_pixel = samples_per_pixel;
+}
+
+void Path_Tracer::set_gamma_coefficient(double coefficient)
+{
+	if (coefficient <= 0)
+		throw std::invalid_argument("Coefficient must be positive");
+	m_gamma_coefficient = coefficient;
+}
+
+void Path_Tracer::set_gamma_exponent(double gamma_exponent)
+{
+	if (gamma_exponent <= 0)
+		throw std::invalid_argument("Exponent must be greater than 0");
+	m_gamma_exponent = gamma_exponent;
 }
 
 void Path_Tracer::set_num_threads(int num_threads)
@@ -315,7 +333,8 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 				sample_estimate_sum += path_trace(ray, random_seq, true);
 
 			m_image_lock.lock();
-			(*image)[row][col] = sample_estimate_sum / m_samples_per_pixel;
+			const Radiance3& estimate = gamma_correction(sample_estimate_sum / m_samples_per_pixel);
+			(*image)[row][col] = estimate;
 			m_image_lock.unlock();
 
 			m_pixel_lock.lock();
@@ -347,4 +366,21 @@ std::string Path_Tracer::concurrent_compute_image(double progress) const
 	std::copy(completed.begin(), completed.end(), concurrent_compute_image.begin());
 	
 	return "0% [" + concurrent_compute_image + "] 100%";
+}
+
+Radiance3 Path_Tracer::gamma_correction(Radiance3 radiance) const
+{
+	return Radiance3(
+		gamma_correction(radiance.r),
+		gamma_correction(radiance.g),
+		gamma_correction(radiance.b));
+}
+
+double Path_Tracer::gamma_correction(double radiance) const
+{
+	return int(
+		std::pow(
+			std::min(1.0, std::max(0.0, radiance * m_gamma_coefficient)),
+			m_gamma_exponent)
+		* 255.0);
 }

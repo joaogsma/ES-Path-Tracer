@@ -27,6 +27,8 @@ public:
 		double aspect_ratio,
 		int resolution_width,
 		int samples_per_pixel,
+		double gamma_coefficient = 7,
+		double gamma_exponent = 1.0 / 2.2,
 		int num_threads = 4);
 
 	Path_Tracer(const Path_Tracer& other);
@@ -40,6 +42,8 @@ public:
 	int resolution_width() const { return m_resolution_width; }
 	double aspect_ratio() const { return m_aspect_ratio; }
 	int samples_per_pixel() const { return m_samples_per_pixel; }
+	double gamma_coefficient() const { return m_gamma_coefficient; }
+	double gamma_exponent() const { return m_gamma_exponent; }
 	int num_threads() const { return m_num_threads; }
 	
 	// Setters
@@ -49,6 +53,8 @@ public:
 	void set_resolution_width(int resolution_width);
 	void set_aspect_ratio(double aspect_ratio);
 	void set_samples_per_pixel(int samples_per_pixel);
+	void set_gamma_coefficient(double gamma_coefficient);
+	void set_gamma_exponent(double exponent);
 	void set_num_threads(int num_threads);
 
 private:
@@ -59,6 +65,8 @@ private:
 	double m_aspect_ratio;
 	int m_resolution_width;
 	int m_samples_per_pixel;
+	double m_gamma_coefficient;
+	double m_gamma_exponent;
 	// Concurrency-related members
 	std::mutex m_pixel_lock;
 	std::mutex m_image_lock;
@@ -89,6 +97,9 @@ private:
 	void thread_code(std::vector<std::vector<Radiance3>>* image);
 
 	std::string Path_Tracer::concurrent_compute_image(double progress) const;
+
+	Radiance3 gamma_correction(Radiance3 radiance) const;
+	double gamma_correction(double radiance) const;
 };
 
 #endif
