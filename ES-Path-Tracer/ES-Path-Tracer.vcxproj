@@ -185,6 +185,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\path-tracer\path_tracer.cpp" />
     <ClCompile Include="src\geometry\triangle.cpp" />
+    <ClCompile Include="src\random\es_individual_random_sequence.cpp" />
+    <ClCompile Include="src\random\random_sequence.cpp" />
     <ClCompile Include="src\scene\sphere.cpp" />
     <ClCompile Include="src\shading\color3.cpp" />
     <ClCompile Include="src\random\uniform_random_sequence.cpp" />
@@ -194,6 +196,7 @@
     <ClCompile Include="src\shading\surface_element.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\random\es_individual_random_sequence.h" />
     <ClInclude Include="headers\random\random_number_engine.h" />
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
     <ClInclude Include="headers\evolution-strategy\color_histogram_fitness.h" />

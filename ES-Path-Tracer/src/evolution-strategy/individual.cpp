@@ -34,6 +34,10 @@ namespace es
         m_proportionality_constant(1 / sqrt(num_obj_var))
     {
         m_data.resize(num_obj_var + 1);
+		mt19937& mt_engine = random::mt_engine_singleton();
+		uniform_real_distribution<double> uniform_distribution(0.0, 1.0);
+		for (size_type i = 0; i < m_data.size(); ++i)
+			m_data[i] = uniform_distribution(mt_engine);
     }
 
 	const function<double(const Individual&)>& Individual::fitness_function() const
@@ -100,4 +104,18 @@ namespace es
 
         return m_fitness_val;
     }
+
+	void Individual::expand(size_type amount)
+	{
+		vector<double> expansion_data;
+		expansion_data.reserve(amount);
+		
+		mt19937& mt_engine = random::mt_engine_singleton();
+		uniform_real_distribution<double> uniform_dist(0.0, 1.0);
+		for (int i = 0; i < amount; ++i)
+			expansion_data.push_back(uniform_dist(mt_engine));
+
+		m_data.insert(obj_var_end(), expansion_data.begin(), expansion_data.end());
+		m_valid_fitness = false;
+	}
 }

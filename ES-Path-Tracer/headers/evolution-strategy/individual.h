@@ -25,7 +25,9 @@ namespace es
 
 		const std::function<double(const Individual&)>& fitness_function() const;
 
-        // Iterator functions
+		void expand(size_type amount);
+        
+			// Iterator functions
         iterator begin() { return m_data.begin(); }
         iterator end() { return m_data.end(); }
         const_iterator begin() const { return m_data.begin(); }

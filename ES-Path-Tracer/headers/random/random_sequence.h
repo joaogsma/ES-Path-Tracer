@@ -4,7 +4,7 @@
 #include <random>
 
 #include "../geometry/vector3.h"
-#include "../random/random_number_engine.h"
+#include "random_number_engine.h"
 
 namespace random
 {
@@ -13,12 +13,16 @@ namespace random
 		Random_Sequence() : m_mt_engine(random::mt_engine_singleton()), m_index(0) {}
 
 		virtual double next() = 0;
-		virtual Vector3 uniform_distributed_hemisphere_sample() = 0;
-		virtual Vector3 cos_distributed_hemisphere_sample() = 0;
+		
+		virtual Vector3 uniform_distributed_hemisphere_sample();
+		
+		virtual Vector3 cos_distributed_hemisphere_sample();
 
 	protected:
 		std::mt19937& m_mt_engine;
 		size_t m_index;
+
+		virtual double next_element();
 	};
 }
 
