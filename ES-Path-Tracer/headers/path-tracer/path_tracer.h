@@ -35,6 +35,15 @@ public:
 
 	void compute_image(std::vector<std::vector<Radiance3>>& image);
 
+	Radiance3 path_trace(
+		const Ray& ray,
+		random::Random_Sequence& random_seq,
+		bool is_eye_ray,
+		double refractive_index = 1.0) const;
+	
+	Radiance3 gamma_correction(Radiance3 radiance) const;
+	double gamma_correction(double radiance) const;
+	
 	// Acessor functions
 	const Camera* camera() const { return m_camera; }
 	const scene::Scene* scene() const { return m_scene; }
@@ -74,32 +83,25 @@ private:
 	int m_current_col;
 	int m_num_threads;
 
-	Radiance3 path_trace(
-		const Ray& ray,
-		random::Random_Sequence& random_seq,
-		bool is_eye_ray,
-		double refractive_index = 1.0);
-	
 	Radiance3 estimate_direct_light_from_area_lights(
 		random::Random_Sequence& random_seq,
 		const scene::Surface_Element& surfel,
 		const Vector3& w_o,
-		double current_refractive_index);
+		double current_refractive_index) const;
 
 	Radiance3 estimate_indirect_light(
 		random::Random_Sequence& random_seq,
 		const scene::Surface_Element& surfel,
 		const Vector3& w_o,
-		bool is_eye_ray);
+		bool is_eye_ray) const;
 
-	const scene::Area_Light& pick_random_light();
+	const scene::Area_Light& pick_random_light() const;
 
 	void thread_code(std::vector<std::vector<Radiance3>>* image);
 
-	std::string Path_Tracer::concurrent_compute_image(double progress) const;
+	Radiance3 estimate_pixel_color(const Ray& ray) const;
 
-	Radiance3 gamma_correction(Radiance3 radiance) const;
-	double gamma_correction(double radiance) const;
+	std::string Path_Tracer::build_progress_bar(double progress) const;
 };
 
 #endif

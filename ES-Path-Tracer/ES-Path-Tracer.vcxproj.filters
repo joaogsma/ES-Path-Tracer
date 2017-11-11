@@ -93,6 +93,9 @@
     <ClCompile Include="src\random\random_sequence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\evolution-strategy\stop_condition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\geometry\point3.h">
@@ -177,6 +180,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\random\es_individual_random_sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\evolution-strategy\stop_condition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,6 +5,8 @@
 #include <random>
 #include <vector>
 
+#include "evolution_strategy.h"
+
 namespace es
 {
     /*	Individual in an evolution Strategy algorithm. This implementation assumes that
@@ -21,9 +23,9 @@ namespace es
 
         Individual(
 			size_type num_obj_var,
-			std::function<double(const Individual& individual)> fitness_fn);
+			Evolution_Strategy::fitness_function* fitness_fn);
 
-		const std::function<double(const Individual&)>& fitness_function() const;
+		Evolution_Strategy::fitness_function* fitness_function() const;
 
 		void expand(size_type amount);
         
@@ -66,9 +68,9 @@ namespace es
         double fitness();
 
     private:
-		std::function<double(const Individual& individual)> m_fitness_fn;
+		Evolution_Strategy::fitness_function* m_fitness_fn;
         std::vector<double> m_data;
-        const double m_proportionality_constant;
+        double m_proportionality_constant;
         double m_fitness_val;
         bool m_valid_fitness;
     };

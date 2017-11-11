@@ -10,11 +10,11 @@ namespace es
     class Survivor_Selection {
 	public:
 		static void generational_selection(
-            std::vector<Individual>& m_population, 
+            std::vector<Individual>& population, 
             std::vector<Individual> children);
 
         static void nongenerational_selection(
-            std::vector<Individual>& m_population,
+            std::vector<Individual>& population,
             std::vector<Individual> children);
 
 	private:

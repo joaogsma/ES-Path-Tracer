@@ -121,7 +121,7 @@ namespace es {
         vector<double> child_obj_var = obj_var_recomb_fn(parent1.obj_var_begin(),
             parent1.obj_var_end(), parent2.obj_var_begin());
 
-        /*	Perform recombination of the parents' standarrd deviations according to
+        /*	Perform recombination of the parents' standard deviations according to
             the specified step_size_recomb_fn function */
         vector<double> child_step_size = step_size_recomb_fn(parent1.step_size_begin(),
             parent1.step_size_end(), parent2.step_size_begin());

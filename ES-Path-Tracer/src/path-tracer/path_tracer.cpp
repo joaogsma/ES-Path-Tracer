@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 
 #define PRINT_PROGRESS true
+#define ES_PATH_TRACER true
 
 #include <algorithm>
 #include <cmath>
@@ -13,6 +14,12 @@
 #include <thread>
 #include <vector>
 
+#include "evolution-strategy/color_histogram_fitness.h"
+#include "evolution-strategy/evolution_strategy.h"
+#include "evolution-strategy/parent_selection.h"
+#include "evolution-strategy/recombination.h"
+#include "evolution-strategy/stop_condition.h"
+#include "evolution-strategy/survivor_selection.h"
 #include "geometry/ray.h"
 #include "geometry/vector3.h"
 #include "path-tracer/camera.h"
@@ -146,7 +153,7 @@ Radiance3 Path_Tracer::path_trace(
 	const Ray& ray,
 	random::Random_Sequence& random_seq,
 	bool is_eye_ray,
-	double refractive_index)
+	double refractive_index) const
 {
 	/*  Compute the radiance BACK along the given ray. In the event that the ray is an eye-ray, 
         include light emitted by the first surface encountered. For subsequent rays, such light 
@@ -186,7 +193,7 @@ Radiance3 Path_Tracer::estimate_direct_light_from_area_lights(
 	random::Random_Sequence& random_seq,
 	const scene::Surface_Element& surfel,
 	const Vector3& w_o,
-	double current_refractive_index)
+	double current_refractive_index) const
 {
 	if (surfel.material.lambertian_reflect.r == 0 && depth >= 2 && dot_prod(w_o, surfel.geometric.normal) < 0)
 		int a = 0;
@@ -253,7 +260,7 @@ Radiance3 Path_Tracer::estimate_indirect_light(
 	random::Random_Sequence& random_seq,
     const scene::Surface_Element& surfel,
 	const Vector3& w_o,
-	bool is_eye_ray)
+	bool is_eye_ray) const
 {
     /*  Use recursion to estimate light running back along ray from surfel, but ONLY light that
         arrives from INDIRECT sources, by making a single-sample estimate of the arriving light */
@@ -283,7 +290,7 @@ Radiance3 Path_Tracer::estimate_indirect_light(
 	return l_o;
 }
 
-const scene::Area_Light& Path_Tracer::pick_random_light()
+const scene::Area_Light& Path_Tracer::pick_random_light() const
 {
 	double inv_total_light_area = 1.0 / m_scene->m_total_light_area;
 
@@ -326,14 +333,10 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 				+ row * down_increment
 				+ col * right_increment;
 			const Ray ray(m_camera->position(), Vector3(m_camera->position(), pixel_center));
-			random::Uniform_Random_Sequence random_seq;
-
-			Radiance3 sample_estimate_sum = 0;
-			for (int i = 0; i < m_samples_per_pixel; ++i)
-				sample_estimate_sum += path_trace(ray, random_seq, true);
+			
+			const Radiance3& estimate = estimate_pixel_color(ray);
 
 			m_image_lock.lock();
-			const Radiance3& estimate = gamma_correction(sample_estimate_sum / m_samples_per_pixel);
 			(*image)[row][col] = estimate;
 			m_image_lock.unlock();
 
@@ -345,7 +348,7 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 			{
 				int completed_pixels = (row + 1) * m_resolution_width;
 				double progress_ratio = (double) completed_pixels / (resolution_height * m_resolution_width);
-				std::cout << '\r' << concurrent_compute_image(progress_ratio);
+				std::cout << '\r' << build_progress_bar(progress_ratio);
 			}
 		}
 
@@ -356,16 +359,44 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 	m_pixel_lock.unlock();
 }
 
-std::string Path_Tracer::concurrent_compute_image(double progress) const
+Radiance3 Path_Tracer::estimate_pixel_color(const Ray& ray) const
 {
-	if (progress < 0 || progress > 1)
-		throw std::invalid_argument("Out of range");
+	if (ES_PATH_TRACER)
+	{
+		Color_Histogram color_histogram;
+		es::Evolution_Strategy::fitness_function color_histogram_fitness_function = 
+			es::Color_Histogram_Fitness(*this, &color_histogram, ray);
+		es::Evolution_Strategy::parent_selection_function global_uniform_parent_selection_function =
+			es::Parent_Selection::global_uniform_selection;
+		es::Evolution_Strategy::recombination_function hibrid_recombination_function =
+			es::Recombination::hibrid_recombination;
+		es::Evolution_Strategy::survivor_selection_function generational_selection_function = 
+			es::Survivor_Selection::generational_selection;
+		es::Evolution_Strategy::stop_condition_function max_iterations_stop_condition =
+			es::Stop_Condition::max_iterations_stop;
 
-	std::string concurrent_compute_image(20, ' ');
-	std::string completed(int(progress / 0.05), '#');
-	std::copy(completed.begin(), completed.end(), concurrent_compute_image.begin());
-	
-	return "0% [" + concurrent_compute_image + "] 100%";
+		es::Evolution_Strategy evolution_strategy(
+			100,
+			15,
+			7,
+			10,
+			max_iterations_stop_condition,
+			global_uniform_parent_selection_function,
+			hibrid_recombination_function,
+			&color_histogram_fitness_function,
+			generational_selection_function);
+
+		evolution_strategy.evolve();
+		return color_histogram.weighted_mean_color();
+	}
+	else
+	{
+		random::Uniform_Random_Sequence random_seq;
+		Radiance3 sample_estimate_sum = 0;
+		for (int i = 0; i < m_samples_per_pixel; ++i)
+			sample_estimate_sum += path_trace(ray, random_seq, true);
+		return gamma_correction(sample_estimate_sum / m_samples_per_pixel);
+	}
 }
 
 Radiance3 Path_Tracer::gamma_correction(Radiance3 radiance) const
@@ -383,4 +414,16 @@ double Path_Tracer::gamma_correction(double radiance) const
 			std::min(1.0, std::max(0.0, radiance * m_gamma_coefficient)),
 			m_gamma_exponent)
 		* 255.0);
+}
+
+std::string Path_Tracer::build_progress_bar(double progress) const
+{
+	if (progress < 0 || progress > 1)
+		throw std::invalid_argument("Out of range");
+
+	std::string build_progress_bar(20, ' ');
+	std::string completed(int(progress / 0.05), '#');
+	std::copy(completed.begin(), completed.end(), build_progress_bar.begin());
+	
+	return "0% [" + build_progress_bar + "] 100%";
 }

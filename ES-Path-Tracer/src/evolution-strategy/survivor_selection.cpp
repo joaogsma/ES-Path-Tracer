@@ -24,24 +24,23 @@ namespace es
         vector<Individual>::size_type num_survivors)
     {
         sort(individual_vec.begin(), individual_vec.end(), compare);
-        individual_vec.erase( individual_vec.begin() + num_survivors, 
-            individual_vec.end() );
+        individual_vec.erase(individual_vec.begin() + num_survivors, individual_vec.end());
     }
 
     void Survivor_Selection::generational_selection(
-		vector<Individual>& m_population,
+		vector<Individual>& population,
         vector<Individual> children)
     {
-        select_survivors(children, m_population.size());
-        m_population = children;
+        select_survivors(children, population.size());
+		population = children;
     }
 
     void Survivor_Selection::nongenerational_selection(
-		vector<Individual>& m_population,
+		vector<Individual>& population,
         vector<Individual> children)
     {
-        children.insert( m_population.end(), children.begin(), children.end() );
-        select_survivors(children, m_population.size());
-        m_population = children;
+        children.insert(children.end(), population.begin(), population.end());
+        select_survivors(children, population.size());
+        population = children;
     }
 }

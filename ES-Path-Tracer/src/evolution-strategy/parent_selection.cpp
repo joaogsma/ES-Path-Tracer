@@ -72,7 +72,7 @@ namespace es
         uniform_int_distribution<vector<Individual>::size_type> indiv_dist(0,
             population.size() - 1);
 
-        for (vector<double>::size_type i = 0; i < size; i++)
+        for (vector<double>::size_type i = 0; i < size; ++i)
         {
             vector<Individual>::size_type parent1_index, parent2_index;
 			mt19937& mt_engine = random::mt_engine_singleton();
@@ -90,8 +90,8 @@ namespace es
             double value_parent2 = begin_it(parent2)[i];
 
             // Store the values
-            parent1_vec[i] = value_parent1;
-            parent2_vec[i] = value_parent2;
+            parent1_vec.push_back(value_parent1);
+            parent2_vec.push_back(value_parent2);
         }
     }
 
@@ -151,7 +151,7 @@ namespace es
         // Fill the step size vectors
 		global_fill_vector(step_sizes1, step_sizes2, m_population, step_size_begin, step_size_end);
 
-        int num_obj_var = (int)object_attributes1.size();
+        int num_obj_var = (int) object_attributes1.size();
 
         // Create return parents
         pair<Individual, Individual> parents = make_pair(

@@ -5,6 +5,7 @@
 #include <random>
 #include <vector>
 
+#include "evolution-strategy/evolution_strategy.h"
 #include "evolution-strategy/individual.h"
 #include "random/random_number_engine.h"
 
@@ -29,7 +30,7 @@ namespace es
 
     Individual::Individual(
 		size_type num_obj_var,
-        function<double(const Individual&)> fitness_fn)
+		Evolution_Strategy::fitness_function* fitness_fn)
         : m_fitness_fn(fitness_fn), m_valid_fitness(false),
         m_proportionality_constant(1 / sqrt(num_obj_var))
     {
@@ -40,7 +41,7 @@ namespace es
 			m_data[i] = uniform_distribution(mt_engine);
     }
 
-	const function<double(const Individual&)>& Individual::fitness_function() const
+	Evolution_Strategy::fitness_function* Individual::fitness_function() const
 	{
 		return m_fitness_fn;
 	}
@@ -51,6 +52,10 @@ namespace es
         {
             m_data.clear();
             copy(other.begin(), other.end(), back_inserter(m_data));
+			m_fitness_fn = other.m_fitness_fn;
+			m_proportionality_constant = other.m_proportionality_constant;
+			m_fitness_val = other.m_fitness_val;
+			m_valid_fitness = other.m_valid_fitness;
         }
 
         return *this;
@@ -74,10 +79,10 @@ namespace es
     void Individual::mutate()
     {
 		mt19937& mt_engine = random::mt_engine_singleton();
-		normal_distribution<double> ndist;
+		normal_distribution<double> normal_dist;
         // Mutate step size
         double& step_size = *step_size_begin();
-        step_size *= exp(m_proportionality_constant * ndist(mt_engine));
+        step_size *= exp(m_proportionality_constant * normal_dist(mt_engine));
         step_size = max(MIN_STEP_SIZE, step_size );
 
         // Mutate object variables
@@ -86,7 +91,7 @@ namespace es
         {
             double& value = *it;
             // Mutate the value
-            value += step_size * ndist(mt_engine);
+            value += step_size * normal_dist(mt_engine);
             
             // Keep the values in the [0, 1] range
             while (value > 1) value -= 1;
@@ -98,8 +103,8 @@ namespace es
     {
         if (!m_valid_fitness)
         {
-            m_fitness_val = m_fitness_fn(*this);
-            m_valid_fitness = true;
+            m_fitness_val = (*m_fitness_fn)(*this);
+			m_valid_fitness = true;
         }
 
         return m_fitness_val;
@@ -107,6 +112,9 @@ namespace es
 
 	void Individual::expand(size_type amount)
 	{
+		if (amount == 0)
+			return;
+
 		vector<double> expansion_data;
 		expansion_data.reserve(amount);
 		
