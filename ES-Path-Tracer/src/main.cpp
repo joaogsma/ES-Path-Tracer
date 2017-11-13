@@ -1,6 +1,6 @@
 #define _USE_MATH_DEFINES
 
-//#define ES_PATH_TRACER
+#define ES_PATH_TRACER
 
 #include <fstream>
 #include <iostream>
@@ -40,7 +40,7 @@ void save_image(const std::string& filename, const std::vector<std::vector<Radia
 		for (int x = 0; x < width; ++x)
 		{
 			const Radiance3& color(image[y][x]);
-			ss << color.r << ' ' << color.g << ' ' << color.b << std::endl;
+			ss << (int) color.r << ' ' << (int) color.g << ' ' << (int) color.b << std::endl;
 		}
 	}
 
@@ -195,11 +195,11 @@ int main()
 	Path_Tracer& path_tracer = Evolution_Strategy_Path_Tracer(
 		&camera,
 		&scene,
-		1,           // Window width
+		3,           // Window width
 		16./9.,      // Aspect ratio
-		10,         // Width resolution
-		10,			 // Maximum iterations per pixel
-		7.0,         // Children to population size ratio
+		680,           // Width resolution
+		5,			 // Maximum iterations per pixel
+		7,         // Children to population size ratio
 		10,          // Population size
 		6,           // Gamma encoding coefficient
 		1.0 / 2.5,   // Gamma encoding exponent
@@ -209,8 +209,8 @@ int main()
 		&camera,
 		&scene,
 		1,           // Window width
-		16. / 9.,      // Aspect ratio
-		680,         // Width resolution
+		16. / 9.,    // Aspect ratio
+		1,         // Width resolution
 		100,         // Samples per pixel
 		6,           // Gamma encoding coefficient
 		1.0 / 2.5,   // Gamma encoding exponent
