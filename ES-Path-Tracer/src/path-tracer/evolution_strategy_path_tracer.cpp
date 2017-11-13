@@ -76,11 +76,13 @@ Radiance3 Evolution_Strategy_Path_Tracer::estimate_pixel_color(const Ray& ray) c
 	es::Evolution_Strategy::stop_condition_function max_iterations_stop_condition =
 		es::Stop_Condition::max_iterations_stop;
 
+	const int initial_individual_length = 15;
+
 	es::Evolution_Strategy evolution_strategy(
-		100,
-		15,
-		7,
-		10,
+		m_max_iterations_per_pixel,
+		initial_individual_length,
+		m_children_population_ratio,
+		m_population_size,
 		max_iterations_stop_condition,
 		global_uniform_parent_selection_function,
 		hibrid_recombination_function,
