@@ -96,6 +96,12 @@
     <ClCompile Include="src\evolution-strategy\stop_condition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\path-tracer\monte_carlo_path_tracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\path-tracer\evolution_strategy_path_tracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\geometry\point3.h">
@@ -183,6 +189,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\evolution-strategy\stop_condition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\path-tracer\monte_carlo_path_tracer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\path-tracer\evolution_strategy_path_tracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

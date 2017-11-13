@@ -26,7 +26,6 @@ public:
 		double window_width,
 		double aspect_ratio,
 		int resolution_width,
-		int samples_per_pixel,
 		double gamma_coefficient = 7,
 		double gamma_exponent = 1.0 / 2.2,
 		int num_threads = 4);
@@ -50,7 +49,6 @@ public:
 	double window_width() const { return m_window_width; }
 	int resolution_width() const { return m_resolution_width; }
 	double aspect_ratio() const { return m_aspect_ratio; }
-	int samples_per_pixel() const { return m_samples_per_pixel; }
 	double gamma_coefficient() const { return m_gamma_coefficient; }
 	double gamma_exponent() const { return m_gamma_exponent; }
 	int num_threads() const { return m_num_threads; }
@@ -61,7 +59,6 @@ public:
 	void set_window_width(double window_width);
 	void set_resolution_width(int resolution_width);
 	void set_aspect_ratio(double aspect_ratio);
-	void set_samples_per_pixel(int samples_per_pixel);
 	void set_gamma_coefficient(double gamma_coefficient);
 	void set_gamma_exponent(double exponent);
 	void set_num_threads(int num_threads);
@@ -73,7 +70,6 @@ private:
 	double m_window_width;
 	double m_aspect_ratio;
 	int m_resolution_width;
-	int m_samples_per_pixel;
 	double m_gamma_coefficient;
 	double m_gamma_exponent;
 	// Concurrency-related members
@@ -99,7 +95,7 @@ private:
 
 	void thread_code(std::vector<std::vector<Radiance3>>* image);
 
-	Radiance3 estimate_pixel_color(const Ray& ray) const;
+	virtual Radiance3 estimate_pixel_color(const Ray& ray) const = 0;
 
 	std::string Path_Tracer::build_progress_bar(double progress) const;
 };

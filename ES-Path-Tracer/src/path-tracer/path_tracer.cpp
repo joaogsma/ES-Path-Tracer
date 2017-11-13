@@ -1,7 +1,6 @@
 #define _USE_MATH_DEFINES
 
 #define PRINT_PROGRESS true
-#define ES_PATH_TRACER true
 
 #include <algorithm>
 #include <cmath>
@@ -14,19 +13,12 @@
 #include <thread>
 #include <vector>
 
-#include "evolution-strategy/color_histogram_fitness.h"
-#include "evolution-strategy/evolution_strategy.h"
-#include "evolution-strategy/parent_selection.h"
-#include "evolution-strategy/recombination.h"
-#include "evolution-strategy/stop_condition.h"
-#include "evolution-strategy/survivor_selection.h"
 #include "geometry/ray.h"
 #include "geometry/vector3.h"
 #include "path-tracer/camera.h"
 #include "path-tracer/path_tracer.h"
 #include "random/random_number_engine.h"
 #include "random/random_sequence.h"
-#include "random/uniform_random_sequence.h"
 #include "scene/area_light.h"
 #include "scene/scene.h"
 #include "shading/color3.h"
@@ -40,17 +32,17 @@ Path_Tracer::Path_Tracer(
 	double window_width,
 	double aspect_ratio,
 	int resolution_width,
-	int samples_per_pixel,
 	double gamma_coefficient,
 	double gamma_exponent,
 	int num_threads)
+	: m_current_row(0),
+	m_current_col(0)
 {
 	set_camera(camera);
 	set_scene(scene);
 	set_window_width(window_width);
 	set_aspect_ratio(aspect_ratio);
 	set_resolution_width(resolution_width);
-	set_samples_per_pixel(samples_per_pixel);
 	set_gamma_coefficient(gamma_coefficient);
 	set_gamma_exponent(gamma_exponent);
 	set_num_threads(num_threads);
@@ -63,7 +55,6 @@ Path_Tracer::Path_Tracer(const Path_Tracer& other) : m_pixel_lock(), m_image_loc
 	set_window_width(other.m_window_width);
 	set_aspect_ratio(other.m_aspect_ratio);
 	set_resolution_width(other.m_resolution_width);
-	set_samples_per_pixel(other.m_samples_per_pixel);
 	set_num_threads(other.m_num_threads);
 }
 
@@ -100,13 +91,6 @@ void Path_Tracer::set_aspect_ratio(double aspect_ratio)
 	if (aspect_ratio <= 0)
 		throw std::invalid_argument("Aspect ratio must be positive");
 	m_aspect_ratio = aspect_ratio;
-}
-
-void Path_Tracer::set_samples_per_pixel(int samples_per_pixel)
-{
-	if (samples_per_pixel <= 0)
-		throw std::invalid_argument("Number of samples per pixel must be positive");
-	m_samples_per_pixel = samples_per_pixel;
 }
 
 void Path_Tracer::set_gamma_coefficient(double coefficient)
@@ -344,6 +328,7 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 
 			if (PRINT_PROGRESS
 				&& col == m_resolution_width - 1
+				&& resolution_height > 20
 				&& (row % (resolution_height / 20) == 0 || row == resolution_height-1))
 			{
 				int completed_pixels = (row + 1) * m_resolution_width;
@@ -357,46 +342,6 @@ void Path_Tracer::thread_code(std::vector<std::vector<Radiance3>>* image)
 	}
 
 	m_pixel_lock.unlock();
-}
-
-Radiance3 Path_Tracer::estimate_pixel_color(const Ray& ray) const
-{
-	if (ES_PATH_TRACER)
-	{
-		Color_Histogram color_histogram;
-		es::Evolution_Strategy::fitness_function color_histogram_fitness_function = 
-			es::Color_Histogram_Fitness(*this, &color_histogram, ray);
-		es::Evolution_Strategy::parent_selection_function global_uniform_parent_selection_function =
-			es::Parent_Selection::global_uniform_selection;
-		es::Evolution_Strategy::recombination_function hibrid_recombination_function =
-			es::Recombination::hibrid_recombination;
-		es::Evolution_Strategy::survivor_selection_function generational_selection_function = 
-			es::Survivor_Selection::generational_selection;
-		es::Evolution_Strategy::stop_condition_function max_iterations_stop_condition =
-			es::Stop_Condition::max_iterations_stop;
-
-		es::Evolution_Strategy evolution_strategy(
-			100,
-			15,
-			7,
-			10,
-			max_iterations_stop_condition,
-			global_uniform_parent_selection_function,
-			hibrid_recombination_function,
-			&color_histogram_fitness_function,
-			generational_selection_function);
-
-		evolution_strategy.evolve();
-		return color_histogram.weighted_mean_color();
-	}
-	else
-	{
-		random::Uniform_Random_Sequence random_seq;
-		Radiance3 sample_estimate_sum = 0;
-		for (int i = 0; i < m_samples_per_pixel; ++i)
-			sample_estimate_sum += path_trace(ray, random_seq, true);
-		return gamma_correction(sample_estimate_sum / m_samples_per_pixel);
-	}
 }
 
 Radiance3 Path_Tracer::gamma_correction(Radiance3 radiance) const

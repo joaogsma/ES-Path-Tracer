@@ -1,5 +1,7 @@
 #define _USE_MATH_DEFINES
 
+//#define ES_PATH_TRACER
+
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -19,6 +21,8 @@
 #include "shading/surface_element.h"
 #include "path-tracer/camera.h"
 #include "path-tracer/path_tracer.h"
+#include "path-tracer/monte_carlo_path_tracer.h"
+#include "path-tracer/evolution_strategy_path_tracer.h"
 #include "random/uniform_random_sequence.h"
 
 void save_image(const std::string& filename, const std::vector<std::vector<Radiance3>>& image)
@@ -51,9 +55,7 @@ void save_image(const std::string& filename, const std::vector<std::vector<Radia
 int main()
 {
 	const float ground_y = -1.f;
-	
 	scene::Scene scene;
-
 	std::vector<Point3> points = {
 		Point3(0, 1, -2),
 		Point3(-1.9, -1, -2),
@@ -79,7 +81,6 @@ int main()
 		Point3(3, 2, 1),
 		Point3(3 - 1e-4, 2, -4)
 	};
-
 	std::vector<Vector3> normals = {
 		Vector3(0, 0.6, 1).normalize(),
 		Vector3(-0.4, -0.4, 1).normalize(),
@@ -105,7 +106,6 @@ int main()
 		Vector3(-1, 0, 0).normalize(),
 		Vector3(-1, 0, 0).normalize()
 	};
-
 	std::vector<Triangle> triangles;
 	std::vector<scene::Object*> objects;
 	
@@ -190,16 +190,33 @@ int main()
 	random::Uniform_Random_Sequence random_seq;
 
 	Camera camera(Point3(0, 1, 6), Vector3(0, -0.1, -1), Vector3(0, 1, 0), 3);
-	Path_Tracer path_tracer(
+	
+#ifdef ES_PATH_TRACER
+	Path_Tracer& path_tracer = Evolution_Strategy_Path_Tracer(
 		&camera,
 		&scene,
-		3,           // Window width
+		1,           // Window width
 		16./9.,      // Aspect ratio
+		10,         // Width resolution
+		10,			 // Maximum iterations per pixel
+		7.0,         // Children to population size ratio
+		10,          // Population size
+		6,           // Gamma encoding coefficient
+		1.0 / 2.5,   // Gamma encoding exponent
+		6);          // Number of threads
+#else
+	Path_Tracer& path_tracer = Monte_Carlo_Path_Tracer(
+		&camera,
+		&scene,
+		1,           // Window width
+		16. / 9.,      // Aspect ratio
 		680,         // Width resolution
 		100,         // Samples per pixel
 		6,           // Gamma encoding coefficient
 		1.0 / 2.5,   // Gamma encoding exponent
 		6);          // Number of threads
+#endif
+
 	std::vector<std::vector<Radiance3>> image;
 	path_tracer.compute_image(image);
 

@@ -41,7 +41,7 @@ namespace es
 			throw std::invalid_argument("Invalid number of object variables per individual");
 
 		if (children_population_ratio <= 0)
-			throw std::invalid_argument("Invalid chldren to population size ratio");
+			throw std::invalid_argument("Invalid children to population size ratio");
 
 		if (m_population_size < 2)
 			throw std::invalid_argument("Invalid population size");

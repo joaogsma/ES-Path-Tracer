@@ -169,6 +169,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\evolution-strategy\stop_condition.cpp" />
+    <ClCompile Include="src\path-tracer\evolution_strategy_path_tracer.cpp" />
+    <ClCompile Include="src\path-tracer\monte_carlo_path_tracer.cpp" />
     <ClCompile Include="src\random\random_number_engine.cpp" />
     <ClCompile Include="src\evolution-strategy\evolution_strategy.cpp" />
     <ClCompile Include="src\evolution-strategy\color_histogram_fitness.cpp" />
@@ -198,6 +200,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\evolution-strategy\stop_condition.h" />
+    <ClInclude Include="headers\path-tracer\evolution_strategy_path_tracer.h" />
+    <ClInclude Include="headers\path-tracer\monte_carlo_path_tracer.h" />
     <ClInclude Include="headers\random\es_individual_random_sequence.h" />
     <ClInclude Include="headers\random\random_number_engine.h" />
     <ClInclude Include="headers\evolution-strategy\evolution_strategy.h" />
