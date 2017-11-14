@@ -4,6 +4,7 @@
 #include "../geometry/ray.h"
 #include "../scene/scene.h"
 #include "camera.h"
+#include "color_histogram.h"  // test
 #include "path_tracer.h"
 #include "scene/scene.h"
 #include "shading/color3.h"
@@ -37,6 +38,11 @@ private:
 	int m_population_size;
 
 	virtual Radiance3 estimate_pixel_color(const Ray& ray) const;
+
+	static bool color_compare_predicate(
+		int color0,
+		int color1,
+		const Color_Histogram& color_histogram);
 };
 
 #endif

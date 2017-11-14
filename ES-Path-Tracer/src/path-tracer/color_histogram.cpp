@@ -28,7 +28,7 @@ Color3 Color_Histogram::weighted_mean_color() const
 	return weighted_sum / m_total_samples;
 }
 
-double Color_Histogram::information_quantity(int red, int green, int blue, int radius)
+double Color_Histogram::information_quantity(int red, int green, int blue, int radius) const
     {
         if (radius <= 0)
             throw std::invalid_argument("Distance must be positive");
@@ -50,8 +50,16 @@ double Color_Histogram::information_quantity(int red, int green, int blue, int r
                 for (int b = min_blue; b <= max_blue; ++b)
                 {
                     int dist = int(pow(r - red, 2) + pow(g - green, 2) + pow(b - blue, 2));
-                    if (dist <= radius2)
-                        total_count += m_color_histogram[to_hash_key(r, g, b)];
+					if (dist <= radius2)
+					{
+						std::unordered_map<int, unsigned int>::const_iterator neighbour =
+							m_color_histogram.find(to_hash_key(r, g, b));
+						if (neighbour != m_color_histogram.end())
+						{
+							int occurences = neighbour->second;
+							total_count += occurences;
+						}
+					}
                 }
             }
         }

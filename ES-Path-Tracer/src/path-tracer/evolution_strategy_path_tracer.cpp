@@ -1,7 +1,10 @@
+#include <algorithm>  // test
+#include <utility>  // test
 #include <stdexcept>
 
 #include "evolution-strategy/color_histogram_fitness.h"
 #include "evolution-strategy/evolution_strategy.h"
+#include "evolution-strategy/individual.h"
 #include "evolution-strategy/parent_selection.h"
 #include "evolution-strategy/recombination.h"
 #include "evolution-strategy/stop_condition.h"
@@ -10,8 +13,11 @@
 #include "path-tracer/camera.h"
 #include "path-tracer/evolution_strategy_path_tracer.h"
 #include "path-tracer/path_tracer.h"
+#include "random/es_individual_random_sequence.h"  // test
 #include "scene/scene.h"
 #include "shading/color3.h"
+
+#define HEURISTIC 3
 
 Evolution_Strategy_Path_Tracer::Evolution_Strategy_Path_Tracer(
 	const Camera* camera,
@@ -76,7 +82,7 @@ Radiance3 Evolution_Strategy_Path_Tracer::estimate_pixel_color(const Ray& ray) c
 	es::Evolution_Strategy::stop_condition_function max_iterations_stop_condition =
 		es::Stop_Condition::max_iterations_stop;
 
-	const int initial_individual_length = 15;
+	const int initial_individual_length = 3;
 
 	es::Evolution_Strategy evolution_strategy(
 		m_max_iterations_per_pixel,
@@ -90,5 +96,81 @@ Radiance3 Evolution_Strategy_Path_Tracer::estimate_pixel_color(const Ray& ray) c
 		generational_selection_function);
 
 	evolution_strategy.evolve();
-	return color_histogram.weighted_mean_color();
+
+	// Heuristic #1:
+	// Return the weighted mean of all radiances gathered in the histogram
+	if (HEURISTIC == 1)
+	{
+		return color_histogram.weighted_mean_color();
+	}
+
+	// Heuristic #2:
+	// Return the mean radiance of individuals in the final population
+	if (HEURISTIC == 2)
+	{
+		Radiance3 accumulator(0.0);
+		for (es::Individual individual : evolution_strategy.population())
+		{
+			random::ES_Individual_Random_Sequence individual_random_sequence(individual);
+			const Radiance3& path_tracer_radiance = path_trace(ray, individual_random_sequence, true);
+			accumulator += path_tracer_radiance;
+		}
+		return gamma_correction(accumulator / evolution_strategy.population_size());
+	}
+
+	// Heuristic #3:
+	// Return the weighted mean of the most frequent colors
+	if (HEURISTIC == 3)
+	{
+		std::vector<int> colors;
+
+		for (const std::pair<int, unsigned int>& element : color_histogram.m_color_histogram)
+		{
+			if (element.second > 0)
+				colors.push_back(element.first);
+		}
+
+		std::sort(
+			colors.begin(),
+			colors.end(),
+			[&](int color0, int color1) { return color_compare_predicate(color0, color1, color_histogram); });
+
+		const int reduced_size = std::max(1, int(0.9 * colors.size()));
+		colors.erase(colors.begin() + reduced_size, colors.end());
+
+		Radiance3 accumulator(0.0);
+		int n_samples = 0;
+		for (int color : colors)
+		{
+			int occurrences = color_histogram.m_color_histogram[color];
+			accumulator += color_histogram.m_color_histogram[color] * color_histogram.from_hash_key(color);
+			n_samples += occurrences;
+		}
+
+		return accumulator / n_samples;
+	}
+}
+
+bool Evolution_Strategy_Path_Tracer::color_compare_predicate(
+	int color0,
+	int color1,
+	const Color_Histogram& color_histogram)
+{
+	const Radiance3 radiance0 = color_histogram.from_hash_key(color0);
+	const Radiance3 radiance1 = color_histogram.from_hash_key(color1);
+
+	const double information_quantity0 = color_histogram.information_quantity(
+		(int) radiance0.r,
+		(int) radiance0.g,
+		(int) radiance0.b);
+
+	const double information_quantity1 = color_histogram.information_quantity(
+		(int) radiance1.r,
+		(int) radiance1.g,
+		(int) radiance1.b);
+
+	const double mean_radiance0 = (radiance0.r + radiance0.g + radiance0.b) / 3.0;
+	const double mean_radiance1 = (radiance1.r + radiance1.g + radiance1.b) / 3.0;
+
+	return (mean_radiance0 * (1.0 / information_quantity0)) < (mean_radiance1 * (1.0 / information_quantity1));
 }

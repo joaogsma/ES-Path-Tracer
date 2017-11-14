@@ -197,9 +197,9 @@ int main()
 		&scene,
 		3,           // Window width
 		16./9.,      // Aspect ratio
-		680,           // Width resolution
-		5,			 // Maximum iterations per pixel
-		7,         // Children to population size ratio
+		600,           // Width resolution
+		10,			 // Maximum iterations per pixel
+		2,         // Children to population size ratio
 		10,          // Population size
 		6,           // Gamma encoding coefficient
 		1.0 / 2.5,   // Gamma encoding exponent

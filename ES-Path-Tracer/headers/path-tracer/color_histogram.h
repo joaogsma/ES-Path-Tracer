@@ -5,7 +5,10 @@
 
 #include "../shading/color3.h"
 
+class Evolution_Strategy_Path_Tracer;
+
 class Color_Histogram {
+	friend Evolution_Strategy_Path_Tracer;
 public:
 	Color_Histogram() : m_total_samples(0) {}
 
@@ -21,7 +24,7 @@ public:
     /*  Computation of the information quantity associated with a given color.
         The information quantity is defined as -log(p), where p is the accumulated 
 		probability of the given color and all others within the given radius */
-    double information_quantity(int red, int green, int blue, int radius = 1);
+    double information_quantity(int red, int green, int blue, int radius = 1) const;
 
 private:
 	std::unordered_map<int, unsigned int> m_color_histogram;
@@ -31,5 +34,7 @@ private:
 
 	Color3 from_hash_key(int key) const;
 };
+
+#include "evolution_strategy_path_tracer.h"
 
 #endif
