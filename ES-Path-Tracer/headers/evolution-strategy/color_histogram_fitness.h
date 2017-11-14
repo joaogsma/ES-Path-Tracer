@@ -1,5 +1,5 @@
-#ifndef __GUARD_FITNESS_H__
-#define __GUARD_FITNESS_H__
+#ifndef ES_PATH_TRACER__EVOLUTION_STRATEGY__COLOR_HISTOGRAM_FITNESS_H_
+#define ES_PATH_TRACER__EVOLUTION_STRATEGY__COLOR_HISTOGRAM_FITNESS_H_
 
 #include "../geometry/ray.h"
 #include "../path-tracer/color_histogram.h"

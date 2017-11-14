@@ -1,5 +1,5 @@
-#ifndef __GUARD_QUADRIC_H__
-#define __GUARD_QUADRIC_H__
+#ifndef ES_PATH_TRACER__SCENE__SPHERE_H_
+#define ES_PATH_TRACER__SCENE__SPHERE_H_
 
 #include "../geometry/aab.h"
 #include "../geometry/ray.h"

@@ -1,5 +1,5 @@
-#ifndef __GUARD_TRIANGLE_H__
-#define __GUARD_TRIANGLE_H__
+#ifndef ES_PATH_TRACER_GEOMETRY_TRIANGLE_H_
+#define ES_PATH_TRACER_GEOMETRY_TRIANGLE_H_
 
 #include <vector>
 

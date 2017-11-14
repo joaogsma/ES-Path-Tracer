@@ -1,5 +1,5 @@
-#ifndef __MESH_OBJECT_H__
-#define __MESH_OBJECT_H__
+#ifndef ES_PATH_TRACER__SCENE__MESH_OBJECT_H_
+#define ES_PATH_TRACER__SCENE__MESH_OBJECT_H_
 
 #include <vector>
 

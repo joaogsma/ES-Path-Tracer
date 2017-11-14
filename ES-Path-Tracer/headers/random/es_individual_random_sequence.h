@@ -1,5 +1,5 @@
-#ifndef __GUARD_ES_INDIVIDUAL_RANDOM_SEQUENCE_H__
-#define __GUARD_ES_INDIVIDUAL_RANDOM_SEQUENCE_H__
+#ifndef ES_PATH_TRACER__RANDOM__ES_INDIVIDUAL_RANDOM_SEQUENCE_H_
+#define ES_PATH_TRACER__RANDOM__ES_INDIVIDUAL_RANDOM_SEQUENCE_H_
 
 #include "../evolution-strategy/individual.h"
 #include "../geometry/vector3.h"

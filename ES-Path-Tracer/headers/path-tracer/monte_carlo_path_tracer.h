@@ -1,5 +1,5 @@
-#ifndef __GUARD_MONTE_CARLO_PATH_TRACER_H__
-#define __GUARD_MONTE_CARLO_PATH_TRACER_H__
+#ifndef ES_PATH_TRACER__PATH_TRACER__MONTE_CARLO_PATH_TRACER_H_
+#define ES_PATH_TRACER__PATH_TRACER__MONTE_CARLO_PATH_TRACER_H_
 
 #include "../geometry/ray.h"
 #include "../scene/scene.h"

@@ -1,5 +1,5 @@
-#ifndef __GUARD_COLOR3_H__
-#define __GUARD_COLOR3_H__
+#ifndef ES_PATH_TRACER__SHADING__COLOR3_H_
+#define ES_PATH_TRACER__SHADING__COLOR3_H_
 
 class Color3 {
 public:

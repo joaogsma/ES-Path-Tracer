@@ -1,5 +1,5 @@
-#ifndef __GUARD_AAB_H__
-#define __GUARD_AAB_H__
+#ifndef ES_PATH_TRACER__GEOMETRY__AAB_H_
+#define ES_PATH_TRACER__GEOMETRY__AAB_H_
 
 #include "point3.h"
 

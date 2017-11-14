@@ -1,5 +1,5 @@
-#ifndef __GUARD_CAMERA_H__
-#define __GUARD_CAMERA_H__
+#ifndef ES_PATH_TRACER__PATH_TRACER__CAMERA_H_
+#define ES_PATH_TRACER__PATH_TRACER__CAMERA_H_
 
 #include <stdexcept>
 

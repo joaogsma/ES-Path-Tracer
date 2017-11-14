@@ -1,5 +1,5 @@
-#ifndef __GUARD_LIGHT_H__
-#define __GUARD_LIGHT_H__
+#ifndef ES_PATH_TRACER__SCENE__LIGHT_H_
+#define ES_PATH_TRACER__SCENE__LIGHT_H_
 
 #include "../shading/color3.h"
 

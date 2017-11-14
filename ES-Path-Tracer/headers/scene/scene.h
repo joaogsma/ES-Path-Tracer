@@ -1,5 +1,5 @@
-#ifndef __GUARD_SCENE_H__
-#define __GUARD_SCENE_H__
+#ifndef ES_PATH_TRACER__SCENE__SCENE_H_
+#define ES_PATH_TRACER__SCENE__SCENE_H_
 
 #include <vector>
 

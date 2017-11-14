@@ -1,5 +1,5 @@
-#ifndef __GUARD_OBJECT_H__
-#define __GUARD_OBJECT_H__
+#ifndef ES_PATH_TRACER__SCENE__OBJECT_H_
+#define ES_PATH_TRACER__SCENE__OBJECT_H_
 
 #include "../geometry/ray.h"
 #include "../geometry/aab.h"

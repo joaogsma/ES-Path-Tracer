@@ -1,5 +1,5 @@
-#ifndef __GUARD_evolution_STRATEGY_H__
-#define __GUARD_evolution_STRATEGY_H__
+#ifndef ES_PATH_TRACER__EVOLUTION_STRATEGY__EVOLUTION_STRATEGY_H_
+#define ES_PATH_TRACER__EVOLUTION_STRATEGY__EVOLUTION_STRATEGY_H_
 
 #include <functional>
 #include <utility>

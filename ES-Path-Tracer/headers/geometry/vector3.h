@@ -1,5 +1,5 @@
-#ifndef __GUARD_VECTOR3_H__
-#define __GUARD_VECTOR3_H__
+#ifndef ES_PATH_TRACER_GEOMETRY_VECTOR3_H_
+#define ES_PATH_TRACER_GEOMETRY_VECTOR3_H_
 
 #include <algorithm>
 #include <vector>

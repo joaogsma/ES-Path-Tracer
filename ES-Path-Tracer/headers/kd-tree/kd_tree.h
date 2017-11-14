@@ -1,5 +1,5 @@
-#ifndef __GUARD_KD_TREE_H__
-#define __GUARD_KD_TREE_H__
+#ifndef ES_PATH_TRACER__KD_TREE__KD_TREE_H_
+#define ES_PATH_TRACER__KD_TREE__KD_TREE_H_
 
 #include <iterator>
 #include <vector>

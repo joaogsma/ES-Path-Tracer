@@ -1,5 +1,5 @@
-#ifndef __GUARD_PLANE_H__
-#define __GUARD_PLANE_H__
+#ifndef ES_PATH_TRACER_GEOMETRY_PLANE_H_
+#define ES_PATH_TRACER_GEOMETRY_PLANE_H_
 
 #include "point3.h"
 #include "vector3.h"

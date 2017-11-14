@@ -1,5 +1,5 @@
-#ifndef __GUARD_INDIVIDUAL_H__
-#define __GUARD_INDIVIDUAL_H__
+#ifndef ES_PATH_TRACER__EVOLUTION_STRATEGY__INDIVIDUAL_H_
+#define ES_PATH_TRACER__EVOLUTION_STRATEGY__INDIVIDUAL_H_
 
 #include <functional>
 #include <random>
