@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <stdexcept>
 
 #include "evolution-strategy/color_histogram_fitness.h"
@@ -49,14 +50,14 @@ namespace es
 			(int) gamma_corrected_radiance.g,
 			(int) gamma_corrected_radiance.b);
 
-		const double average_radiance =
-			(gamma_corrected_radiance.r + gamma_corrected_radiance.g + gamma_corrected_radiance.b)
-			/ 3.0;
+		const double maximum_radiance = 
+			*std::max_element(gamma_corrected_radiance.begin(), gamma_corrected_radiance.end());
+
 		const double information_quantity = m_color_histogram->information_quantity(
 			(int)gamma_corrected_radiance.r,
 			(int)gamma_corrected_radiance.g,
 			(int)gamma_corrected_radiance.b,
 			m_radius);
-		return average_radiance * information_quantity;
+		return maximum_radiance * information_quantity;
 	}
 }
