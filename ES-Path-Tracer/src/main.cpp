@@ -2,6 +2,7 @@
 
 #define ES_PATH_TRACER
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -24,6 +25,28 @@
 #include "path-tracer/monte_carlo_path_tracer.h"
 #include "path-tracer/evolution_strategy_path_tracer.h"
 #include "random/uniform_random_sequence.h"
+
+///////////////////////////////////////////////////////////////////////////////
+//// General parameters
+///////////////////////////////////////////////////////////////////////////////
+const int N_THREADS = 6;
+const int WIDTH_RESOLUTION = 600;
+const double WINDOW_WIDTH = 3.0;
+const double ASPECT_RATIO = 16.0 / 9.0;
+const double GAMMA_ENCODING_COEFFICIENT = 6;
+const double GAMMA_ENCODING_EXPONENT = 1.0 / 2.5;
+
+///////////////////////////////////////////////////////////////////////////////
+//// Evolution Strategy parameters
+///////////////////////////////////////////////////////////////////////////////
+const int MAX_ITERATIONS_PER_PIXEL = 10;
+const int POPULATION_SIZE = 10;
+const double CHILDREN_POPULATION_RATIO = 2.0;
+
+///////////////////////////////////////////////////////////////////////////////
+//// Vanilla Path Tracer parameters
+///////////////////////////////////////////////////////////////////////////////
+const int SAMPLES_PER_PIXEL = 200;
 
 void save_image(const std::string& filename, const std::vector<std::vector<Radiance3>>& image)
 {
@@ -195,30 +218,35 @@ int main()
 	Path_Tracer& path_tracer = Evolution_Strategy_Path_Tracer(
 		&camera,
 		&scene,
-		3,           // Window width
-		16./9.,      // Aspect ratio
-		600,           // Width resolution
-		10,			 // Maximum iterations per pixel
-		2,         // Children to population size ratio
-		10,          // Population size
-		6,           // Gamma encoding coefficient
-		1.0 / 2.5,   // Gamma encoding exponent
-		6);          // Number of threads
+		WINDOW_WIDTH,
+		ASPECT_RATIO,
+		WIDTH_RESOLUTION,
+		MAX_ITERATIONS_PER_PIXEL,
+		CHILDREN_POPULATION_RATIO,
+		POPULATION_SIZE,
+		GAMMA_ENCODING_COEFFICIENT,
+		GAMMA_ENCODING_EXPONENT,
+		N_THREADS);
 #else
 	Path_Tracer& path_tracer = Monte_Carlo_Path_Tracer(
 		&camera,
 		&scene,
-		1,           // Window width
-		16. / 9.,    // Aspect ratio
-		1,         // Width resolution
-		100,         // Samples per pixel
-		6,           // Gamma encoding coefficient
-		1.0 / 2.5,   // Gamma encoding exponent
-		6);          // Number of threads
+		WINDOW_WIDTH,
+		ASPECT_RATIO,
+		WIDTH_RESOLUTION,
+		SAMPLES_PER_PIXEL,
+		GAMMA_ENCODING_COEFFICIENT,
+		GAMMA_ENCODING_EXPONENT,
+		N_THREADS);
 #endif
 
+	std::chrono::time_point<std::chrono::steady_clock> begin_instant = std::chrono::steady_clock::now();
 	std::vector<std::vector<Radiance3>> image;
 	path_tracer.compute_image(image);
+	std::chrono::time_point<std::chrono::steady_clock> end_instant = std::chrono::steady_clock::now();
+
+	long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_instant - begin_instant).count();
+	std::cout << "Elapsed run time: " << elapsed << std::endl;
 
 	std::string filename = "result_image.ppm";
 	save_image(filename, image);
