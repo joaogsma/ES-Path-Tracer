@@ -1,5 +1,7 @@
 #include <algorithm>  // test
+#include <iostream> // test
 #include <utility>  // test
+#include <string>
 #include <stdexcept>
 
 #include "evolution-strategy/color_histogram_fitness.h"
@@ -18,6 +20,19 @@
 #include "shading/color3.h"
 
 #define HEURISTIC 3
+
+const int RADIUS_SIZE = 4;
+// "inv inf quantity"
+// "none"
+const std::string FREQUENCY_COEFFICIENT = "none";
+// "maximum"
+// "norm maximum"
+// "mean"
+// "norm mean"
+// "norm mean and maximum"
+// "none"
+const std::string RADIANCE_COEFFICIENT = "norm mean and maximum";
+const bool DECREASING_ORDER = true;
 
 Evolution_Strategy_Path_Tracer::Evolution_Strategy_Path_Tracer(
 	const Camera* camera,
@@ -72,7 +87,7 @@ Radiance3 Evolution_Strategy_Path_Tracer::estimate_pixel_color(const Ray& ray) c
 {
 	Color_Histogram color_histogram;
 	es::Evolution_Strategy::fitness_function color_histogram_fitness_function =
-		es::Color_Histogram_Fitness(*this, &color_histogram, ray);
+		es::Color_Histogram_Fitness(*this, &color_histogram, ray, RADIUS_SIZE);
 	es::Evolution_Strategy::parent_selection_function global_uniform_parent_selection_function =
 		es::Parent_Selection::global_uniform_selection;
 	es::Evolution_Strategy::recombination_function hibrid_recombination_function =
@@ -135,7 +150,7 @@ Radiance3 Evolution_Strategy_Path_Tracer::estimate_pixel_color(const Ray& ray) c
 			colors.end(),
 			[&](int color0, int color1) { return color_compare_predicate(color0, color1, color_histogram); });
 
-		const int reduced_size = std::max(1, int(0.9 * colors.size()));
+		const int reduced_size = std::max(1, int(0.99 * colors.size()));
 		colors.erase(colors.begin() + reduced_size, colors.end());
 
 		Radiance3 accumulator(0.0);
@@ -159,18 +174,84 @@ bool Evolution_Strategy_Path_Tracer::color_compare_predicate(
 	const Radiance3 radiance0 = color_histogram.from_hash_key(color0);
 	const Radiance3 radiance1 = color_histogram.from_hash_key(color1);
 
-	const double information_quantity0 = color_histogram.information_quantity(
-		(int) radiance0.r,
-		(int) radiance0.g,
-		(int) radiance0.b);
+	double frequency_coefficient0;
+	double frequency_coefficient1;
 
-	const double information_quantity1 = color_histogram.information_quantity(
-		(int) radiance1.r,
-		(int) radiance1.g,
-		(int) radiance1.b);
+	if (FREQUENCY_COEFFICIENT == "none")
+	{
+		frequency_coefficient0 = 1.0;
+		frequency_coefficient1 = 1.0;
+	}
+	else if (FREQUENCY_COEFFICIENT == "inv inf quantity")
+	{
+		const double information_quantity0 = color_histogram.information_quantity(
+			(int) radiance0.r,
+			(int) radiance0.g,
+			(int) radiance0.b);
+		const double information_quantity1 = color_histogram.information_quantity(
+			(int) radiance1.r,
+			(int) radiance1.g,
+			(int) radiance1.b);
+		frequency_coefficient0 = 1.0 / information_quantity0;
+		frequency_coefficient1 = 1.0 / information_quantity1;
+	}
+	else
+	{
+		throw std::runtime_error("Unknown configuration");
+	}
+	
+	double radiance_coefficient0;
+	double radiance_coefficient1;
 
-	const double mean_radiance0 = (radiance0.r + radiance0.g + radiance0.b) / 3.0;
-	const double mean_radiance1 = (radiance1.r + radiance1.g + radiance1.b) / 3.0;
+	if (RADIANCE_COEFFICIENT == "none")
+	{
+		radiance_coefficient0 = 1.0;
+		radiance_coefficient1 = 1.0;
+	}
+	else if (RADIANCE_COEFFICIENT == "mean")
+	{
+		const double mean_radiance0 = (radiance0.r + radiance0.g + radiance0.b) / 3.0;
+		const double mean_radiance1 = (radiance1.r + radiance1.g + radiance1.b) / 3.0;
+		radiance_coefficient0 = mean_radiance0;
+		radiance_coefficient1 = mean_radiance1;
+	}
+	else if (RADIANCE_COEFFICIENT == "norm mean")
+	{
+		const double mean_radiance0 = (radiance0.r + radiance0.g + radiance0.b) / 3.0;
+		const double mean_radiance1 = (radiance1.r + radiance1.g + radiance1.b) / 3.0;
+		radiance_coefficient0 = mean_radiance0 / 255.0;
+		radiance_coefficient1 = mean_radiance1 / 255.0;
+	}
+	else if (RADIANCE_COEFFICIENT == "maximum")
+	{
+		const double max_radiance0 = std::max(radiance0.r, std::max(radiance0.g, radiance0.b));
+		const double max_radiance1 = std::max(radiance1.r, std::max(radiance1.g, radiance1.b));
+		radiance_coefficient0 = max_radiance0;
+		radiance_coefficient1 = max_radiance1;
+	}
+	else if (RADIANCE_COEFFICIENT == "norm maximum")
+	{
+		const double max_radiance0 = std::max(radiance0.r, std::max(radiance0.g, radiance0.b));
+		const double max_radiance1 = std::max(radiance1.r, std::max(radiance1.g, radiance1.b));
+		radiance_coefficient0 = max_radiance0 / 255.0;
+		radiance_coefficient1 = max_radiance1 / 255.0;
+	}
+	else if (RADIANCE_COEFFICIENT == "norm mean and maximum")
+	{
+		const double mean_radiance0 = (radiance0.r + radiance0.g + radiance0.b) / 3.0;
+		const double mean_radiance1 = (radiance1.r + radiance1.g + radiance1.b) / 3.0;
+		const double max_radiance0 = std::max(radiance0.r, std::max(radiance0.g, radiance0.b));
+		const double max_radiance1 = std::max(radiance1.r, std::max(radiance1.g, radiance1.b));
+		radiance_coefficient0 = (mean_radiance0 / 255.0) * (max_radiance0 / 255.0);
+		radiance_coefficient1 = (mean_radiance1 / 255.0) * (max_radiance1 / 255.0);
+	}
+	else
+	{
+		throw std::runtime_error("Unknown configuration");
+	}
+	
+	bool increasing_order_result = 
+		radiance_coefficient0 * frequency_coefficient0 < radiance_coefficient1 * frequency_coefficient1;
 
-	return (mean_radiance0 * (1.0 / information_quantity0)) < (mean_radiance1 * (1.0 / information_quantity1));
+	return DECREASING_ORDER ? !increasing_order_result : increasing_order_result;
 }

@@ -10,6 +10,17 @@
 #include "random/random_sequence.h"
 #include "shading/color3.h"
 
+// "inf quantity"
+// "none"
+const std::string FREQUENCY_COEFFICIENT = "inf quantity";
+// "maximum"
+// "norm maximum"
+// "mean"
+// "norm mean"
+// "norm mean and maximum"
+// "none"
+const std::string RADIANCE_COEFFICIENT = "norm mean and maximum";
+
 namespace es
 {
 	Color_Histogram_Fitness::Color_Histogram_Fitness(
@@ -50,14 +61,77 @@ namespace es
 			(int) gamma_corrected_radiance.g,
 			(int) gamma_corrected_radiance.b);
 
-		const double maximum_radiance = 
-			*std::max_element(gamma_corrected_radiance.begin(), gamma_corrected_radiance.end());
+		///////////////////////////////////////////////////
+		//// Radiance coefficient
+		///////////////////////////////////////////////////
 
-		const double information_quantity = m_color_histogram->information_quantity(
-			(int)gamma_corrected_radiance.r,
-			(int)gamma_corrected_radiance.g,
-			(int)gamma_corrected_radiance.b,
-			m_radius);
-		return maximum_radiance * information_quantity;
+		double radiance_coefficient;
+
+		if (RADIANCE_COEFFICIENT == "none")
+		{
+			radiance_coefficient = 1.0;
+		}
+		else if (RADIANCE_COEFFICIENT == "maximum")
+		{
+			const double maximum_radiance = 
+				*std::max_element(gamma_corrected_radiance.begin(), gamma_corrected_radiance.end());
+			radiance_coefficient = maximum_radiance;
+		}
+		else if (RADIANCE_COEFFICIENT == "norm maximum")
+		{
+			const double maximum_radiance =
+				*std::max_element(gamma_corrected_radiance.begin(), gamma_corrected_radiance.end());
+			radiance_coefficient = maximum_radiance / 255.0;
+		}
+		else if (RADIANCE_COEFFICIENT == "mean")
+		{
+			const double mean_radiance =
+				(gamma_corrected_radiance.r + gamma_corrected_radiance.g + gamma_corrected_radiance.b) / 3.0;
+			radiance_coefficient = mean_radiance;
+		}
+		else if (RADIANCE_COEFFICIENT == "norm mean")
+		{
+			const double mean_radiance =
+				(gamma_corrected_radiance.r + gamma_corrected_radiance.g + gamma_corrected_radiance.b) / 3.0;
+			radiance_coefficient = mean_radiance / 255.0;
+		}
+		else if (RADIANCE_COEFFICIENT == "norm mean and maximum")
+		{
+			const double maximum_radiance =
+				*std::max_element(gamma_corrected_radiance.begin(), gamma_corrected_radiance.end());
+			const double mean_radiance =
+				(gamma_corrected_radiance.r + gamma_corrected_radiance.g + gamma_corrected_radiance.b) / 3.0;
+			radiance_coefficient = (mean_radiance / 255.0) * (maximum_radiance / 255.0);
+		}
+		else
+		{
+			throw std::runtime_error("Unknown configuration");
+		}
+		
+		///////////////////////////////////////////////////
+		//// Frequency coefficient
+		///////////////////////////////////////////////////
+
+		double frequency_coefficient;
+
+		if (FREQUENCY_COEFFICIENT == "none")
+		{
+			frequency_coefficient = 1.0;
+		}
+		else if (FREQUENCY_COEFFICIENT == "inf quantity")
+		{
+			const double information_quantity = m_color_histogram->information_quantity(
+				(int) gamma_corrected_radiance.r,
+				(int) gamma_corrected_radiance.g,
+				(int) gamma_corrected_radiance.b,
+				m_radius);
+			frequency_coefficient = information_quantity;
+		}
+		else
+		{
+			throw std::runtime_error("Unknown configuration");
+		}
+
+		return radiance_coefficient * frequency_coefficient;
 	}
 }
