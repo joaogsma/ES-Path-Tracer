@@ -19,7 +19,7 @@
 #include "scene/scene.h"
 #include "shading/color3.h"
 
-#define HEURISTIC 3
+#define HEURISTIC 1
 
 const int RADIUS_SIZE = 4;
 // "inv inf quantity"

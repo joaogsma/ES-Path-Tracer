@@ -19,7 +19,7 @@ const std::string FREQUENCY_COEFFICIENT = "inf quantity";
 // "norm mean"
 // "norm mean and maximum"
 // "none"
-const std::string RADIANCE_COEFFICIENT = "norm mean and maximum";
+const std::string RADIANCE_COEFFICIENT = "norm mean";
 
 namespace es
 {

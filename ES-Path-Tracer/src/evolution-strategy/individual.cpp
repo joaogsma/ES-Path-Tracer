@@ -1,3 +1,5 @@
+#include <iostream> // test
+
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -26,19 +28,25 @@ static const double COMP_EPSILON = 1e-7;
 
 namespace es
 {
-	const double Individual::MIN_STEP_SIZE = 1e-3;
+	const double Individual::MIN_STEP_SIZE = 1e-7;
+	const double Individual::MAX_STEP_SIZE = 0.1;
 
     Individual::Individual(
 		size_type num_obj_var,
 		Evolution_Strategy::fitness_function* fitness_fn)
-        : m_fitness_fn(fitness_fn), m_valid_fitness(false),
-        m_proportionality_constant(1 / sqrt(num_obj_var))
+        : m_fitness_fn(fitness_fn), m_valid_fitness(false)
     {
         m_data.resize(num_obj_var + 1);
 		mt19937& mt_engine = random::mt_engine_singleton();
+		
+		// Initialize the object variables
 		uniform_real_distribution<double> uniform_distribution(0.0, 1.0);
-		for (size_type i = 0; i < m_data.size(); ++i)
-			m_data[i] = uniform_distribution(mt_engine);
+		for (Individual::iterator it = obj_var_begin(); it != obj_var_end(); ++it)
+			*it= uniform_distribution(mt_engine);
+		
+		// Initialize the step size
+		uniform_distribution = uniform_real_distribution<double>(MIN_STEP_SIZE, MAX_STEP_SIZE);
+		*step_size_begin() = uniform_distribution(mt_engine);
     }
 
 	Evolution_Strategy::fitness_function* Individual::fitness_function() const
@@ -53,7 +61,6 @@ namespace es
             m_data.clear();
             copy(other.begin(), other.end(), back_inserter(m_data));
 			m_fitness_fn = other.m_fitness_fn;
-			m_proportionality_constant = other.m_proportionality_constant;
 			m_fitness_val = other.m_fitness_val;
 			m_valid_fitness = other.m_valid_fitness;
         }
@@ -79,19 +86,20 @@ namespace es
     void Individual::mutate()
     {
 		mt19937& mt_engine = random::mt_engine_singleton();
-		normal_distribution<double> normal_dist;
+		normal_distribution<double> step_size_normal_dist(0.0, 0.4);
+		normal_distribution<double> obj_var_normal_dist;
         // Mutate step size
         double& step_size = *step_size_begin();
-        step_size *= exp(m_proportionality_constant * normal_dist(mt_engine));
-        step_size = max(MIN_STEP_SIZE, step_size );
+        step_size *= exp(step_size_normal_dist(mt_engine));
+        step_size = min(MAX_STEP_SIZE, max(MIN_STEP_SIZE, step_size));
 
-        // Mutate object variables
+		// Mutate object variables
         iterator begin = obj_var_begin(), end = obj_var_end();
         for (iterator it = begin; it != end; it++)
         {
             double& value = *it;
             // Mutate the value
-            value += step_size * normal_dist(mt_engine);
+            value += step_size * obj_var_normal_dist(mt_engine);
             
             // Keep the values in the [0, 1] range
             while (value > 1) value -= 1;

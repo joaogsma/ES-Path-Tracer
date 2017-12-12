@@ -14,6 +14,7 @@ namespace es
         to a normal curve in each object attribute */
     class Individual {
 		static const double MIN_STEP_SIZE;
+		static const double MAX_STEP_SIZE;
 	
 	public:
         typedef std::vector<double>::size_type size_type;
@@ -70,7 +71,6 @@ namespace es
     private:
 		Evolution_Strategy::fitness_function* m_fitness_fn;
         std::vector<double> m_data;
-        double m_proportionality_constant;
         double m_fitness_val;
         bool m_valid_fitness;
     };
